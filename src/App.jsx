@@ -1407,8 +1407,6 @@ Rules:
     const msg = (text || input).trim();
     if (!msg || loading) return;
     setInput("");
-    const newMsgs = [...msgs, {role:"ai" === "ai" ? "ai" : "user", role:"user", text:msg}];
-    // build properly
     const updatedMsgs = [...msgs, {role:"user", text:msg}];
     setMsgs(updatedMsgs);
     setLoading(true);
