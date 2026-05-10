@@ -1203,7 +1203,96 @@ async function callGemini(prompt, _apiKey) {
 }
 
 // ─────────────────────────────────────────────
-// VCAA CURRICULUM DATABASE
+// MATH CLEANER — converts LaTeX to readable text
+// Applied to ALL AI-generated content before display
+// ─────────────────────────────────────────────
+function cleanMath(text) {
+  if (!text) return text;
+  return text
+    // Remove $...$ LaTeX delimiters and convert contents
+    .replace(/\$\$([^$]+)\$\$/g, (_, m) => convertLatex(m))
+    .replace(/\$([^$\n]+)\$/g, (_, m) => convertLatex(m))
+    // Common LaTeX commands outside of $ delimiters
+    .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+    .replace(/\\times/g, '×')
+    .replace(/\\div/g, '÷')
+    .replace(/\\pm/g, '±')
+    .replace(/\\leq/g, '≤')
+    .replace(/\\geq/g, '≥')
+    .replace(/\\neq/g, '≠')
+    .replace(/\\approx/g, '≈')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\gamma/g, 'γ')
+    .replace(/\\Delta/g, 'Δ')
+    .replace(/\\delta/g, 'δ')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\mu/g, 'μ')
+    .replace(/\\sigma/g, 'σ')
+    .replace(/\\infty/g, '∞')
+    .replace(/\\rightarrow/g, '→')
+    .replace(/\\leftarrow/g, '←')
+    .replace(/\\Rightarrow/g, '⇒')
+    .replace(/\\cdot/g, '·')
+    .replace(/\\circ/g, '°')
+    // Superscripts
+    .replace(/\^{([^}]+)}/g, (_, e) => e.split('').map(toSup).join(''))
+    .replace(/\^2(?!\d)/g, '²')
+    .replace(/\^3(?!\d)/g, '³')
+    .replace(/\^n/g, 'ⁿ')
+    .replace(/\^-1/g, '⁻¹')
+    // Subscripts
+    .replace(/_{([^}]+)}/g, (_, s) => s.split('').map(toSub).join(''))
+    // Clean leftover backslashes
+    .replace(/\\([a-zA-Z]+)/g, '$1')
+    .replace(/\\\\/g, '');
+}
+
+function toSup(c) {
+  const map = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','=':'⁼','(':'⁽',')':'⁾','n':'ⁿ','x':'ˣ'};
+  return map[c] || c;
+}
+
+function toSub(c) {
+  const map = {'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉','+':'₊','-':'₋','=':'₌','(':'₍',')':'₎','n':'ₙ','x':'ₓ'};
+  return map[c] || c;
+}
+
+function convertLatex(math) {
+  return math
+    .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+    .replace(/\\sqrt/g, '√')
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+    .replace(/\\times/g, '×')
+    .replace(/\\div/g, '÷')
+    .replace(/\\pm/g, '±')
+    .replace(/\\leq/g, '≤')
+    .replace(/\\geq/g, '≥')
+    .replace(/\\neq/g, '≠')
+    .replace(/\\approx/g, '≈')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\gamma/g, 'γ')
+    .replace(/\\Delta/g, 'Δ')
+    .replace(/\\delta/g, 'δ')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\sigma/g, 'σ')
+    .replace(/\\infty/g, '∞')
+    .replace(/\\cdot/g, '·')
+    .replace(/\^{([^}]+)}/g, (_, e) => e.split('').map(toSup).join(''))
+    .replace(/\^2(?!\d)/g, '²')
+    .replace(/\^3(?!\d)/g, '³')
+    .replace(/_{([^}]+)}/g, (_, s) => s.split('').map(toSub).join(''))
+    .replace(/\\([a-zA-Z]+)/g, '$1')
+    .trim();
+}
+
+
 // Official dot points from vcaa.vic.edu.au study designs
 // ─────────────────────────────────────────────
 const VCAA_CURRICULUM = {
@@ -2128,8 +2217,71 @@ function getCurriculumContext(subject, topic, userNotes, yearLevel) {
 }
 
 // ─────────────────────────────────────────────
-// MARKDOWN RENDERER — renders study notes properly
+// CLEAN MATH — converts LaTeX to readable symbols
+// Used everywhere text is displayed
 // ─────────────────────────────────────────────
+function cleanMath(text) {
+  if (!text) return text;
+  return text
+    // Remove $...$ LaTeX delimiters and convert contents
+    .replace(/\$([^$]+)\$/g, (_, math) => convertLatex(math))
+    // Handle \(...\) and \[...\] delimiters
+    .replace(/\\\(([^)]+)\\\)/g, (_, math) => convertLatex(math))
+    .replace(/\\\[([^\]]+)\\\]/g, (_, math) => convertLatex(math))
+    // Handle standalone symbols outside delimiters
+    .replace(/\^2(?!\d)/g, '²')
+    .replace(/\^3(?!\d)/g, '³')
+    .replace(/\^4(?!\d)/g, '⁴')
+    .replace(/\^n(?!\w)/g, 'ⁿ');
+}
+
+function convertLatex(math) {
+  return math
+    .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+    .replace(/\\sqrt(\w)/g, '√$1')
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+    .replace(/\\times/g, '×')
+    .replace(/\\cdot/g, '·')
+    .replace(/\\div/g, '÷')
+    .replace(/\\pm/g, '±')
+    .replace(/\\leq/g, '≤')
+    .replace(/\\geq/g, '≥')
+    .replace(/\\neq/g, '≠')
+    .replace(/\\approx/g, '≈')
+    .replace(/\\therefore/g, '∴')
+    .replace(/\\because/g, '∵')
+    .replace(/\\in/g, '∈')
+    .replace(/\\notin/g, '∉')
+    .replace(/\\subset/g, '⊂')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\gamma/g, 'γ')
+    .replace(/\\Delta/g, 'Δ')
+    .replace(/\\delta/g, 'δ')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\mu/g, 'μ')
+    .replace(/\\sigma/g, 'σ')
+    .replace(/\\omega/g, 'ω')
+    .replace(/\\infty/g, '∞')
+    .replace(/\\sum/g, 'Σ')
+    .replace(/\\int/g, '∫')
+    .replace(/\^2/g, '²')
+    .replace(/\^3/g, '³')
+    .replace(/\^4/g, '⁴')
+    .replace(/\^n/g, 'ⁿ')
+    .replace(/\^0/g, '⁰')
+    .replace(/\^1/g, '¹')
+    .replace(/\^{([^}]+)}/g, '^($1)')
+    .replace(/_{([^}]+)}/g, '_($1)')
+    .replace(/\\text\{([^}]+)\}/g, '$1')
+    .replace(/\\mathrm\{([^}]+)\}/g, '$1')
+    .replace(/\\left/g, '').replace(/\\right/g, '')
+    .replace(/\\{/g, '{').replace(/\\}/g, '}');
+}
+
+
 function MarkdownRenderer({ content }) {
   const render = (text) => {
     if (!text) return null;
@@ -2343,11 +2495,13 @@ IMPORTANT FORMATTING RULES:
 
       quiz: `Generate 5 ${curriculum} exam-style questions based on:
 ${ctx}
+IMPORTANT: Write ALL maths in plain text — use ², ³, √, ×, ÷, π — NEVER use LaTeX ($...$).
 Return ONLY valid JSON array, no markdown:
 [{"question":"...","options":["A","B","C","D"],"correct":0,"explanation":"...","marks":2}]`,
 
       flashcards: `Generate 8 spaced-repetition flashcards based on:
 ${ctx}
+IMPORTANT: Write ALL maths in plain text — use ², ³, √, ×, ÷, π — NEVER use LaTeX ($...$).
 Return ONLY valid JSON array, no markdown:
 [{"q":"...","a":"..."}]`,
 
@@ -2704,20 +2858,20 @@ function InlineQuiz({ questions, subject, gs }) {
         <span style={{fontSize:12,color:"#6060a0"}}>{subject}</span>
       </div>
       <div className="cb">
-        <div style={{fontWeight:700,fontSize:15,lineHeight:1.5,marginBottom:20}}>{q.question}</div>
+        <div style={{fontWeight:700,fontSize:15,lineHeight:1.5,marginBottom:20}}>{cleanMath(q.question)}</div>
         {q.options?.map((opt,i)=>{
           let cls="qopt";
           if(answered){cls+=" qdis";if(i===q.correct)cls+=" qcor";else if(i===sel)cls+=" qwrg";}
           return (
             <div key={i} className={cls} onClick={()=>choose(i)}>
               <div className="ql" style={answered&&i===q.correct?{background:"rgba(92,224,198,.2)",color:"var(--a2)"}:answered&&i===sel?{background:"rgba(255,107,107,.2)",color:"var(--a3)"}:{}}>{String.fromCharCode(65+i)}</div>
-              {opt}
+              {cleanMath(opt)}
               {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--a2)"}}>✓</span>}
               {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--a3)"}}>✗</span>}
             </div>
           );
         })}
-        {answered&&<div className="qexp fade-up"><strong style={{color:"var(--a2)"}}>💡 </strong>{q.explanation}</div>}
+        {answered&&<div className="qexp fade-up"><strong style={{color:"var(--a2)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
         {answered&&<button className="btn btn-p" style={{marginTop:14}} onClick={next}>{qi<questions.length-1?"Next →":"Finish"}</button>}
       </div>
     </div>
@@ -2761,12 +2915,12 @@ function InlineFlashcards({ cards, subject }) {
         <div className={`fc-inner${flipped?" flip":""}`} style={{minHeight:180}}>
           <div className="fc-face fc-front">
             <div className="fc-sub">{subject}</div>
-            <div className="fc-q" style={{fontSize:17}}>{card.q}</div>
+            <div className="fc-q" style={{fontSize:17}}>{cleanMath(card.q)}</div>
             <div className="fc-hint">Tap to reveal</div>
           </div>
           <div className="fc-face fc-back">
             <div className="fc-sub" style={{color:"var(--a2)"}}>Answer</div>
-            <div className="fc-a">{card.a}</div>
+            <div className="fc-a">{cleanMath(card.a)}</div>
           </div>
         </div>
       </div>
@@ -2816,16 +2970,18 @@ Generate exactly 6 multiple choice questions based on:
 ${ctx}
 ${currentTopic ? `Focus specifically on: ${currentTopic}` : "Cover a range of topics from the curriculum above."}
 
-Rules:
+CRITICAL FORMATTING RULES:
+- Write ALL maths in plain text — use ², ³, √, ×, ÷, ≤, ≥, π, Δ, θ — NEVER use LaTeX ($...$) or backslash commands
+- Example: write "√72 - √18" NOT "$\\sqrt{72} - \\sqrt{18}$"
+- Example: write "x² + 3x - 4" NOT "$x^2 + 3x - 4$"
 - Questions must be genuine exam style with correct difficulty
 - Each question has exactly 4 options (A, B, C, D)
 - Only ONE correct answer
 - Include a clear explanation for the correct answer
 - Use Australian curriculum content and spelling
-- Reference specific VCAA dot points where relevant
 
 Respond ONLY with valid JSON, no markdown, no backticks:
-[{"subject":"${subject}","question":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
+[{"subject":"${selSubj}","question":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
 
       const raw = await callGemini(prompt, apiKey);
       const clean = raw.replace(/```json|```/g,"").trim();
@@ -2942,20 +3098,20 @@ Respond ONLY with valid JSON, no markdown, no backticks:
       </div>
       <div className="card" style={{marginBottom:14}}>
         <div className="cb">
-          <div style={{fontWeight:700,fontSize:16,lineHeight:1.5,marginBottom:22}}>{q.question}</div>
+          <div style={{fontWeight:700,fontSize:16,lineHeight:1.5,marginBottom:22}}>{cleanMath(q.question)}</div>
           {q.options?.map((opt,i)=>{
             let cls="qopt";
             if(answered){cls+=" qdis";if(i===q.correct)cls+=" qcor";else if(i===sel)cls+=" qwrg";}
             return (
               <div key={i} className={cls} onClick={()=>choose(i)}>
                 <div className="ql" style={answered&&i===q.correct?{background:"rgba(92,224,198,.2)",color:"var(--a2)"}:answered&&i===sel?{background:"rgba(255,107,107,.2)",color:"var(--a3)"}:{}}>{String.fromCharCode(65+i)}</div>
-                {opt}
+                {cleanMath(opt)}
                 {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--a2)"}}>✓</span>}
                 {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--a3)"}}>✗</span>}
               </div>
             );
           })}
-          {answered&&<div className="qexp fade-up"><strong style={{color:"var(--a2)"}}>💡 </strong>{q.explanation}</div>}
+          {answered&&<div className="qexp fade-up"><strong style={{color:"var(--a2)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
         </div>
       </div>
       {answered&&(
@@ -2999,9 +3155,14 @@ function FlashcardsScreen({ profile }) {
 ${ctx}
 ${currentTopic ? `Focus on: ${currentTopic}` : "Cover key concepts across the curriculum."}
 
-Make questions exam-relevant. Answers should be concise but complete.
+CRITICAL FORMATTING RULES:
+- Write ALL maths in plain text — use ², ³, √, ×, ÷, ≤, ≥, π, Δ — NEVER use LaTeX ($...$)
+- Example: write "√72 - √18" NOT "$\\sqrt{72} - \\sqrt{18}$"
+- Questions should be concise, answers clear but complete
+- Focus on exam-relevant content
+
 Return ONLY valid JSON, no markdown:
-[{"q":"question","a":"answer","subject":"${subject}"}]`;
+[{"q":"question","a":"answer","subject":"${selSubj}"}]`;
       const raw = await callGemini(prompt, apiKey);
       const clean = raw.replace(/```json|```/g,"").trim();
       const parsed = JSON.parse(clean);
@@ -3098,12 +3259,12 @@ Return ONLY valid JSON, no markdown:
           <div className={`fc-inner${flipped?" flip":""}`} style={{minHeight:220}}>
             <div className="fc-face fc-front">
               <div className="fc-sub">{card.subject||selSubj}</div>
-              <div className="fc-q">{card.q}</div>
+              <div className="fc-q">{cleanMath(card.q)}</div>
               <div className="fc-hint">Tap to reveal</div>
             </div>
             <div className="fc-face fc-back">
               <div className="fc-sub" style={{color:"var(--a2)"}}>Answer</div>
-              <div className="fc-a">{card.a}</div>
+              <div className="fc-a">{cleanMath(card.a)}</div>
             </div>
           </div>
         </div>
