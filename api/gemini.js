@@ -36,7 +36,7 @@ export default async function handler(req, res) {
         "X-Title": "Study Space"
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-exp:free",
+        model: "google/gemini-2.0-flash-lite:free",
         messages,
         max_tokens: generationConfig?.maxOutputTokens || 1024,
         temperature: generationConfig?.temperature || 0.7,
