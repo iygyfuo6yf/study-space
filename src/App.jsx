@@ -590,7 +590,15 @@ function AuthScreen({ onAuth }) {
   return (
     <div className="auth-wrap">
       <div className="auth-card fade-up">
-        <div className="auth-logo">Study Space</div>
+        <div style={{textAlign:"center",marginBottom:8}}>
+          <img 
+            src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" 
+            alt="Study Space" 
+            style={{width:110,height:110,objectFit:"contain",borderRadius:24}}
+            onError={e=>{e.target.style.display="none";}}
+          />
+        </div>
+        <div className="auth-sub" style={{fontWeight:800,fontSize:20,color:"var(--text)",WebkitTextFillColor:"var(--text)",marginBottom:2}}>Study Space</div>
         <div className="auth-sub">{mode === "login" ? "Welcome back — ready to study?" : "Join Victorian students getting better grades"}</div>
 
         {!configured && (
@@ -877,8 +885,9 @@ function Onboarding({ user, onComplete }) {
   return (
     <div className="ob-wrap">
       <div className="ob-inner">
-        <div className="ob-logo">Study Space</div>
-        <div className="ob-tag">Victorian Education Platform · Years 9–12 · Years 9–12</div>
+        <div className="ob-logo"><img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Space" style={{width:90,height:90,objectFit:"contain",borderRadius:20,marginBottom:4}}/></div>
+        <div className="ob-tag" style={{fontWeight:700,fontSize:14,color:"var(--text)",marginBottom:2,WebkitTextFillColor:"var(--text)"}}>Study Space</div>
+        <div className="ob-tag">Victorian Education Platform · Years 9–12</div>
         <div className="ob-prog"><div className="ob-fill" style={{width:`${pct}%`}}/></div>
         {steps[step]}
       </div>
@@ -3737,7 +3746,7 @@ export default function App() {
     <>
       <style>{css}</style>
       <div style={{position:"fixed",inset:0,background:"var(--bg)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
-        <div style={{fontWeight:900,fontSize:28,background:"linear-gradient(135deg,#7C6AF7,#5CE0C6)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Study Space</div>
+        <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Space" style={{width:100,height:100,objectFit:"contain",borderRadius:22,marginBottom:16}}/>
         <div style={{display:"flex",gap:8}}>
           {[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`,width:10,height:10}}/>)}
         </div>
@@ -3773,7 +3782,13 @@ export default function App() {
       <div className="app">
         {/* SIDEBAR */}
         <div className="sidebar">
-          <div className="logo">Study Space<span className="logo-sub">Victorian Education Platform · Years 9–12</span></div>
+          <div className="logo" style={{display:"flex",alignItems:"center",gap:10}}>
+            <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Space" style={{width:38,height:38,objectFit:"contain",borderRadius:10,flexShrink:0}}/>
+            <div>
+              <div style={{fontSize:16,fontWeight:900,background:"linear-gradient(135deg,#7C6AF7,#5CE0C6)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",lineHeight:1.2}}>Study Space</div>
+              <span className="logo-sub">Victorian Education · Years 9–12</span>
+            </div>
+          </div>
 
           <div className="nav-section">
             <div className="nav-lbl">Learn</div>
