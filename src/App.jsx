@@ -2128,6 +2128,134 @@ function getCurriculumContext(subject, topic, userNotes, yearLevel) {
 }
 
 // ─────────────────────────────────────────────
+// MARKDOWN RENDERER — renders study notes properly
+// ─────────────────────────────────────────────
+function MarkdownRenderer({ content }) {
+  const render = (text) => {
+    if (!text) return null;
+    const lines = text.split('\n');
+    const elements = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      const line = lines[i];
+
+      // H1
+      if (line.startsWith('# ')) {
+        elements.push(<h2 key={i} style={{fontFamily:"var(--ff)",fontSize:20,fontWeight:900,color:"var(--text)",margin:"20px 0 12px",borderBottom:"1px solid var(--border)",paddingBottom:8}}>{renderInline(line.slice(2))}</h2>);
+      }
+      // H2
+      else if (line.startsWith('## ')) {
+        elements.push(<h3 key={i} style={{fontFamily:"var(--ff)",fontSize:16,fontWeight:800,color:"var(--accent)",margin:"18px 0 8px"}}>{renderInline(line.slice(3))}</h3>);
+      }
+      // H3
+      else if (line.startsWith('### ')) {
+        elements.push(<h4 key={i} style={{fontFamily:"var(--ff)",fontSize:14,fontWeight:700,color:"var(--a2)",margin:"14px 0 6px"}}>{renderInline(line.slice(4))}</h4>);
+      }
+      // Horizontal rule
+      else if (line.trim() === '---' || line.trim() === '***') {
+        elements.push(<hr key={i} style={{border:"none",borderTop:"1px solid var(--border)",margin:"16px 0"}}/>);
+      }
+      // Bullet point
+      else if (line.match(/^[\s]*[-*•]\s+/)) {
+        const indent = line.match(/^(\s*)/)[1].length;
+        const text = line.replace(/^[\s]*[-*•]\s+/, '');
+        elements.push(
+          <div key={i} style={{display:"flex",gap:8,marginBottom:4,paddingLeft:indent*8}}>
+            <span style={{color:"var(--accent)",flexShrink:0,marginTop:2}}>•</span>
+            <span style={{fontSize:14,lineHeight:1.7,color:"#d0d0e8"}}>{renderInline(text)}</span>
+          </div>
+        );
+      }
+      // Numbered list
+      else if (line.match(/^\d+\.\s+/)) {
+        const num = line.match(/^(\d+)\./)[1];
+        const text = line.replace(/^\d+\.\s+/, '');
+        elements.push(
+          <div key={i} style={{display:"flex",gap:10,marginBottom:4}}>
+            <span style={{color:"var(--accent)",fontWeight:700,flexShrink:0,minWidth:20,fontFamily:"var(--ff)"}}>{num}.</span>
+            <span style={{fontSize:14,lineHeight:1.7,color:"#d0d0e8"}}>{renderInline(text)}</span>
+          </div>
+        );
+      }
+      // Empty line
+      else if (line.trim() === '') {
+        elements.push(<div key={i} style={{height:8}}/>);
+      }
+      // Regular paragraph
+      else if (line.trim()) {
+        elements.push(<p key={i} style={{fontSize:14,lineHeight:1.8,color:"#d0d0e8",margin:"4px 0"}}>{renderInline(line)}</p>);
+      }
+      i++;
+    }
+    return elements;
+  };
+
+  const renderInline = (text) => {
+    // Process inline formatting
+    const parts = [];
+    let remaining = text;
+    let key = 0;
+
+    // Replace LaTeX-style math with readable format
+    remaining = remaining
+      .replace(/\$([^$]+)\$/g, (_, math) => {
+        return math
+          .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+          .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+          .replace(/\\times/g, '×')
+          .replace(/\\div/g, '÷')
+          .replace(/\\pm/g, '±')
+          .replace(/\\leq/g, '≤')
+          .replace(/\\geq/g, '≥')
+          .replace(/\\neq/g, '≠')
+          .replace(/\\approx/g, '≈')
+          .replace(/\\pi/g, 'π')
+          .replace(/\\alpha/g, 'α')
+          .replace(/\\beta/g, 'β')
+          .replace(/\\Delta/g, 'Δ')
+          .replace(/\\delta/g, 'δ')
+          .replace(/\\theta/g, 'θ')
+          .replace(/\\infty/g, '∞')
+          .replace(/\^2/g, '²')
+          .replace(/\^3/g, '³')
+          .replace(/\^n/g, 'ⁿ')
+          .replace(/\^/g, '^')
+          .replace(/_/g, '_');
+      })
+      // Also handle ^2 ^3 outside of LaTeX
+      .replace(/\^2(?!\d)/g, '²')
+      .replace(/\^3(?!\d)/g, '³');
+
+    // Split by bold (**text**) and code (`text`)
+    const regex = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(remaining)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(<span key={key++}>{remaining.slice(lastIndex, match.index)}</span>);
+      }
+      const m = match[0];
+      if (m.startsWith('**')) {
+        parts.push(<strong key={key++} style={{color:"var(--text)",fontWeight:700}}>{m.slice(2,-2)}</strong>);
+      } else if (m.startsWith('`')) {
+        parts.push(<code key={key++} style={{background:"var(--bg3)",padding:"1px 6px",borderRadius:4,fontSize:13,color:"var(--a2)",fontFamily:"monospace"}}>{m.slice(1,-1)}</code>);
+      } else if (m.startsWith('*')) {
+        parts.push(<em key={key++} style={{color:"var(--muted2)"}}>{m.slice(1,-1)}</em>);
+      }
+      lastIndex = match.index + m.length;
+    }
+    if (lastIndex < remaining.length) {
+      parts.push(<span key={key++}>{remaining.slice(lastIndex)}</span>);
+    }
+    return parts.length > 0 ? parts : remaining;
+  };
+
+  return <div style={{fontSize:14,lineHeight:1.8}}>{render(content)}</div>;
+}
+
+// ─────────────────────────────────────────────
 // SUBJECTS SCREEN — Full curriculum-powered
 // ─────────────────────────────────────────────
 function SubjectsScreen({ profile, gs }) {
@@ -2199,14 +2327,19 @@ function SubjectsScreen({ profile, gs }) {
 ${ctx}
 
 Write detailed, exam-focused study notes covering:
-1. Key definitions and concepts (bold them)
-2. Important formulas or rules
+1. Key definitions and concepts (bold them using **bold**)
+2. Important formulas or rules (write them in plain text — use × for multiply, ÷ for divide, ² for squared, √ for square root, NOT LaTeX)
 3. Common exam question types and how to answer them
 4. Worked examples where relevant
 5. Key things examiners look for
 6. Common student mistakes to avoid
 
-Format clearly with headings. Be specific to the ${curriculum} course, not generic.`,
+IMPORTANT FORMATTING RULES:
+- Use ## for section headings, ### for subheadings
+- Use bullet points with - for lists
+- Write all maths in plain readable text: use ², ³, √, ×, ÷, ≤, ≥, π, Δ — NOT LaTeX ($...$) 
+- Bold key terms with **term**
+- Be specific to the ${curriculum} course, not generic`,
 
       quiz: `Generate 5 ${curriculum} exam-style questions based on:
 ${ctx}
@@ -2223,9 +2356,11 @@ ${ctx}
 
 Create a concise dot-point revision summary perfect for last-minute exam study. Include:
 • All key terms and definitions
-• Important formulas/rules
+• Important formulas/rules (write in plain text — use ², √, ×, ÷, π, Δ — NOT LaTeX)
 • Key cause-effect relationships
 • Common exam traps to avoid
+
+FORMATTING: Use ## headings, - bullet points, **bold** for key terms. NO LaTeX or $ symbols.
 Keep it punchy and exam-focused.`
     };
 
@@ -2297,7 +2432,9 @@ Keep it punchy and exam-focused.`
                   <div className="ct">{activeTab==="study"?"📖 Study Notes":"📋 Revision Summary"} — {selTopic}</div>
                   <span className="tag tag-a">{curriculum}</span>
                 </div>
-                <div className="cb" style={{whiteSpace:"pre-wrap",fontSize:14,lineHeight:1.8,color:"#d0d0e8"}}>{content}</div>
+                <div className="cb">
+                  <MarkdownRenderer content={content}/>
+                </div>
               </div>
             )}
 
@@ -3020,6 +3157,7 @@ Rules:
 - Reference specific dot points from the curriculum above when relevant
 - Use **bold** for key terms and bullet points for lists
 - Keep responses concise but thorough
+- Write all maths in plain readable text: use ², ³, √, ×, ÷, ≤, ≥, π, Δ — NOT LaTeX ($...$)
 - If asked for practice questions, make them genuine exam-style with mark allocations`;
 
   const sugs = [
@@ -3536,7 +3674,24 @@ export default function App() {
   // ── On mount: check for existing session or OAuth callback ──
   useEffect(() => {
     const init = async () => {
-      // 1. Handle OAuth redirect callback (Google sends back #access_token=...)
+
+      // Helper to normalise profile from DB (snake_case) to app format (camelCase)
+      const normaliseProfile = (saved, userName) => ({
+        yearLevel: saved.year_level || saved.yearLevel,
+        selectedSubjects: saved.selected_subjects || saved.selectedSubjects || [],
+        futurePath: saved.future_path || saved.futurePath,
+        hoursPerWeek: saved.hours_per_week || saved.hoursPerWeek,
+        studyGoal: saved.study_goal || saved.studyGoal,
+        userName: saved.display_name || userName,
+        email: saved.email,
+      });
+
+      // Always check localStorage first — fastest path
+      const localProfile = (() => {
+        try { return JSON.parse(localStorage.getItem("ss_profile") || "null"); } catch { return null; }
+      })();
+
+      // 1. Handle OAuth redirect callback
       if (window.location.hash.includes("access_token")) {
         const session = await supabase.auth.handleCallback();
         if (session?.access_token) {
@@ -3548,14 +3703,24 @@ export default function App() {
             userId: session.user?.id,
           };
           setUser(u);
-          // Try to load saved profile
-          const saved = await supabase.loadProfile(session.user?.id, session.access_token);
-          if (saved?.yearLevel) {
-            setProfile({ ...saved, userName: u.name });
+          // Try Supabase first, fall back to localStorage
+          try {
+            const saved = await supabase.loadProfile(session.user?.id, session.access_token);
+            if (saved?.year_level || saved?.yearLevel) {
+              const p = normaliseProfile(saved, u.name);
+              setProfile(p);
+              localStorage.setItem("ss_profile", JSON.stringify(p));
+              setStage("app");
+              return;
+            }
+          } catch {}
+          // Check localStorage backup
+          if (localProfile?.yearLevel) {
+            setProfile({ ...localProfile, userName: u.name });
             setStage("app");
-          } else {
-            setStage("onboarding");
+            return;
           }
+          setStage("onboarding");
           return;
         }
       }
@@ -3571,11 +3736,19 @@ export default function App() {
           userId: session.user?.id,
         };
         setUser(u);
-        // Try to load saved profile from DB
+        // Check localStorage first (instant)
+        if (localProfile?.yearLevel) {
+          setProfile({ ...localProfile, userName: u.name });
+          setStage("app");
+          return;
+        }
+        // Try Supabase
         try {
           const saved = await supabase.loadProfile(session.user?.id, session.access_token);
-          if (saved?.yearLevel) {
-            setProfile({ ...saved, userName: u.name });
+          if (saved?.year_level || saved?.yearLevel) {
+            const p = normaliseProfile(saved, u.name);
+            setProfile(p);
+            localStorage.setItem("ss_profile", JSON.stringify(p));
             setStage("app");
             return;
           }
@@ -3592,12 +3765,32 @@ export default function App() {
 
   const handleAuth = async (u) => {
     setUser(u);
-    // If they have a session (real Supabase auth), try to load existing profile
+    // Check localStorage first — instant
+    const localProfile = (() => {
+      try { return JSON.parse(localStorage.getItem("ss_profile") || "null"); } catch { return null; }
+    })();
+    if (localProfile?.yearLevel) {
+      setProfile({ ...localProfile, userName: u.name });
+      setStage("app");
+      return;
+    }
+    // Try Supabase
     if (u.session?.access_token && u.userId) {
       try {
         const saved = await supabase.loadProfile(u.userId, u.session.access_token);
-        if (saved?.yearLevel) {
-          setProfile({ ...saved, userName: u.name });
+        const yearLevel = saved?.year_level || saved?.yearLevel;
+        if (yearLevel) {
+          const p = {
+            yearLevel,
+            selectedSubjects: saved.selected_subjects || saved.selectedSubjects || [],
+            futurePath: saved.future_path || saved.futurePath,
+            hoursPerWeek: saved.hours_per_week || saved.hoursPerWeek,
+            studyGoal: saved.study_goal || saved.studyGoal,
+            userName: saved.display_name || u.name,
+            email: u.email,
+          };
+          setProfile(p);
+          localStorage.setItem("ss_profile", JSON.stringify(p));
           setStage("app");
           return;
         }
@@ -3609,6 +3802,8 @@ export default function App() {
   const handleOnboard = async (data) => {
     const fullProfile = { ...data, userName: user.name, email: user.email, provider: user.provider };
     setProfile(fullProfile);
+    // Save to localStorage immediately — fastest
+    localStorage.setItem("ss_profile", JSON.stringify(fullProfile));
     // Save to Supabase if we have a real session
     if (user.userId && user.session?.access_token) {
       try {
@@ -3621,7 +3816,7 @@ export default function App() {
           display_name: user.name,
         }, user.session.access_token);
       } catch (e) {
-        console.warn("Profile save failed:", e);
+        console.warn("Profile save to Supabase failed:", e);
       }
     }
     setStage("app");
@@ -3629,6 +3824,7 @@ export default function App() {
 
   const handleSignOut = () => {
     supabase.auth.signOut();
+    localStorage.removeItem("ss_profile");
     setStage("auth");
     setUser(null);
     setProfile(null);
