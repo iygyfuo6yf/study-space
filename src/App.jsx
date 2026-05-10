@@ -2753,6 +2753,8 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
       setDeepNotes(d => ({...d, [key]: {loading: false, visible: true, content: "⚠️ Couldn't generate notes. Try again."}}));
     }
   };
+
+  const quizChoose = (subId, optIdx) => {
     const qs = quizStates[subId];
     if (!qs||qs.answered) return;
     const correct = qs.questions[qs.qi].correct;
