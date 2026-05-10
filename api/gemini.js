@@ -1,17 +1,16 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: "API key not configured" });
-  }
+  if (!apiKey) return res.status(500).json({ error: "API key not configured" });
 
   try {
     const { contents, systemInstruction, generationConfig } = req.body;
 
-    // Convert Gemini format to OpenRouter/OpenAI format
+    // Check if any content has images (inline_data)
+    const hasImages = contents?.some(c => c.parts?.some(p => p.inline_data));
+
+    // Convert Gemini format → OpenAI/OpenRouter format
     const messages = [];
 
     if (systemInstruction?.parts?.[0]?.text) {
@@ -20,12 +19,36 @@ export default async function handler(req, res) {
 
     if (contents) {
       contents.forEach(c => {
-        messages.push({
-          role: c.role === "model" ? "assistant" : "user",
-          content: c.parts?.[0]?.text || ""
-        });
+        const role = c.role === "model" ? "assistant" : "user";
+        if (!c.parts || c.parts.length === 0) return;
+
+        // Check if any part has an image
+        const hasImg = c.parts.some(p => p.inline_data);
+
+        if (hasImg) {
+          // Build multipart content array for vision
+          const content = c.parts.map(p => {
+            if (p.inline_data) {
+              return {
+                type: "image_url",
+                image_url: { url: `data:${p.inline_data.mime_type};base64,${p.inline_data.data}` }
+              };
+            }
+            return { type: "text", text: p.text || "" };
+          }).filter(p => p.type !== "text" || p.text);
+          messages.push({ role, content });
+        } else {
+          // Text only
+          const text = c.parts.map(p => p.text || "").join("\n").trim();
+          if (text) messages.push({ role, content: text });
+        }
       });
     }
+
+    // Use vision model if images present
+    const model = hasImages
+      ? "google/gemini-2.0-flash-lite:free"
+      : "openrouter/auto";
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -36,9 +59,9 @@ export default async function handler(req, res) {
         "X-Title": "Study Space"
       },
       body: JSON.stringify({
-        model: "openrouter/auto",
+        model,
         messages,
-        max_tokens: generationConfig?.maxOutputTokens || 1024,
+        max_tokens: generationConfig?.maxOutputTokens || 1500,
         temperature: generationConfig?.temperature || 0.7,
       })
     });
@@ -49,7 +72,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: data.error.message || "OpenRouter error" });
     }
 
-    // Convert back to Gemini response format so app code doesn't need changing
+    // Convert back to Gemini response format
     const text = data.choices?.[0]?.message?.content || "";
     return res.status(200).json({
       candidates: [{ content: { parts: [{ text }] } }]
