@@ -3818,6 +3818,561 @@ function AnalyticsScreen({ profile, gs }) {
 }
 
 // ─────────────────────────────────────────────
+// SETTINGS SCREEN
+// ─────────────────────────────────────────────
+function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
+  const [tab, setTab] = useState("profile");
+  const [editing, setEditing] = useState(false);
+  const [yearLevel, setYearLevel] = useState(profile.yearLevel);
+  const [selectedSubjects, setSelectedSubjects] = useState(profile.selectedSubjects || []);
+  const [futurePath, setFuturePath] = useState(profile.futurePath || "");
+  const [hoursPerWeek, setHoursPerWeek] = useState(profile.hoursPerWeek || "moderate");
+  const [saved, setSaved] = useState(false);
+
+  const YEAR_LEVELS = [{id:"year9",label:"Year 9"},{id:"year10",label:"Year 10"},{id:"vce",label:"VCE"},{id:"ib",label:"IB Diploma"}];
+  const FUTURE_PATHS = [
+    {id:"medicine",label:"🩺 Medicine / Health"},{id:"law",label:"⚖️ Law"},{id:"engineering",label:"⚙️ Engineering"},
+    {id:"cs",label:"💻 Computer Science"},{id:"business",label:"💼 Business"},{id:"science",label:"🔬 Science"},
+    {id:"arts_hum",label:"🎨 Arts / Humanities"},{id:"education",label:"📖 Education"},{id:"trades",label:"🔧 Trades"},
+  ];
+  const HOURS = [{id:"light",label:"Light (1-2h/day)"},{id:"moderate",label:"Moderate (2-3h/day)"},{id:"intensive",label:"Intensive (3-5h/day)"},{id:"extreme",label:"Extreme (5h+/day)"}];
+
+  const subjectGroups = yearLevel === "vce" ? ALL_SUBJECTS.vce.groups
+    : yearLevel === "ib" ? ALL_SUBJECTS.ib.groups
+    : yearLevel === "year9" ? {"Core":ALL_SUBJECTS.year9.core,"Electives":ALL_SUBJECTS.year9.elective}
+    : {"Core":ALL_SUBJECTS.year10.core,"Electives":ALL_SUBJECTS.year10.elective};
+
+  const save = () => {
+    const updated = {...profile, yearLevel, selectedSubjects, futurePath, hoursPerWeek};
+    onUpdateProfile(updated);
+    setSaved(true); setEditing(false);
+    setTimeout(()=>setSaved(false),2000);
+  };
+
+  const TABS = [{id:"profile",label:"👤 Profile"},{id:"subjects",label:"📚 Subjects"},{id:"notifications",label:"🔔 Alerts"},{id:"about",label:"ℹ️ About"}];
+
+  return (
+    <div className="content fade-up">
+      <div style={{fontWeight:900,fontSize:22,marginBottom:20}}>Settings</div>
+      <div style={{display:"flex",gap:6,marginBottom:24,flexWrap:"wrap"}}>
+        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} className={`btn btn-sm ${tab===t.id?"btn-p":"btn-g"}`}>{t.label}</button>)}
+      </div>
+
+      {tab==="profile"&&(
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div className="card">
+            <div className="ch"><div className="ct">👤 Your Profile</div><button className="btn btn-s btn-sm" onClick={()=>setEditing(e=>!e)}>{editing?"Cancel":"Edit"}</button></div>
+            <div className="cb">
+              <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:20}}>
+                <div style={{width:64,height:64,borderRadius:"50%",background:"linear-gradient(135deg,#7C6AF7,#5CE0C6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,fontWeight:900,color:"#fff",flexShrink:0}}>
+                  {profile.userName?.[0]?.toUpperCase()||"S"}
+                </div>
+                <div>
+                  <div style={{fontWeight:800,fontSize:18}}>{profile.userName}</div>
+                  <div style={{fontSize:13,color:"#6060a0"}}>{profile.email}</div>
+                  <div style={{fontSize:12,color:"#50508a",marginTop:4}}>{ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel} · {profile.selectedSubjects?.length||0} subjects</div>
+                </div>
+              </div>
+              {!editing?(
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  {[
+                    {label:"Year Level",value:ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel},
+                    {label:"Career Goal",value:FUTURE_PATHS.find(f=>f.id===profile.futurePath)?.label||profile.futurePath||"Not set"},
+                    {label:"Study Intensity",value:HOURS.find(h=>h.id===profile.hoursPerWeek)?.label||"Moderate"},
+                    {label:"Subjects",value:`${profile.selectedSubjects?.length||0} selected`},
+                  ].map((item,i)=>(
+                    <div key={i} style={{background:"var(--bg3)",borderRadius:10,padding:"12px 14px"}}>
+                      <div style={{fontSize:11,color:"#50508a",marginBottom:4,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em"}}>{item.label}</div>
+                      <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+              ):(
+                <div style={{display:"flex",flexDirection:"column",gap:16}}>
+                  <div>
+                    <div style={{fontSize:12,fontWeight:700,color:"#7070a8",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Year Level</div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {YEAR_LEVELS.map(y=><button key={y.id} onClick={()=>{setYearLevel(y.id);setSelectedSubjects([]);}} className={`btn btn-sm ${yearLevel===y.id?"btn-p":"btn-g"}`}>{y.label}</button>)}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{fontSize:12,fontWeight:700,color:"#7070a8",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Career Goal</div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                      {FUTURE_PATHS.map(f=><button key={f.id} onClick={()=>setFuturePath(f.id)} className={`btn btn-sm ${futurePath===f.id?"btn-p":"btn-g"}`} style={{justifyContent:"flex-start"}}>{f.label}</button>)}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{fontSize:12,fontWeight:700,color:"#7070a8",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Study Intensity</div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {HOURS.map(h=><button key={h.id} onClick={()=>setHoursPerWeek(h.id)} className={`btn btn-sm ${hoursPerWeek===h.id?"btn-p":"btn-g"}`}>{h.label}</button>)}
+                    </div>
+                  </div>
+                  <button className="btn btn-p" onClick={save} style={{padding:"12px"}}>{saved?"✅ Saved!":"Save Changes"}</button>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="card" style={{borderColor:"rgba(255,107,107,.2)"}}>
+            <div className="ch"><div className="ct" style={{color:"var(--a3)"}}>⚠️ Account</div></div>
+            <div className="cb" style={{display:"flex",gap:10}}>
+              <button className="btn btn-sm" style={{border:"1px solid rgba(255,107,107,.3)",color:"var(--a3)"}} onClick={onSignOut}>Sign Out</button>
+              <button className="btn btn-sm btn-g" onClick={()=>{localStorage.clear();onSignOut();}}>Clear All Data & Sign Out</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab==="subjects"&&(
+        <div className="card">
+          <div className="ch"><div className="ct">📚 My Subjects</div><span style={{fontSize:12,color:"#50508a"}}>{selectedSubjects.length}/12</span></div>
+          <div className="cb">
+            <div style={{fontSize:13,color:"#7070a8",marginBottom:14}}>Tap to add or remove. Changes save immediately.</div>
+            {Object.entries(subjectGroups).map(([group,subjects])=>(
+              <div key={group} style={{marginBottom:18}}>
+                <div style={{fontSize:11,fontWeight:800,color:"#50508a",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{group}</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+                  {subjects.map(s=>{
+                    const sel = selectedSubjects.includes(s);
+                    return(
+                      <button key={s} onClick={()=>{
+                        const updated = sel ? selectedSubjects.filter(x=>x!==s) : selectedSubjects.length<12?[...selectedSubjects,s]:selectedSubjects;
+                        setSelectedSubjects(updated);
+                        onUpdateProfile({...profile,selectedSubjects:updated});
+                      }}
+                        style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",background:sel?getColor(s):"var(--bg3)",color:sel?"#fff":"#7070a8",border:`1px solid ${sel?getColor(s):"var(--border)"}`,transition:"all .15s"}}>
+                        {sel&&"✓ "}{s}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {tab==="notifications"&&(
+        <div className="card">
+          <div className="ch"><div className="ct">🔔 Notification Preferences</div></div>
+          <div className="cb">
+            {[
+              {label:"📅 SAC & Exam Countdowns",desc:"7, 3 and 1 day reminders",key:"sac"},
+              {label:"🔥 Daily Streak Reminder",desc:"Keep your streak alive",key:"streak"},
+              {label:"⚡ XP Milestones",desc:"Level up and achievement alerts",key:"xp"},
+              {label:"📊 Weekly Summary",desc:"Sunday progress report",key:"weekly"},
+            ].map((n,i)=>{
+              const [val,setVal]=useState(()=>JSON.parse(localStorage.getItem(`notif_${n.key}`)??"true"));
+              return(
+                <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:i<3?"1px solid var(--border)":"none"}}>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:600}}>{n.label}</div>
+                    <div style={{fontSize:11,color:"#50508a",marginTop:2}}>{n.desc}</div>
+                  </div>
+                  <button onClick={()=>{localStorage.setItem(`notif_${n.key}`,JSON.stringify(!val));setVal(!val);}}
+                    style={{width:44,height:24,borderRadius:12,background:val?"var(--accent)":"var(--bg3)",border:`1px solid ${val?"var(--accent)":"var(--border)"}`,cursor:"pointer",position:"relative",flexShrink:0,transition:"all .2s"}}>
+                    <div style={{width:18,height:18,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:val?22:2,transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.3)"}}/>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {tab==="about"&&(
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div className="card">
+            <div className="cb" style={{textAlign:"center",padding:"24px"}}>
+              <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Space" style={{width:80,height:80,borderRadius:18,marginBottom:12}}/>
+              <div style={{fontWeight:900,fontSize:22,marginBottom:4}}>Study Space</div>
+              <div style={{color:"#6060a0",fontSize:13,marginBottom:4}}>Victorian Education Platform · Years 9–12</div>
+              <div style={{fontSize:12,color:"#50508a"}}>Version 1.0.0</div>
+            </div>
+          </div>
+          <div className="card">
+            <div className="ch"><div className="ct">📋 Platform Info</div></div>
+            <div className="cb">
+              {[
+                {label:"AI Model",value:"Google Gemini 2.0 Flash (OpenRouter)"},
+                {label:"Curriculum",value:"VCAA 2024-2028 + IB Diploma"},
+                {label:"Subjects",value:"88 subjects across Years 9-12"},
+                {label:"Auth",value:"Google OAuth via Supabase"},
+                {label:"Hosting",value:"Vercel"},
+              ].map((item,i)=>(
+                <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:i<4?"1px solid var(--border)":"none",fontSize:13}}>
+                  <span style={{color:"#7070a8"}}>{item.label}</span>
+                  <span style={{fontWeight:600,color:"var(--text)"}}>{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// SEARCH SCREEN
+// ─────────────────────────────────────────────
+function SearchScreen({ profile, setScreen }) {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+
+  useEffect(()=>{
+    if(!query.trim()){setResults([]);return;}
+    const q=query.toLowerCase();
+    const found=[];
+    profile.selectedSubjects?.forEach(sub=>{
+      if(sub.toLowerCase().includes(q))
+        found.push({type:"subject",title:sub,subtitle:"Subject",color:getColor(sub),action:"subjects"});
+    });
+    Object.entries(VCAA_CURRICULUM).forEach(([sub,data])=>{
+      if(!profile.selectedSubjects?.includes(sub))return;
+      data.areas?.forEach(area=>{
+        if(area.name.toLowerCase().includes(q))
+          found.push({type:"topic",title:area.name,subtitle:sub,color:getColor(sub),action:"subjects"});
+        area.dotPoints?.forEach(dp=>{
+          if(dp.toLowerCase().includes(q))
+            found.push({type:"dotpoint",title:dp.slice(0,55)+(dp.length>55?"...":""),subtitle:`${sub} → ${area.name}`,color:getColor(sub),action:"subjects"});
+        });
+      });
+    });
+    const screens=[
+      {name:"dashboard",label:"Dashboard",icon:"⊞"},{name:"quiz",label:"Practice Quiz",icon:"🎯"},
+      {name:"flashcards",label:"Flashcards",icon:"🃏"},{name:"planner",label:"Study Planner",icon:"📅"},
+      {name:"analytics",label:"Analytics",icon:"📊"},{name:"ai",label:"AI Tutor",icon:"✨"},
+      {name:"leaderboard",label:"Leaderboard",icon:"🏆"},{name:"groups",label:"Study Groups",icon:"👥"},
+      {name:"settings",label:"Settings",icon:"⚙️"},
+    ];
+    screens.forEach(s=>{
+      if(s.label.toLowerCase().includes(q))
+        found.push({type:"screen",title:s.icon+" "+s.label,subtitle:"Navigate to",color:"#7C6AF7",action:s.name});
+    });
+    setResults(found.slice(0,20));
+  },[query]);
+
+  const QUICK=[
+    {icon:"📚",label:"My Subjects",screen:"subjects"},{icon:"🎯",label:"Practice Quiz",screen:"quiz"},
+    {icon:"🃏",label:"Flashcards",screen:"flashcards"},{icon:"✨",label:"AI Tutor",screen:"ai"},
+    {icon:"📅",label:"Study Planner",screen:"planner"},{icon:"📊",label:"Analytics",screen:"analytics"},
+  ];
+
+  return(
+    <div className="content fade-up">
+      <div style={{fontWeight:900,fontSize:22,marginBottom:20}}>Search</div>
+      <div style={{position:"relative",marginBottom:20}}>
+        <div style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:16,color:"#50508a"}}>🔍</div>
+        <input autoFocus value={query} onChange={e=>setQuery(e.target.value)}
+          placeholder="Search subjects, topics, curriculum points..."
+          style={{width:"100%",background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 14px 14px 44px",color:"var(--text)",fontSize:15,outline:"none",fontFamily:"var(--ff)",boxSizing:"border-box"}}/>
+        {query&&<button onClick={()=>setQuery("")} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:"#50508a",cursor:"pointer",fontSize:18}}>✕</button>}
+      </div>
+      {!query&&(
+        <div>
+          <div style={{fontWeight:700,fontSize:13,color:"#50508a",marginBottom:12,textTransform:"uppercase",letterSpacing:".08em"}}>Quick Links</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            {QUICK.map((q,i)=>(
+              <button key={i} onClick={()=>setScreen(q.screen)} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"16px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:20}}>{q.icon}</span>
+                <span style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{q.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {query&&results.length===0&&(
+        <div style={{textAlign:"center",padding:"40px",color:"#50508a"}}>
+          <div style={{fontSize:32,marginBottom:8}}>🔍</div>
+          <div>No results for "{query}"</div>
+        </div>
+      )}
+      {results.length>0&&(
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          <div style={{fontSize:12,color:"#50508a",marginBottom:4}}>{results.length} result{results.length!==1?"s":""}</div>
+          {results.map((r,i)=>(
+            <button key={i} onClick={()=>setScreen(r.action)} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:12,width:"100%"}}>
+              <div style={{width:36,height:36,borderRadius:8,background:`${r.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>
+                {{subject:"📚",topic:"📖",dotpoint:"•",screen:"🔗"}[r.type]}
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{r.title}</div>
+                <div style={{fontSize:11,color:"#50508a",marginTop:2}}>{r.subtitle}</div>
+              </div>
+              <div style={{fontSize:12,color:r.color,fontWeight:700}}>→</div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// LEADERBOARD SCREEN
+// ─────────────────────────────────────────────
+function LeaderboardScreen({ profile, gs }) {
+  const {state}=gs;
+  const myEntry={name:profile.userName||"You",xp:state.xp||0,level:state.level||1,streak:state.streak||0,isMe:true,avatar:profile.userName?.[0]?.toUpperCase()||"Y",yearLevel:profile.yearLevel};
+  const simulated=[
+    {name:"Priya M.",xp:4820,level:10,streak:14,avatar:"P",yearLevel:"vce"},
+    {name:"James L.",xp:4510,level:9,streak:8,avatar:"J",yearLevel:"vce"},
+    {name:"Sophie K.",xp:3990,level:8,streak:21,avatar:"S",yearLevel:"ib"},
+    {name:"Aiden T.",xp:3740,level:8,streak:5,avatar:"A",yearLevel:"year10"},
+    {name:"Mei C.",xp:3200,level:7,streak:12,avatar:"M",yearLevel:"vce"},
+    {name:"Luca R.",xp:2800,level:6,streak:3,avatar:"L",yearLevel:"year9"},
+    {name:"Zara B.",xp:2400,level:5,streak:9,avatar:"Z",yearLevel:"vce"},
+  ];
+  const allEntries=[...simulated,myEntry].sort((a,b)=>b.xp-a.xp);
+  const myRank=allEntries.findIndex(e=>e.isMe)+1;
+  const rankIcon=i=>i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;
+  const rankColor=i=>i===0?"#FFD700":i===1?"#C0C0C0":i===2?"#CD7F32":"var(--text)";
+
+  return(
+    <div className="content fade-up">
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+        <div>
+          <div style={{fontWeight:900,fontSize:22}}>Leaderboard</div>
+          <div style={{color:"#6060a0",fontSize:13,marginTop:3}}>Your rank: #{myRank} · {(state.xp||0).toLocaleString()} XP</div>
+        </div>
+        <div style={{textAlign:"center",background:"linear-gradient(135deg,rgba(124,106,247,.2),rgba(92,224,198,.1))",border:"1px solid rgba(124,106,247,.3)",borderRadius:12,padding:"10px 16px"}}>
+          <div style={{fontSize:24,fontWeight:900,color:"var(--accent)"}}>#{myRank}</div>
+          <div style={{fontSize:10,color:"#50508a"}}>Your Rank</div>
+        </div>
+      </div>
+      <div className="card" style={{marginBottom:18,borderColor:"rgba(124,106,247,.3)"}}>
+        <div className="cb">
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,textAlign:"center"}}>
+            {[{val:(state.xp||0).toLocaleString(),label:"Total XP",color:"#7C6AF7"},{val:`Lv ${state.level||1}`,label:"Level",color:"#5CE0C6"},{val:`🔥${state.streak||0}`,label:"Streak",color:"#FF6B6B"},{val:profile.selectedSubjects?.length||0,label:"Subjects",color:"#FFD700"}].map((s,i)=>(
+              <div key={i}><div style={{fontSize:18,fontWeight:900,color:s.color}}>{s.val}</div><div style={{fontSize:10,color:"#50508a",marginTop:2}}>{s.label}</div></div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="card">
+        <div style={{padding:"0 16px"}}>
+          {allEntries.map((entry,i)=>(
+            <div key={i} className={`lb-row${entry.isMe?" me":""}`} style={{padding:"12px 0",borderBottom:i<allEntries.length-1?"1px solid var(--border)":"none"}}>
+              <div style={{fontSize:20,width:36,textAlign:"center",flexShrink:0,color:rankColor(i)}}>{rankIcon(i)}</div>
+              <div style={{width:36,height:36,borderRadius:"50%",background:entry.isMe?"linear-gradient(135deg,#7C6AF7,#5CE0C6)":"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800,color:entry.isMe?"#fff":"var(--text)",flexShrink:0}}>{entry.avatar}</div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:700,fontSize:14}}>{entry.name}{entry.isMe&&<span className="tag tag-a" style={{marginLeft:6,fontSize:9}}>You</span>}</div>
+                <div style={{fontSize:11,color:"#50508a"}}>Level {entry.level} · 🔥{entry.streak} streak</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontWeight:800,fontSize:14,color:"var(--accent)"}}>{entry.xp.toLocaleString()}</div>
+                <div style={{fontSize:10,color:"#50508a"}}>XP</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{textAlign:"center",marginTop:14,fontSize:12,color:"#40406a"}}>🌏 Live leaderboard with real users coming in the mobile app</div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// STUDY GROUPS SCREEN
+// ─────────────────────────────────────────────
+function StudyGroupsScreen({ profile }) {
+  const [tab,setTab]=useState("discover");
+  const [groups,setGroups]=useState(()=>{try{return JSON.parse(localStorage.getItem("ss_groups")||"[]");}catch{return [];}});
+  const [newName,setNewName]=useState("");
+  const [newSubject,setNewSubject]=useState(profile.selectedSubjects?.[0]||"");
+
+  const createGroup=()=>{
+    if(!newName.trim())return;
+    const g={id:Date.now().toString(),name:newName,subject:newSubject,members:[profile.userName],createdAt:new Date().toISOString()};
+    const updated=[...groups,g];
+    setGroups(updated);localStorage.setItem("ss_groups",JSON.stringify(updated));
+    setNewName("");setTab("mygroups");
+  };
+
+  const sampleGroups=[
+    {id:"s1",name:"VCE Chemistry Study Group",subject:"Chemistry",members:["Priya","James","Mei","Sophie"],color:"#43C6AC",desc:"Weekly SAC prep and past paper reviews"},
+    {id:"s2",name:"Maths Methods Masterclass",subject:"Maths Methods",members:["Aiden","Luca","Zara"],color:"#6C63FF",desc:"Calculus help and exam strategies"},
+    {id:"s3",name:"Biology HL IB",subject:"Biology HL",members:["Sophie","James"],color:"#56C785",desc:"IB Biology HL study sessions"},
+    {id:"s4",name:"Year 10 Science Squad",subject:"Science",members:["Priya","Mei","Zara","Luca"],color:"#00C9FF",desc:"Year 10 science practice and assignments"},
+  ];
+
+  return(
+    <div className="content fade-up">
+      <div style={{fontWeight:900,fontSize:22,marginBottom:20}}>Study Groups</div>
+      <div style={{display:"flex",gap:8,marginBottom:20}}>
+        {[{id:"discover",label:"🔍 Discover"},{id:"mygroups",label:"👥 My Groups"},{id:"create",label:"➕ Create"}].map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)} className={`btn btn-sm ${tab===t.id?"btn-p":"btn-g"}`}>{t.label}</button>
+        ))}
+      </div>
+
+      {tab==="discover"&&(
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {sampleGroups.map(g=>(
+            <div key={g.id} className="card" style={{borderLeft:`4px solid ${g.color}`}}>
+              <div className="cb">
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+                  <div><div style={{fontWeight:700,fontSize:15}}>{g.name}</div><div style={{fontSize:12,color:g.color,fontWeight:600,marginTop:2}}>{g.subject}</div></div>
+                  <span style={{fontSize:11,color:"#50508a",background:"var(--bg3)",borderRadius:20,padding:"3px 10px"}}>{g.members.length} members</span>
+                </div>
+                <div style={{fontSize:13,color:"#7070a8",marginBottom:12}}>{g.desc}</div>
+                <div style={{display:"flex",gap:8}}><button className="btn btn-p btn-sm">Join Group</button><button className="btn btn-g btn-sm">View</button></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab==="mygroups"&&(
+        groups.length===0?(
+          <div style={{textAlign:"center",padding:"48px 24px",color:"#50508a"}}>
+            <div style={{fontSize:48,marginBottom:12}}>👥</div>
+            <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>No groups yet</div>
+            <button className="btn btn-p btn-sm" onClick={()=>setTab("create")}>Create a Group</button>
+          </div>
+        ):groups.map(g=>(
+          <div key={g.id} className="card" style={{marginBottom:12}}>
+            <div className="cb">
+              <div style={{fontWeight:700,fontSize:15,marginBottom:4}}>{g.name}</div>
+              <div style={{fontSize:12,color:"#6060a0",marginBottom:10}}>{g.subject}</div>
+              <button className="btn btn-p btn-sm">Open Chat</button>
+            </div>
+          </div>
+        ))
+      )}
+
+      {tab==="create"&&(
+        <div className="card">
+          <div className="ch"><div className="ct">➕ Create Study Group</div></div>
+          <div className="cb" style={{display:"flex",flexDirection:"column",gap:14}}>
+            <input value={newName} onChange={e=>setNewName(e.target.value)} placeholder="Group name e.g. VCE Chemistry SAC Prep"
+              style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"10px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}/>
+            <select value={newSubject} onChange={e=>setNewSubject(e.target.value)}
+              style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"10px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}>
+              {profile.selectedSubjects?.map(s=><option key={s} value={s}>{s}</option>)}
+            </select>
+            <button className="btn btn-p" onClick={createGroup} disabled={!newName.trim()}>Create Group</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// TUTOR MARKETPLACE SCREEN
+// ─────────────────────────────────────────────
+function TutorMarketplaceScreen({ profile }) {
+  const [subject,setSubject]=useState("");
+  const [tab,setTab]=useState("browse");
+  const tutors=[
+    {id:1,name:"Dr Sarah Chen",subjects:["Chemistry","Biology","Physics"],rating:4.9,reviews:47,price:80,badge:"⭐ Top Rated",bio:"PhD Chemistry, 8 years VCE & IB tutoring. Specialises in SAC prep.",avatar:"S",available:true},
+    {id:2,name:"Michael Torres",subjects:["Maths Methods","Specialist Maths","Physics"],rating:4.8,reviews:92,price:70,badge:"🎓 VCE Expert",bio:"99.95 ATAR. Personally scored 50 in Methods and 48 in Specialist. Now at Melbourne Uni Engineering.",avatar:"M",available:true},
+    {id:3,name:"Emma Williams",subjects:["English","Literature","Legal Studies"],rating:4.9,reviews:63,price:65,badge:"✍️ English Specialist",bio:"Secondary English teacher + private tutor. Masters analytical writing and essay structure.",avatar:"E",available:false},
+    {id:4,name:"Rohan Patel",subjects:["Economics","Business Management","Accounting"],rating:4.7,reviews:38,price:60,badge:"💼 Commerce Pro",bio:"Commerce graduate + CPA. Makes Economics and Business Management exam-focused.",avatar:"R",available:true},
+    {id:5,name:"Yuki Tanaka",subjects:["Japanese SL","Japanese (Year 9-10)"],rating:5.0,reviews:21,price:75,badge:"🇯🇵 Native Speaker",bio:"Native Japanese speaker, JLPT N1. VCE and Year 9-10 Japanese specialist.",avatar:"Y",available:true},
+    {id:6,name:"Alex Nguyen",subjects:["Biology HL","Chemistry HL","Biology SL"],rating:4.8,reviews:29,price:85,badge:"🎓 IB Expert",bio:"IB graduate (44/45). Specialises in sciences — IA support, past papers, exam technique.",avatar:"A",available:true},
+  ];
+  const filtered=subject?tutors.filter(t=>t.subjects.some(s=>s.toLowerCase().includes(subject.toLowerCase()))):tutors;
+
+  return(
+    <div className="content fade-up">
+      <div style={{fontWeight:900,fontSize:22,marginBottom:8}}>Tutor Marketplace</div>
+      <div style={{color:"#6060a0",fontSize:13,marginBottom:20}}>Expert tutors for your subjects · Sessions from $60/hr</div>
+      <div style={{display:"flex",gap:8,marginBottom:20}}>
+        {[{id:"browse",label:"🔍 Browse"},{id:"booked",label:"📅 Sessions"},{id:"saved",label:"❤️ Saved"}].map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)} className={`btn btn-sm ${tab===t.id?"btn-p":"btn-g"}`}>{t.label}</button>
+        ))}
+      </div>
+      {tab==="browse"&&(
+        <div>
+          <select value={subject} onChange={e=>setSubject(e.target.value)}
+            style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 14px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)",width:"100%",marginBottom:16}}>
+            <option value="">All Subjects</option>
+            {profile.selectedSubjects?.map(s=><option key={s} value={s}>{s}</option>)}
+          </select>
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            {filtered.map(tutor=>(
+              <div key={tutor.id} className="card" style={{opacity:tutor.available?1:.7}}>
+                <div className="cb">
+                  <div style={{display:"flex",gap:14,marginBottom:10}}>
+                    <div style={{width:52,height:52,borderRadius:"50%",background:"linear-gradient(135deg,#7C6AF7,#5CE0C6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,fontWeight:800,color:"#fff",flexShrink:0}}>{tutor.avatar}</div>
+                    <div style={{flex:1}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                        <div style={{fontWeight:800,fontSize:15}}>{tutor.name}</div>
+                        <span style={{fontSize:10,background:"rgba(124,106,247,.15)",color:"var(--accent)",borderRadius:20,padding:"2px 8px",fontWeight:700}}>{tutor.badge}</span>
+                        {!tutor.available&&<span style={{fontSize:10,background:"rgba(255,107,107,.15)",color:"var(--a3)",borderRadius:20,padding:"2px 8px"}}>Unavailable</span>}
+                      </div>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginTop:4}}>
+                        <span style={{color:"#FFD700",fontSize:12}}>{"★".repeat(Math.round(tutor.rating))}</span>
+                        <span style={{fontSize:12,color:"#50508a"}}>{tutor.rating} ({tutor.reviews} reviews)</span>
+                        <span style={{fontSize:12,fontWeight:700,color:"var(--a2)"}}>${tutor.price}/hr</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{fontSize:13,color:"#9090b8",marginBottom:10,lineHeight:1.6}}>{tutor.bio}</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>
+                    {tutor.subjects.map(s=><span key={s} style={{fontSize:11,background:`${getColor(s)}22`,color:getColor(s),borderRadius:20,padding:"3px 10px",fontWeight:600}}>{s}</span>)}
+                  </div>
+                  <div style={{display:"flex",gap:8}}>
+                    <button className="btn btn-p btn-sm" disabled={!tutor.available}>{tutor.available?"Book Session":"Unavailable"}</button>
+                    <button className="btn btn-g btn-sm">❤️ Save</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {(tab==="booked"||tab==="saved")&&(
+        <div style={{textAlign:"center",padding:"60px 24px",color:"#50508a"}}>
+          <div style={{fontSize:48,marginBottom:12}}>{tab==="booked"?"📅":"❤️"}</div>
+          <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>{tab==="booked"?"No sessions booked":"No saved tutors"}</div>
+          <button className="btn btn-p btn-sm" onClick={()=>setTab("browse")}>Browse Tutors</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICATIONS PANEL
+// ─────────────────────────────────────────────
+function NotificationsPanel({ profile, gs, onClose }) {
+  const {state}=gs;
+  const notifications=[];
+  (state.calendarEvents||[]).filter(e=>new Date(e.date)>=new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3).forEach(e=>{
+    const days=Math.ceil((new Date(e.date)-new Date())/(1000*60*60*24));
+    notifications.push({icon:"📅",title:`${e.title} in ${days} day${days!==1?"s":""}`,subtitle:`${e.subject} · ${new Date(e.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}`,color:days<=3?"var(--a3)":days<=7?"var(--gold)":"var(--a2)",time:"Upcoming"});
+  });
+  if(state.streak>0) notifications.push({icon:"🔥",title:`${state.streak} day streak! Keep it up!`,subtitle:"Study today to maintain your streak",color:"#FF6B6B",time:"Today"});
+  if(state.xp>=100) notifications.push({icon:"⚡",title:`Level ${state.level} — ${500-(state.xp%500)} XP to next level`,subtitle:"Keep studying to level up",color:"var(--accent)",time:"Progress"});
+  const weakSubjects=profile.selectedSubjects?.filter(s=>(state.masteryMap?.[s]||50)<60);
+  if(weakSubjects?.length>0) notifications.push({icon:"⚠️",title:`${weakSubjects[0]} needs attention`,subtitle:`Mastery at ${state.masteryMap?.[weakSubjects[0]]||50}% — take a quiz`,color:"var(--gold)",time:"Study tip"});
+  if(notifications.length===0) notifications.push({icon:"✅",title:"You're all caught up!",subtitle:"No new notifications",color:"var(--a2)",time:"Now"});
+
+  return(
+    <div style={{position:"absolute",top:65,right:16,width:320,background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:16,boxShadow:"0 8px 32px rgba(0,0,0,.4)",zIndex:1000,overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
+      <div style={{padding:"14px 16px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{fontWeight:800,fontSize:15}}>🔔 Notifications</div>
+        <button onClick={onClose} style={{background:"none",border:"none",color:"#50508a",cursor:"pointer",fontSize:16}}>✕</button>
+      </div>
+      <div style={{maxHeight:380,overflowY:"auto"}}>
+        {notifications.map((n,i)=>(
+          <div key={i} style={{padding:"12px 16px",borderBottom:i<notifications.length-1?"1px solid var(--border)":"none",display:"flex",gap:12,alignItems:"flex-start"}}>
+            <div style={{fontSize:20,flexShrink:0}}>{n.icon}</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{n.title}</div>
+              <div style={{fontSize:11,color:"#50508a",marginTop:2}}>{n.subtitle}</div>
+            </div>
+            <div style={{fontSize:10,color:n.color,fontWeight:700,flexShrink:0}}>{n.time}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
 // MAIN APP
 // ─────────────────────────────────────────────
 export default function App() {
@@ -3983,6 +4538,20 @@ export default function App() {
     setStage("app");
   };
 
+  const handleUpdateProfile = (updated) => {
+    setProfile(updated);
+    localStorage.setItem("ss_profile", JSON.stringify(updated));
+    if (user?.userId && user?.session?.access_token) {
+      supabase.saveProfile(user.userId, {
+        year_level: updated.yearLevel,
+        selected_subjects: updated.selectedSubjects,
+        future_path: updated.futurePath,
+        hours_per_week: updated.hoursPerWeek,
+        display_name: updated.userName,
+      }, user.session.access_token).catch(() => {});
+    }
+  };
+
   const handleSignOut = () => {
     supabase.auth.signOut();
     localStorage.removeItem("ss_profile");
@@ -3991,16 +4560,30 @@ export default function App() {
     setProfile(null);
   };
 
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [searchTarget, setSearchTarget] = useState(null);
+
   const NAV = [
-    {id:"dashboard",icon:"⊞",label:"Dashboard"},
-    {id:"subjects",icon:"📚",label:"Subjects"},
-    {id:"quiz",icon:"🎯",label:"Practice Quiz"},
-    {id:"flashcards",icon:"🃏",label:"Flashcards"},
-    {id:"ai",icon:"✨",label:"Gemini AI Tutor",badge:"FREE"},
-    {id:"planner",icon:"📅",label:"Study Planner"},
-    {id:"analytics",icon:"📊",label:"Analytics"},
+    {id:"dashboard",icon:"⊞",label:"Dashboard",section:"learn"},
+    {id:"subjects",icon:"📚",label:"Subjects",section:"learn"},
+    {id:"quiz",icon:"🎯",label:"Practice Quiz",section:"learn"},
+    {id:"flashcards",icon:"🃏",label:"Flashcards",section:"learn"},
+    {id:"ai",icon:"✨",label:"Gemini AI Tutor",badge:"FREE",section:"learn"},
+    {id:"planner",icon:"📅",label:"Study Planner",section:"track"},
+    {id:"analytics",icon:"📊",label:"Analytics",section:"track"},
+    {id:"groups",icon:"👥",label:"Study Groups",section:"community"},
+    {id:"leaderboard",icon:"🏆",label:"Leaderboard",section:"community"},
+    {id:"tutors",icon:"🎓",label:"Tutor Marketplace",section:"community"},
+    {id:"search",icon:"🔍",label:"Search",section:"hidden"},
+    {id:"settings",icon:"⚙️",label:"Settings",section:"hidden"},
   ];
-  const TITLES = {dashboard:"Dashboard",subjects:"My Subjects",quiz:"Practice Quiz",flashcards:"Flashcards",ai:"Gemini AI Tutor",planner:"Study Planner",analytics:"Analytics"};
+
+  const TITLES = {
+    dashboard:"Dashboard",subjects:"My Subjects",quiz:"Practice Quiz",
+    flashcards:"Flashcards",ai:"Gemini AI Tutor",planner:"Study Planner",
+    analytics:"Analytics",groups:"Study Groups",leaderboard:"Leaderboard",
+    tutors:"Tutor Marketplace",search:"Search",settings:"Settings"
+  };
 
   // ── Loading screen ──
   if (stage === "loading") return (
@@ -4024,18 +4607,24 @@ export default function App() {
   );
 
   const SCREENS = {
-    dashboard: <Dashboard profile={profile} setScreen={setScreen} gs={gs}/>,
-    subjects:  <SubjectsScreen profile={profile} gs={gs}/>,
-    quiz:      <QuizScreen profile={profile} gs={gs}/>,
-    flashcards:<FlashcardsScreen profile={profile}/>,
-    ai:        <AIScreen profile={profile}/>,
-    planner:   <PlannerScreen profile={profile} gs={gs}/>,
-    analytics: <AnalyticsScreen profile={profile} gs={gs}/>,
+    dashboard:   <Dashboard profile={profile} setScreen={setScreen} gs={gs}/>,
+    subjects:    <SubjectsScreen profile={profile} gs={gs}/>,
+    quiz:        <QuizScreen profile={profile} gs={gs}/>,
+    flashcards:  <FlashcardsScreen profile={profile}/>,
+    ai:          <AIScreen profile={profile}/>,
+    planner:     <PlannerScreen profile={profile} gs={gs}/>,
+    analytics:   <AnalyticsScreen profile={profile} gs={gs}/>,
+    groups:      <StudyGroupsScreen profile={profile}/>,
+    leaderboard: <LeaderboardScreen profile={profile} gs={gs}/>,
+    tutors:      <TutorMarketplaceScreen profile={profile}/>,
+    search:      <SearchScreen profile={profile} setScreen={setScreen} setSearchTarget={setSearchTarget}/>,
+    settings:    <SettingsScreen profile={profile} onUpdateProfile={handleUpdateProfile} onSignOut={handleSignOut}/>,
   };
 
   const isIB = profile?.yearLevel === "ib";
   const yearLabel = isIB ? "IB Diploma" : ALL_SUBJECTS[profile?.yearLevel]?.label || "VCE";
-  const providerIcon = { google:"G", apple:"", email:"✉" }[user?.provider] || "Y";
+
+  const notifCount = (gs.state.calendarEvents||[]).filter(e=>new Date(e.date)>=new Date()).length;
 
   return (
     <>
@@ -4053,7 +4642,7 @@ export default function App() {
 
           <div className="nav-section">
             <div className="nav-lbl">Learn</div>
-            {NAV.slice(0,5).map(n=>(
+            {NAV.filter(n=>n.section==="learn").map(n=>(
               <div key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}>
                 <span className="ni-icon">{n.icon}</span>{n.label}
                 {n.badge&&<span className={`ni-badge${n.badge==="FREE"?" new":""}`}>{n.badge}</span>}
@@ -4063,7 +4652,7 @@ export default function App() {
 
           <div className="nav-section" style={{marginTop:8}}>
             <div className="nav-lbl">Track</div>
-            {NAV.slice(5).map(n=>(
+            {NAV.filter(n=>n.section==="track").map(n=>(
               <div key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}>
                 <span className="ni-icon">{n.icon}</span>{n.label}
               </div>
@@ -4072,8 +4661,10 @@ export default function App() {
 
           <div className="nav-section" style={{marginTop:8}}>
             <div className="nav-lbl">Community</div>
-            {[{icon:"👥",label:"Study Groups"},{icon:"🏆",label:"Leaderboard"},{icon:"🛒",label:"Tutor Marketplace"}].map(n=>(
-              <div key={n.label} className="ni"><span className="ni-icon">{n.icon}</span>{n.label}</div>
+            {NAV.filter(n=>n.section==="community").map(n=>(
+              <div key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}>
+                <span className="ni-icon">{n.icon}</span>{n.label}
+              </div>
             ))}
           </div>
 
@@ -4082,29 +4673,35 @@ export default function App() {
               <div className="xp-lbl"><span>Level {gs.state.level||1} · {(gs.state.xp||0).toLocaleString()} XP</span><span>{500-((gs.state.xp||0)%500)} to next</span></div>
               <div className="xp-track"><div className="xp-fill" style={{width:`${xpPct}%`}}/></div>
             </div>
-            <div className="user-row" title="Click to sign out" onClick={handleSignOut}>
+            <div className="user-row" onClick={()=>setScreen("settings")} title="Settings" style={{cursor:"pointer"}}>
               <div className="av">{(profile?.userName||user?.name||"Y")[0].toUpperCase()}</div>
               <div style={{flex:1,minWidth:0}}>
                 <div className="u-name">{profile?.userName || user?.name || "Student"}</div>
                 <div className="u-sub">{yearLabel} · {user?.provider === "google" ? "Google" : "Email"}</div>
               </div>
-              <span style={{color:"#50508a",fontSize:11,fontWeight:600}}>Sign out</span>
+              <span style={{color:"#50508a",fontSize:16}}>⚙️</span>
             </div>
           </div>
         </div>
 
         {/* MAIN */}
-        <div className="main">
+        <div className="main" onClick={()=>showNotifications&&setShowNotifications(false)}>
           <div className="topbar">
-            <div className="topbar-title">{TITLES[screen]}</div>
+            <div className="topbar-title">{TITLES[screen]||"Study Space"}</div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               <div className="chip chip-fire">🔥 {gs.state.streak||0} days</div>
               <div className="chip chip-xp">⚡ {(gs.state.xp||0).toLocaleString()} XP</div>
-              <div className="icon-btn">🔔</div>
-              <div className="icon-btn">🔍</div>
+              <div className="icon-btn" onClick={e=>{e.stopPropagation();setShowNotifications(n=>!n)}} style={{position:"relative"}}>
+                🔔
+                {notifCount>0&&<div style={{position:"absolute",top:-2,right:-2,width:16,height:16,background:"var(--a3)",borderRadius:"50%",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:800}}>{notifCount}</div>}
+              </div>
+              <div className="icon-btn" onClick={()=>setScreen("search")}>🔍</div>
             </div>
           </div>
-          {SCREENS[screen]}
+          {showNotifications && (
+            <NotificationsPanel profile={profile} gs={gs} onClose={()=>setShowNotifications(false)}/>
+          )}
+          {SCREENS[screen] || SCREENS.dashboard}
         </div>
       </div>
     </>
