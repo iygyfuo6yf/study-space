@@ -1185,6 +1185,24 @@ function Dashboard({ profile, setScreen, gs }) {
 }
 
 // ─────────────────────────────────────────────
+// GEMINI HELPER — calls YOUR Vercel backend
+// API key is hidden server-side, users need nothing
+// ─────────────────────────────────────────────
+async function callGemini(prompt, _apiKey) {
+  const res = await fetch("/api/gemini", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+}
+
+// ─────────────────────────────────────────────
 // VCAA CURRICULUM DATABASE
 // Official dot points from vcaa.vic.edu.au study designs
 // ─────────────────────────────────────────────
@@ -2970,42 +2988,20 @@ Return ONLY valid JSON, no markdown:
 // GEMINI AI TUTOR
 // ─────────────────────────────────────────────
 function AIScreen({ profile }) {
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem("gemini_key") || "");
-  const [keyInput, setKeyInput] = useState("");
-  const [keySet, setKeySet] = useState(() => !!localStorage.getItem("gemini_key"));
-  const [keyError, setKeyError] = useState("");
-
   const firstName = profile.userName?.split(" ")[0] || "there";
   const curriculum = profile.yearLevel === "ib" ? "IB Diploma" : profile.yearLevel === "vce" ? "VCE" : ALL_SUBJECTS[profile.yearLevel]?.label || "Victorian secondary";
 
   const [msgs, setMsgs] = useState([
-    {role:"ai", text:`Hey ${firstName}! 👋 I'm your Gemini AI tutor — powered by Google's Gemini 2.0 Flash (free tier).\n\nI know you're studying ${profile.selectedSubjects?.slice(0,3).join(", ")}${profile.selectedSubjects?.length > 3 ? ` and ${profile.selectedSubjects.length - 3} more` : ""} in ${curriculum}.\n\nAsk me anything — concept explanations, practice questions, essay feedback, exam strategies, or "help me understand [topic]". What are we working on today?`}
+    {role:"ai", text:`Hey ${firstName}! 👋 I'm your Gemini AI tutor — powered by Google's Gemini 2.0 Flash.\n\nI know you're studying ${profile.selectedSubjects?.slice(0,3).join(", ")}${profile.selectedSubjects?.length > 3 ? ` and ${profile.selectedSubjects.length - 3} more` : ""} in ${curriculum}.\n\nAsk me anything — concept explanations, practice questions, essay feedback, exam strategies, or "help me understand [topic]". What are we working on today?`}
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
 
-  const saveKey = () => {
-    const k = keyInput.trim();
-    if (!k.startsWith("AIza") || k.length < 30) {
-      setKeyError("That doesn't look like a valid Gemini API key. It should start with 'AIza'.");
-      return;
-    }
-    localStorage.setItem("gemini_key", k);
-    setApiKey(k);
-    setKeySet(true);
-    setKeyError("");
-  };
-
-  const clearKey = () => {
-    localStorage.removeItem("gemini_key");
-    setApiKey(""); setKeyInput(""); setKeySet(false);
-  };
-
-  const systemPrompt = `You are an expert tutor for Australian secondary students specialising in ${curriculum}. 
+  const systemPrompt = `You are an expert tutor for Australian secondary students specialising in ${curriculum}.
 
 Student profile:
-- Year level: ${profile.yearLevel || "VCE"}  
+- Year level: ${profile.yearLevel || "VCE"}
 - Subjects: ${profile.selectedSubjects?.join(", ") || "General"}
 - Future goal: ${profile.futurePath || "Not specified"}
 - Study intensity: ${profile.hoursPerWeek || "moderate"}
@@ -3042,135 +3038,46 @@ Rules:
     setLoading(true);
 
     try {
-      // Build Gemini contents array — system prompt as first user turn (Gemini Flash supports systemInstruction)
       const contents = updatedMsgs.map(m => ({
         role: m.role === "ai" ? "model" : "user",
         parts: [{ text: m.text }]
       }));
 
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemPrompt }] },
-            contents,
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 1024,
-            }
-          })
-        }
-      );
+      const res = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+        })
+      });
 
       const data = await res.json();
 
       if (data.error) {
-        const errMsg = data.error.message || "API error";
-        if (errMsg.toLowerCase().includes("api key") || errMsg.toLowerCase().includes("invalid")) {
-          setKeySet(false);
-          setMsgs(m=>[...m, {role:"ai", text:"⚠️ Your API key seems invalid or expired. Please re-enter it below."}]);
-        } else {
-          setMsgs(m=>[...m, {role:"ai", text:`⚠️ Gemini error: ${errMsg}`}]);
-        }
+        setMsgs(m=>[...m, {role:"ai", text:`⚠️ ${data.error}`}]);
         setLoading(false);
         return;
       }
 
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text
         || "Sorry, I couldn't generate a response. Please try again.";
-
       setMsgs(m=>[...m, {role:"ai", text:reply}]);
     } catch(e) {
-      setMsgs(m=>[...m, {role:"ai", text:"⚠️ Couldn't reach Gemini. Check your internet connection and try again.\n\nQuick tip while you wait: For VCE exams, always identify the **command term** in the question ('describe', 'explain', 'analyse', 'evaluate') — each requires a different type of response and carries different marks."}]);
+      setMsgs(m=>[...m, {role:"ai", text:"⚠️ Connection error. Please check your internet and try again."}]);
     }
     setLoading(false);
-  }, [input, msgs, loading, apiKey, systemPrompt]);
+  }, [input, msgs, loading, systemPrompt]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({behavior:"smooth"}); }, [msgs, loading]);
 
-  // ── API KEY SETUP SCREEN ──
-  if (!keySet) return (
-    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"calc(100vh - 65px)",padding:24}}>
-      <div style={{width:"100%",maxWidth:480}}>
-        <div className="card fade-up">
-          <div className="cb" style={{padding:32}}>
-            {/* Gemini logo area */}
-            <div style={{textAlign:"center",marginBottom:24}}>
-              <div style={{fontSize:48,marginBottom:8}}>✨</div>
-              <div style={{fontWeight:900,fontSize:22,marginBottom:4}}>Connect Gemini AI Tutor</div>
-              <div style={{fontSize:13,color:"#6060a0",lineHeight:1.6}}>
-                Powered by Google Gemini 2.0 Flash — <strong style={{color:"var(--a2)"}}>free to use</strong> with a Google AI Studio key.
-              </div>
-            </div>
-
-            {/* Steps */}
-            <div style={{background:"var(--bg3)",borderRadius:12,padding:18,marginBottom:20}}>
-              <div style={{fontSize:12,fontWeight:800,color:"#50508a",marginBottom:12,letterSpacing:".06em"}}>HOW TO GET YOUR FREE KEY</div>
-              {[
-                {n:"1",text:"Go to ", link:"aistudio.google.com/apikey", url:"https://aistudio.google.com/apikey"},
-                {n:"2",text:"Sign in with your Google account"},
-                {n:"3",text:"Click \"Create API key\" → copy it"},
-                {n:"4",text:"Paste it below — free tier gives 1,500 requests/day"},
-              ].map((s,i)=>(
-                <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:i<3?10:0}}>
-                  <div style={{width:22,height:22,borderRadius:"50%",background:"rgba(124,106,247,.2)",color:"var(--accent)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>{s.n}</div>
-                  <div style={{fontSize:13,color:"#9090c0",lineHeight:1.5}}>
-                    {s.text}
-                    {s.link && <a href={s.url} target="_blank" rel="noreferrer" style={{color:"var(--a2)",fontWeight:700,textDecoration:"none"}}>{s.link} ↗</a>}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <input
-              className="auth-input"
-              type="password"
-              placeholder="Paste your Gemini API key (AIza...)"
-              value={keyInput}
-              onChange={e=>{setKeyInput(e.target.value);setKeyError("");}}
-              onKeyDown={e=>e.key==="Enter"&&saveKey()}
-              style={{marginBottom:keyError?8:12,fontSize:13}}
-            />
-            {keyError && <div style={{fontSize:12,color:"var(--a3)",marginBottom:10,padding:"8px 12px",background:"rgba(255,107,107,.1)",borderRadius:8}}>{keyError}</div>}
-
-            <button className="btn btn-p btn-full" style={{padding:13}} onClick={saveKey}>
-              ✨ Connect Gemini — Start Tutoring
-            </button>
-
-            <div style={{marginTop:14,fontSize:11,color:"#40406a",textAlign:"center",lineHeight:1.6}}>
-              Your key is stored only in your browser's local storage.<br/>
-              It never leaves your device or gets sent to our servers.
-            </div>
-          </div>
-        </div>
-
-        {/* Free tier info */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginTop:14}}>
-          {[
-            {icon:"🆓",label:"Free Tier",val:"1,500 req/day"},
-            {icon:"⚡",label:"Model",val:"Gemini 2.0 Flash"},
-            {icon:"🔒",label:"Privacy",val:"Key stays local"},
-          ].map((f,i)=>(
-            <div key={i} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 10px",textAlign:"center"}}>
-              <div style={{fontSize:20,marginBottom:4}}>{f.icon}</div>
-              <div style={{fontSize:10,fontWeight:800,color:"#50508a",marginBottom:2}}>{f.label}</div>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--a2)"}}>{f.val}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  // ── CHAT SCREEN ──
   return (
     <div className="chat-wrap">
       <div className="chat-msgs">
         {msgs.map((m,i)=>(
           <div key={i} className={`msg ${m.role} fade-up`}>
-            <div className={`m-av ${m.role==="ai"?"m-ai-av":"m-u-av"}`}>{m.role==="ai"?"✨":"Y"}</div>
+            <div className={`m-av ${m.role==="ai"?"m-ai-av":"m-u-av"}`}>{m.role==="ai"?"✨":(profile.userName?.[0]||"Y")}</div>
             <div className="m-bub" style={{whiteSpace:"pre-wrap"}}>{m.text}</div>
           </div>
         ))}
@@ -3188,10 +3095,7 @@ Rules:
             onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}/>
           <button className="btn btn-p" onClick={()=>send()} style={{alignSelf:"flex-end",padding:"10px 14px"}}>↑</button>
         </div>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div style={{fontSize:10,color:"#40406a"}}>✨ Powered by Google Gemini 2.0 Flash · Free tier · Curriculum-grounded for {curriculum}</div>
-          <button onClick={clearKey} style={{background:"none",border:"none",fontSize:10,color:"#40406a",cursor:"pointer",textDecoration:"underline"}}>Change key</button>
-        </div>
+        <div style={{fontSize:10,color:"#40406a"}}>✨ Powered by Google Gemini 2.0 Flash · Curriculum-grounded for {curriculum}</div>
       </div>
     </div>
   );
