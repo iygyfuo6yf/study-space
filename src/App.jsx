@@ -2648,6 +2648,7 @@ function SubtopicBookmarks({ selTopic, subject, curriculum, staticSubtopics, gs 
   const [loadingAI, setLoadingAI] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
   const [quizStates, setQuizStates] = useState({});
+  const [deepNotes, setDeepNotes] = useState({});   // {subtopicId: {loading, content}}
   const color = getColor(subject);
 
   useEffect(() => {
@@ -2711,7 +2712,47 @@ Write ALL maths in plain text — NO LaTeX. Return ONLY valid JSON:
     }
   };
 
-  const quizChoose = (subId, optIdx) => {
+  const loadDeeperNotes = async (sub) => {
+    const key = sub.id;
+    // Toggle off if already showing
+    if (deepNotes[key]?.content) {
+      setDeepNotes(d => ({...d, [key]: {...d[key], visible: !d[key]?.visible}}));
+      return;
+    }
+    setDeepNotes(d => ({...d, [key]: {loading: true, visible: true}}));
+    try {
+      const cacheKey = `ss_deep_${subject}_${selTopic}_${key}`.replace(/\s+/g,"_");
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) { setDeepNotes(d=>({...d,[key]:{loading:false,visible:true,content:cached}})); return; }
+
+      const prompt = `You are an expert ${curriculum} tutor. Write comprehensive study notes for "${sub.title}" in ${curriculum} ${subject}.
+
+Key content to cover:
+${sub.keyFacts.map(f=>`• ${f}`).join('\n')}
+${sub.formula ? `Key formula: ${sub.formula}` : ''}
+
+Write detailed, exam-focused notes including:
+## Key Concepts
+[explain each concept clearly with examples]
+
+## Worked Examples
+[show step-by-step examples using this content]
+
+## Common Mistakes to Avoid
+[list 3-4 mistakes students make]
+
+## Exam Tips
+[specific tips for ${curriculum} assessment]
+
+Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use ## headings, **bold** key terms, - bullet points.`;
+
+      const content = await callGemini(prompt);
+      localStorage.setItem(cacheKey, content);
+      setDeepNotes(d => ({...d, [key]: {loading: false, visible: true, content}}));
+    } catch {
+      setDeepNotes(d => ({...d, [key]: {loading: false, visible: true, content: "⚠️ Couldn't generate notes. Try again."}}));
+    }
+  };
     const qs = quizStates[subId];
     if (!qs||qs.answered) return;
     const correct = qs.questions[qs.qi].correct;
@@ -2835,12 +2876,35 @@ Write ALL maths in plain text — NO LaTeX. Return ONLY valid JSON:
                     </div>
                   )}
 
+                  {/* Deep notes panel */}
+                  {deepNotes[sub.id]?.visible && (
+                    <div style={{margin:"0 18px 14px",background:"var(--bg3)",borderRadius:10,padding:"16px"}}>
+                      {deepNotes[sub.id]?.loading ? (
+                        <div style={{textAlign:"center",padding:"20px 0",color:"#6060a0"}}>
+                          <div style={{fontSize:20,marginBottom:6}}>✨</div>
+                          <div style={{fontSize:13}}>Generating deep notes for {sub.title}...</div>
+                          <div style={{display:"flex",gap:6,justifyContent:"center",marginTop:8}}>{[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                            <div style={{fontSize:12,fontWeight:700,color:color,textTransform:"uppercase",letterSpacing:".06em"}}>📖 Deep Study Notes — {sub.title}</div>
+                            <button onClick={()=>setDeepNotes(d=>({...d,[sub.id]:{...d[sub.id],visible:false}}))} style={{background:"none",border:"none",color:"#50508a",cursor:"pointer",fontSize:14}}>✕</button>
+                          </div>
+                          <MarkdownRenderer content={deepNotes[sub.id]?.content||""}/>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Action buttons */}
                   <div style={{padding:"0 18px 16px",display:"flex",gap:8,flexWrap:"wrap"}}>
                     <button className="btn btn-sm" style={{background:color,color:"#fff",border:"none"}} onClick={()=>loadMiniQuiz(sub)}>
                       {qs?.showQuiz?"✕ Hide Quiz":"🎯 Practice Questions"}
                     </button>
-                    <button className="btn btn-g btn-sm">🔍 Dive Deeper</button>
+                    <button className="btn btn-s btn-sm" onClick={()=>loadDeeperNotes(sub)}>
+                      {deepNotes[sub.id]?.visible?"✕ Hide Notes":"🔍 Dive Deeper"}
+                    </button>
                   </div>
                 </div>
               )}
@@ -4266,6 +4330,39 @@ function AnalyticsScreen({ profile, gs }) {
 // ─────────────────────────────────────────────
 // SETTINGS SCREEN
 // ─────────────────────────────────────────────
+function NotifToggles() {
+  const NOTIFS = [
+    {label:"📅 SAC & Exam Countdowns",desc:"7, 3 and 1 day reminders",key:"sac"},
+    {label:"🔥 Daily Streak Reminder",desc:"Keep your streak alive",key:"streak"},
+    {label:"⚡ XP Milestones",desc:"Level up and achievement alerts",key:"xp"},
+    {label:"📊 Weekly Summary",desc:"Sunday progress report",key:"weekly"},
+  ];
+  const [vals, setVals] = useState(() =>
+    Object.fromEntries(NOTIFS.map(n => [n.key, JSON.parse(localStorage.getItem(`notif_${n.key}`) ?? "true")]))
+  );
+  const toggle = (key) => {
+    const next = !vals[key];
+    localStorage.setItem(`notif_${key}`, JSON.stringify(next));
+    setVals(v => ({...v, [key]: next}));
+  };
+  return (
+    <>
+      {NOTIFS.map((n,i) => (
+        <div key={n.key} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:i<3?"1px solid var(--border)":"none"}}>
+          <div>
+            <div style={{fontSize:13,fontWeight:600}}>{n.label}</div>
+            <div style={{fontSize:11,color:"#50508a",marginTop:2}}>{n.desc}</div>
+          </div>
+          <button onClick={()=>toggle(n.key)}
+            style={{width:44,height:24,borderRadius:12,background:vals[n.key]?"var(--accent)":"var(--bg3)",border:`1px solid ${vals[n.key]?"var(--accent)":"var(--border)"}`,cursor:"pointer",position:"relative",flexShrink:0,transition:"all .2s"}}>
+            <div style={{width:18,height:18,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:vals[n.key]?22:2,transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.3)"}}/>
+          </button>
+        </div>
+      ))}
+    </>
+  );
+}
+
 function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
   const [tab, setTab] = useState("profile");
   const [editing, setEditing] = useState(false);
@@ -4401,26 +4498,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
         <div className="card">
           <div className="ch"><div className="ct">🔔 Notification Preferences</div></div>
           <div className="cb">
-            {[
-              {label:"📅 SAC & Exam Countdowns",desc:"7, 3 and 1 day reminders",key:"sac"},
-              {label:"🔥 Daily Streak Reminder",desc:"Keep your streak alive",key:"streak"},
-              {label:"⚡ XP Milestones",desc:"Level up and achievement alerts",key:"xp"},
-              {label:"📊 Weekly Summary",desc:"Sunday progress report",key:"weekly"},
-            ].map((n,i)=>{
-              const [val,setVal]=useState(()=>JSON.parse(localStorage.getItem(`notif_${n.key}`)??"true"));
-              return(
-                <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:i<3?"1px solid var(--border)":"none"}}>
-                  <div>
-                    <div style={{fontSize:13,fontWeight:600}}>{n.label}</div>
-                    <div style={{fontSize:11,color:"#50508a",marginTop:2}}>{n.desc}</div>
-                  </div>
-                  <button onClick={()=>{localStorage.setItem(`notif_${n.key}`,JSON.stringify(!val));setVal(!val);}}
-                    style={{width:44,height:24,borderRadius:12,background:val?"var(--accent)":"var(--bg3)",border:`1px solid ${val?"var(--accent)":"var(--border)"}`,cursor:"pointer",position:"relative",flexShrink:0,transition:"all .2s"}}>
-                    <div style={{width:18,height:18,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:val?22:2,transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.3)"}}/>
-                  </button>
-                </div>
-              );
-            })}
+            <NotifToggles/>
           </div>
         </div>
       )}
