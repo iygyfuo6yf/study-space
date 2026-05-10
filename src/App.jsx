@@ -2318,8 +2318,541 @@ function MarkdownRenderer({ content }) {
 }
 
 // ─────────────────────────────────────────────
-// SUBJECTS SCREEN — Full curriculum-powered
+// SUBTOPICS DATABASE — structured content per topic area
 // ─────────────────────────────────────────────
+const SUBTOPICS = {
+  "Number & Algebra": [
+    {id:"surds",emoji:"√",title:"Surds & Irrational Numbers",summary:"Numbers that can't be expressed as exact fractions, left in root form.",keyFacts:["√2, √3, √5 are irrational — they go on forever","Simplify: √72 = √(36×2) = 6√2","Multiply: √a × √b = √(ab)","Divide: √a ÷ √b = √(a/b)","Can't add unlike surds: √2 + √3 ≠ √5"],formula:"√(ab) = √a × √b"},
+    {id:"sci-notation",emoji:"×10",title:"Scientific Notation",summary:"Writing very large or small numbers as a × 10ⁿ where 1 ≤ a < 10.",keyFacts:["4,500,000 = 4.5 × 10⁶","0.00032 = 3.2 × 10⁻⁴","Multiply: add the powers of 10","Divide: subtract the powers of 10","Used in science for astronomical/microscopic values"],formula:"a × 10ⁿ where 1 ≤ a < 10"},
+    {id:"expanding",emoji:"()",title:"Expanding Brackets",summary:"Multiply every term inside the brackets by the term outside.",keyFacts:["a(b+c) = ab + ac","(a+b)(c+d) = ac + ad + bc + bd","(a+b)² = a² + 2ab + b²","(a-b)² = a² - 2ab + b²","(a+b)(a-b) = a² - b²  (difference of squares)"],formula:"(a+b)² = a² + 2ab + b²"},
+    {id:"factorising",emoji:"÷",title:"Factorising",summary:"The reverse of expanding — find what multiplies to give an expression.",keyFacts:["Find HCF first: 6x + 9 = 3(2x + 3)","Difference of squares: a²-b² = (a+b)(a-b)","Trinomials: x²+5x+6 = (x+2)(x+3)","Find two numbers that multiply to c and add to b","Always check by expanding back"],formula:"a²-b² = (a+b)(a-b)"},
+    {id:"indices",emoji:"aⁿ",title:"Index Laws",summary:"Rules for working with powers and exponents.",keyFacts:["aᵐ × aⁿ = aᵐ⁺ⁿ  (multiply: add powers)","aᵐ ÷ aⁿ = aᵐ⁻ⁿ  (divide: subtract powers)","(aᵐ)ⁿ = aᵐⁿ  (power of power: multiply)","a⁰ = 1  (anything to power 0)","a⁻ⁿ = 1/aⁿ  (negative power = reciprocal)"],formula:"aᵐ × aⁿ = aᵐ⁺ⁿ"},
+  ],
+  "Measurement & Geometry": [
+    {id:"pythagoras",emoji:"📐",title:"Pythagoras' Theorem",summary:"In a right-angled triangle, the square of the hypotenuse equals the sum of squares of the other two sides.",keyFacts:["a² + b² = c²  (c is always the hypotenuse)","Hypotenuse is opposite the right angle — always the longest side","Finding hypotenuse: c = √(a² + b²)","Finding a shorter side: a = √(c² - b²)","Pythagorean triples: 3,4,5 and 5,12,13 and 8,15,17"],formula:"a² + b² = c²"},
+    {id:"trigonometry",emoji:"📏",title:"Trigonometry — SOH CAH TOA",summary:"Using ratios of sides in right-angled triangles to find unknown sides and angles.",keyFacts:["SOH: sin θ = Opposite / Hypotenuse","CAH: cos θ = Adjacent / Hypotenuse","TOA: tan θ = Opposite / Adjacent","To find an angle: use inverse sin⁻¹, cos⁻¹, tan⁻¹","Label sides relative to the angle you're working with"],formula:"sin θ = O/H   cos θ = A/H   tan θ = O/A"},
+    {id:"area",emoji:"⬜",title:"Area & Perimeter",summary:"Area is the space inside a 2D shape. Perimeter is the distance around it.",keyFacts:["Rectangle: A = l × w, P = 2(l+w)","Triangle: A = ½ × b × h","Circle: A = πr², Circumference = 2πr","Trapezium: A = ½(a+b)h","Parallelogram: A = b × h"],formula:"Triangle: A = ½bh   Circle: A = πr²"},
+    {id:"volume",emoji:"📦",title:"Volume & Surface Area",summary:"Volume is the 3D space inside a solid. Surface area is the total of all faces.",keyFacts:["Rectangular prism: V = lwh","Cylinder: V = πr²h","Triangular prism: V = ½bhl","Cylinder SA = 2πr² + 2πrh","Sphere: V = 4/3 πr³, SA = 4πr²"],formula:"Cylinder: V = πr²h   Prism: V = base area × height"},
+    {id:"similarity",emoji:"🔍",title:"Similar Figures & Scale Factors",summary:"Shapes are similar if they have the same angles and proportional sides.",keyFacts:["Matching angles are equal","Corresponding sides are in the same ratio","Scale factor k: if sides × k, area × k², volume × k³","Find scale factor: divide matching sides","Use ratios to find unknown sides"],formula:"scale factor k: area ratio = k²"},
+    {id:"circle-geo",emoji:"⭕",title:"Circle Geometry",summary:"Properties and theorems relating to circles, chords, tangents and angles.",keyFacts:["Angle in semicircle = 90°","Angle at centre = 2 × angle at circumference","Angles in same segment are equal","Tangent is perpendicular to radius at point of contact","Chord from centre bisects the chord at 90°"]},
+  ],
+  "Statistics & Probability": [
+    {id:"data-types",emoji:"📊",title:"Data Types & Displays",summary:"Data is either categorical (types) or numerical (counts/measurements).",keyFacts:["Categorical: colour, gender, type — no numbers","Numerical discrete: countable whole numbers (goals scored)","Numerical continuous: measurements (height, time)","Dot plots and stem-and-leaf: for small data sets","Box plots: show median, quartiles, outliers"],},
+    {id:"summary-stats",emoji:"📈",title:"Summary Statistics",summary:"Single numbers that describe the centre and spread of a data set.",keyFacts:["Mean: sum ÷ count (affected by outliers)","Median: middle value when ordered (resistant to outliers)","Mode: most frequent value","Range: max − min","IQR: Q3 − Q1 (middle 50% of data)"],formula:"Mean = Σx/n   IQR = Q3 - Q1"},
+    {id:"probability",emoji:"🎲",title:"Probability",summary:"The likelihood of an event occurring, expressed as a number from 0 to 1.",keyFacts:["P(event) = favourable outcomes ÷ total outcomes","P(certain) = 1, P(impossible) = 0","Complement: P(not A) = 1 - P(A)","P(A and B) = P(A) × P(B) for independent events","P(A or B) = P(A) + P(B) - P(A and B)"],formula:"P(A) = n(A) / n(S)"},
+  ],
+  "Patterns & Algebra": [
+    {id:"linear-equations",emoji:"⚖️",title:"Linear Equations",summary:"Equations where the highest power is 1. Solve by doing the same to both sides.",keyFacts:["Isolate the variable step by step","Expand brackets first if needed","Collect like terms on each side","Move variables to one side, numbers to the other","Check: substitute your answer back in"]},
+    {id:"graphing",emoji:"📉",title:"Graphing Linear Relationships",summary:"Linear relationships form straight lines on a number plane.",keyFacts:["y = mx + b (gradient-intercept form)","m = gradient (rise ÷ run)","b = y-intercept (where line crosses y-axis)","Positive gradient: goes up left to right","Find x-intercept: set y = 0 and solve"],formula:"y = mx + b"},
+    {id:"simultaneous",emoji:"✖️",title:"Simultaneous Equations",summary:"Two equations, two unknowns — find values that satisfy both.",keyFacts:["Substitution: sub one equation into the other","Elimination: add/subtract to remove a variable","Solution is the intersection point of two lines","Check by substituting into BOTH original equations","Parallel lines → no solution, same line → infinite solutions"]},
+    {id:"quadratics",emoji:"∪",title:"Quadratic Equations",summary:"Equations with x² as highest power. Graphs are parabolas.",keyFacts:["Standard form: ax² + bx + c = 0","Factorise: (x+p)(x+q) = 0 → x = -p or x = -q","Quadratic formula: x = (-b ± √(b²-4ac)) / 2a","Discriminant b²-4ac: >0 two solutions, =0 one, <0 none","Vertex is the turning point of the parabola"],formula:"x = (-b ± √(b²-4ac)) / 2a"},
+  ],
+  "Functions & Graphs": [
+    {id:"function-notation",emoji:"f(x)",title:"Functions & Function Notation",summary:"A function maps each input to exactly one output.",keyFacts:["f(x) means 'f of x' — substitute x into the rule","Domain: all valid input values","Range: all possible output values","Vertical line test: each x has only one y","Composite: f(g(x)) — apply g first, then f"]},
+    {id:"transformations",emoji:"↔",title:"Transformations of Graphs",summary:"How graphs shift, stretch and flip when we change the function.",keyFacts:["y = f(x) + k: shifts UP k units","y = f(x) - k: shifts DOWN k units","y = f(x - h): shifts RIGHT h units","y = f(x + h): shifts LEFT h units","y = af(x): vertical stretch by factor a","y = -f(x): reflection in x-axis"]},
+    {id:"exp-log",emoji:"eˣ",title:"Exponential & Logarithmic Functions",summary:"Exponentials model growth/decay. Logs are their inverses.",keyFacts:["y = aˣ: exponential growth if a > 1, decay if 0 < a < 1","y = eˣ: natural exponential (e ≈ 2.718)","ln(x) = log_e(x): natural logarithm","log(ab) = log a + log b","log(a/b) = log a - log b"],formula:"y = eˣ  ↔  x = ln(y)"},
+  ],
+  "Calculus — Differentiation": [
+    {id:"power-rule",emoji:"d/dx",title:"Differentiation Rules",summary:"Shortcuts for finding derivatives of common functions.",keyFacts:["Power rule: d/dx(xⁿ) = nxⁿ⁻¹","d/dx(eˣ) = eˣ","d/dx(ln x) = 1/x","d/dx(sin x) = cos x","d/dx(cos x) = -sin x"],formula:"d/dx(xⁿ) = nxⁿ⁻¹"},
+    {id:"chain-rule",emoji:"⛓",title:"Chain, Product & Quotient Rules",summary:"Rules for differentiating composite and combined functions.",keyFacts:["Chain rule: d/dx[f(g(x))] = f'(g(x)) × g'(x)","Product rule: d/dx[uv] = u'v + uv'","Quotient rule: d/dx[u/v] = (u'v - uv') / v²","Chain rule tip: 'outside × derivative of inside'","Most common exam rule: chain rule"],formula:"Chain: dy/dx = dy/du × du/dx"},
+    {id:"applications-diff",emoji:"📈",title:"Applications of Differentiation",summary:"Using derivatives to analyse function behaviour and solve optimisation.",keyFacts:["f'(x) = 0 at stationary points (local max/min)","f'(x) > 0: function increasing","f'(x) < 0: function decreasing","f''(x) > 0: minimum; f''(x) < 0: maximum","Tangent gradient at x=a is f'(a)"],},
+  ],
+  "Calculus — Integration": [
+    {id:"antidiff",emoji:"∫",title:"Antidifferentiation & Indefinite Integrals",summary:"The reverse of differentiation — finding the original function.",keyFacts:["∫xⁿ dx = xⁿ⁺¹/(n+1) + C  (n ≠ -1)","∫eˣ dx = eˣ + C","∫(1/x) dx = ln|x| + C","∫sin x dx = -cos x + C","Always add + C (constant of integration)"],formula:"∫xⁿ dx = xⁿ⁺¹/(n+1) + C"},
+    {id:"definite-integrals",emoji:"∫ₐᵇ",title:"Definite Integrals & Area",summary:"Calculates the exact area between a curve and the x-axis.",keyFacts:["∫ₐᵇ f(x)dx = F(b) - F(a)  where F' = f","Area above x-axis is positive","Area below x-axis is negative — use absolute value for area","Area between two curves: ∫(top - bottom)dx","Fundamental theorem connects differentiation and integration"],formula:"∫ₐᵇ f(x)dx = F(b) - F(a)"},
+  ],
+  "Organic Chemistry": [
+    {id:"functional-groups",emoji:"⚗️",title:"Functional Groups",summary:"Organic compounds are classified by their functional groups which determine their reactions.",keyFacts:["Alkanes: C-C single bonds, suffix -ane (methane, ethane, propane)","Alkenes: C=C double bond, suffix -ene","Alcohols: -OH group, suffix -ol (ethanol)","Carboxylic acids: -COOH, suffix -oic acid","Esters: -COO-, formed from acid + alcohol (condensation)"]},
+    {id:"reaction-types",emoji:"🔄",title:"Organic Reaction Types",summary:"The key reactions organic compounds undergo.",keyFacts:["Addition: adds across C=C double bond (alkenes + H₂, Br₂, H₂O)","Substitution: replaces H with another atom (alkanes + Cl₂)","Condensation: two molecules join, releasing H₂O","Hydrolysis: breaks bonds using water (reverse of condensation)","Combustion: burns in O₂ → CO₂ + H₂O + energy"]},
+  ],
+  "Electrochemistry": [
+    {id:"redox",emoji:"⚡",title:"Oxidation & Reduction (OIL RIG)",summary:"Redox reactions involve transfer of electrons between species.",keyFacts:["OIL: Oxidation Is Loss of electrons","RIG: Reduction Is Gain of electrons","Oxidising agent: accepts electrons (gets reduced itself)","Reducing agent: donates electrons (gets oxidised itself)","Assign oxidation numbers to track electron transfer"],formula:"OIL RIG — Oxidation Is Loss, Reduction Is Gain"},
+    {id:"galvanic-cells",emoji:"🔋",title:"Galvanic Cells",summary:"Convert chemical energy to electrical energy via spontaneous redox.",keyFacts:["Anode: oxidation occurs (negative terminal)","Cathode: reduction occurs (positive terminal)","Salt bridge: maintains electrical neutrality","EMF = E°(cathode) - E°(anode)","Electrons flow: anode → external circuit → cathode"],formula:"EMF = E°cathode - E°anode"},
+    {id:"electrolysis",emoji:"🔌",title:"Electrolytic Cells",summary:"Use electrical energy to drive non-spontaneous chemical reactions.",keyFacts:["Anode: oxidation (connected to + terminal)","Cathode: reduction (connected to - terminal)","Faraday's law: mass = (I × t × M) / (n × F)","Applications: electroplating, aluminium smelting","More current × more time = more product"],formula:"m = ItM / nF"},
+  ],
+  "Energetics & Thermodynamics": [
+    {id:"enthalpy",emoji:"ΔH",title:"Enthalpy Changes",summary:"ΔH measures heat released or absorbed in a chemical reaction.",keyFacts:["Exothermic: ΔH < 0 (heat released, products lower energy)","Endothermic: ΔH > 0 (heat absorbed, products higher energy)","q = mcΔT for calorimetry calculations","Standard conditions: 25°C, 1 atm, 1 mol/L","Bond breaking absorbs energy; bond forming releases energy"],formula:"q = mcΔT"},
+    {id:"gibbs",emoji:"ΔG",title:"Gibbs Free Energy & Spontaneity",summary:"ΔG predicts whether a reaction occurs spontaneously.",keyFacts:["ΔG = ΔH - TΔS","ΔG < 0: spontaneous (will occur without energy input)","ΔG > 0: non-spontaneous","ΔG = 0: at equilibrium","ΔS: entropy — measure of disorder (gases > liquids > solids)"],formula:"ΔG = ΔH - TΔS"},
+  ],
+  "Equilibrium & Acids/Bases": [
+    {id:"equilibrium",emoji:"⇌",title:"Dynamic Equilibrium & Le Chatelier's",summary:"A reversible reaction where forward and reverse rates are equal.",keyFacts:["Equilibrium: concentrations constant (not necessarily equal)","Le Chatelier: system opposes changes to restore equilibrium","Add reactant → shifts toward products","Increase temperature → shifts toward endothermic direction","Increase pressure → shifts toward fewer moles of gas","Catalyst: speeds up reaching equilibrium, doesn't shift position"]},
+    {id:"ph",emoji:"pH",title:"pH, Acids & Bases",summary:"pH measures hydrogen ion concentration on a logarithmic scale.",keyFacts:["pH = -log[H⁺]","pH < 7: acidic; pH 7: neutral; pH > 7: basic (alkaline)","Strong acids fully dissociate: HCl, H₂SO₄, HNO₃","Weak acids partially dissociate: CH₃COOH (acetic acid)","pH + pOH = 14 at 25°C","Kw = [H⁺][OH⁻] = 1×10⁻¹⁴"],formula:"pH = -log[H⁺]   pOH = -log[OH⁻]   pH + pOH = 14"},
+  ],
+  "Motion & Forces": [
+    {id:"kinematics",emoji:"🏃",title:"Kinematics — Equations of Motion",summary:"Describes motion using displacement, velocity, acceleration and time.",keyFacts:["v = u + at","s = ut + ½at²","v² = u² + 2as","s = ½(u+v)t","Only valid for CONSTANT acceleration","v=final, u=initial, a=acceleration, s=displacement, t=time"],formula:"v = u + at  |  s = ut + ½at²  |  v² = u² + 2as"},
+    {id:"newtons-laws",emoji:"⚖️",title:"Newton's Three Laws",summary:"Fundamental laws describing how forces affect the motion of objects.",keyFacts:["1st Law (Inertia): object stays at rest or moves at constant velocity unless a net force acts","2nd Law: F = ma (net force = mass × acceleration)","3rd Law: every action has equal and opposite reaction pair","Weight W = mg where g = 9.8 m/s²","Net force = vector sum of ALL forces acting"],formula:"F = ma  |  W = mg"},
+    {id:"momentum",emoji:"💥",title:"Momentum & Impulse",summary:"Momentum is mass × velocity. Impulse is change in momentum.",keyFacts:["p = mv (momentum, kg⋅m/s)","Impulse J = FΔt = Δp","Conservation: total momentum unchanged if no external force","Elastic collision: KE and momentum both conserved","Inelastic: only momentum conserved (objects may stick together)"],formula:"p = mv  |  J = FΔt = Δp"},
+    {id:"energy-work",emoji:"⚡",title:"Work, Energy & Power",summary:"Work is done when a force moves an object. Energy is the capacity to do work.",keyFacts:["W = Fs cos θ","KE = ½mv²","GPE = mgh","Conservation: total mechanical energy is constant (no friction)","P = W/t = Fv","Efficiency = useful output / total input × 100%"],formula:"W = Fs  |  KE = ½mv²  |  PE = mgh  |  P = W/t"},
+    {id:"circular",emoji:"⭕",title:"Circular Motion",summary:"Objects moving in circles experience centripetal acceleration toward the centre.",keyFacts:["Centripetal acceleration: a = v²/r","Centripetal force: F = mv²/r (directed toward centre, NOT outward)","Period T: time for one complete revolution","Frequency f = 1/T","v = 2πr/T","Examples: satellites, cars on bends, spinning on a string"],formula:"F = mv²/r  |  a = v²/r"},
+  ],
+  "Electricity & Magnetism": [
+    {id:"dc-circuits",emoji:"🔌",title:"DC Circuits & Ohm's Law",summary:"Circuits with direct current. All obey Ohm's Law: V = IR.",keyFacts:["Ohm's Law: V = IR (Voltage = Current × Resistance)","Series: same current everywhere, voltages add, R_total = R₁+R₂+...","Parallel: same voltage, currents add, 1/R = 1/R₁+1/R₂+...","Power: P = VI = I²R = V²/R","Kirchhoff's voltage law: sum of EMFs = sum of voltage drops"],formula:"V = IR  |  P = VI  |  Series: R=R₁+R₂"},
+    {id:"em-induction",emoji:"🧲",title:"Electromagnetic Induction",summary:"A changing magnetic field induces an EMF and current in a conductor.",keyFacts:["Faraday's law: EMF = -ΔΦ/Δt","Lenz's law: induced current OPPOSES the change that caused it","Magnetic flux: Φ = BA cos θ","Generator converts mechanical → electrical energy","Transformer: V₁/V₂ = N₁/N₂ (turns ratio)"],formula:"EMF = -ΔΦ/Δt  |  V₁/V₂ = N₁/N₂"},
+  ],
+  "Cell Biology & Regulation": [
+    {id:"cell-structure",emoji:"🔬",title:"Cell Structure & Organelles",summary:"All living things are made of cells with specific organelles performing specific functions.",keyFacts:["Nucleus: contains DNA, controls cell activities","Mitochondria: aerobic respiration → ATP (energy)","Chloroplasts: photosynthesis (plants/algae only)","Ribosomes: protein synthesis (translation)","Cell membrane: controls entry/exit (phospholipid bilayer)","Endoplasmic reticulum: transport network (rough = proteins, smooth = lipids)"]},
+    {id:"dna-protein",emoji:"🧬",title:"DNA, Transcription & Translation",summary:"DNA stores genetic information and directs protein synthesis.",keyFacts:["DNA: double helix, nucleotides, base pairs A-T and G-C","Transcription: DNA → mRNA (in nucleus)","Translation: mRNA → protein (at ribosomes)","Codon: 3 bases on mRNA codes for one amino acid","Start codon: AUG; Stop codons: UAA, UAG, UGA","Gene expression is controlled — not all genes are always active"]},
+    {id:"respiration",emoji:"⚡",title:"Cellular Respiration",summary:"Releases energy from glucose to produce ATP.",keyFacts:["Overall: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP","Glycolysis: glucose → pyruvate, in cytoplasm, 2 ATP, no O₂ needed","Krebs cycle: pyruvate → CO₂, in mitochondrial matrix, 2 ATP","ETC: uses O₂, produces ~32 ATP, in inner mitochondrial membrane","Anaerobic (no O₂): fermentation → lactic acid (animals) or ethanol (yeast)"],formula:"C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ~36 ATP"},
+  ],
+  "Nervous System & Brain": [
+    {id:"neurons",emoji:"🧠",title:"Neurons & Synaptic Transmission",summary:"Neurons are specialised cells that transmit electrical and chemical signals.",keyFacts:["Sensory neurons: carry signals from sense organs to brain","Motor neurons: carry signals from brain to muscles/glands","Interneurons: connect sensory and motor pathways in the CNS","Action potential: electrical signal along axon (all-or-nothing response)","Synapse: gap between neurons — neurotransmitters diffuse across","Key neurotransmitters: serotonin (mood), dopamine (reward), GABA (calming)"]},
+  ],
+  "Learning & Memory": [
+    {id:"classical-conditioning",emoji:"🔔",title:"Classical Conditioning (Pavlov)",summary:"Learning by association — a neutral stimulus becomes linked to an automatic response.",keyFacts:["US: Unconditioned Stimulus (food naturally causes salivation)","UR: Unconditioned Response (automatic response to US)","NS: Neutral Stimulus (bell — no response initially)","CS: Conditioned Stimulus (bell after pairing with food)","CR: Conditioned Response (salivation to bell alone)","Extinction: CR weakens if CS presented repeatedly without US"]},
+    {id:"operant-conditioning",emoji:"🐀",title:"Operant Conditioning (Skinner)",summary:"Learning through consequences — behaviour strengthened or weakened by outcomes.",keyFacts:["Positive reinforcement: add pleasant stimulus → behaviour increases","Negative reinforcement: remove unpleasant → behaviour increases (e.g. taking painkiller removes pain)","Positive punishment: add unpleasant → behaviour decreases","Negative punishment: remove pleasant → behaviour decreases","Variable ratio schedule: most resistant to extinction (e.g. pokies, social media)"]},
+    {id:"memory-models",emoji:"🧠",title:"Atkinson-Shiffrin Memory Model",summary:"Information flows through sensory, short-term and long-term memory stores.",keyFacts:["Sensory memory: fraction of a second (iconic = visual; echoic = auditory)","Short-term memory (STM): 20-30 seconds, capacity of 7±2 chunks","Long-term memory (LTM): potentially unlimited capacity and duration","Maintenance rehearsal transfers STM → LTM","Levels of processing: deeper processing = better encoding and recall"]},
+  ],
+  "The Victorian Court System": [
+    {id:"court-hierarchy",emoji:"⚖️",title:"Court Hierarchy",summary:"Courts are arranged by jurisdiction and status — higher courts set binding precedent.",keyFacts:["Magistrates Court: summary offences, civil up to $100K","County Court: serious indictable offences, civil up to $1M","Supreme Court: most serious crimes, unlimited civil jurisdiction","Court of Appeal: hears appeals from Magistrates and County Courts","High Court of Australia: final court of appeal, constitutional matters","Higher courts bind lower courts through doctrine of precedent"]},
+  ],
+  "Criminal Law": [
+    {id:"elements-crime",emoji:"🔍",title:"Elements of a Crime",summary:"Every crime requires two elements proved beyond reasonable doubt.",keyFacts:["Actus reus: the guilty act (physical element)","Mens rea: the guilty mind (mental/intention element)","Both must be present AND occur at the same time","Strict liability offences: actus reus only (e.g. speeding)","Standard of proof in criminal law: beyond reasonable doubt","Burden of proof: prosecution must prove guilt (accused is presumed innocent)"]},
+  ],
+  "Functions & Graphs (Year 9-10)": [
+    {id:"linear-graphs",emoji:"📉",title:"Linear & Non-Linear Graphs",summary:"Graphs of equations showing relationships between variables.",keyFacts:["Linear: y = mx + b — straight line","Gradient m = rise/run","Parabola: y = ax² + bx + c — U-shaped curve","Exponential: y = aˣ — rapid growth or decay","Transformations shift, stretch and flip graphs"]},
+    {id:"parabolas",emoji:"∪",title:"Parabolas & Quadratic Graphs",summary:"U-shaped graphs of quadratic functions y = ax² + bx + c.",keyFacts:["Vertex: turning point of the parabola","Axis of symmetry: x = -b/2a","x-intercepts: where parabola crosses x-axis (roots)","a > 0: opens upward (happy face) ∪","a < 0: opens downward (sad face) ∩"],formula:"y = ax² + bx + c"},
+  ],
+  "Biology (Year 9-10)": [
+    {id:"cells",emoji:"🔬",title:"Cells & Cell Division",summary:"All living things are made of cells. New cells form through division.",keyFacts:["Plant cells: cell wall, chloroplasts, large vacuole (not in animal cells)","Animal cells: no cell wall, no chloroplasts, small vacuoles","Mitosis: produces 2 identical daughter cells (growth and repair)","Meiosis: produces 4 gametes with half the chromosomes (reproduction)","DNA in nucleus controls all cell activities"]},
+    {id:"genetics",emoji:"🧬",title:"Genetics & Inheritance",summary:"Traits are passed from parents to offspring through genes.",keyFacts:["Genes are sections of DNA on chromosomes","Alleles: different versions of the same gene","Dominant allele (B) masks recessive (b) — BB or Bb shows dominant trait","Recessive only shows if both alleles are recessive (bb)","Punnett squares predict probability of offspring traits"]},
+    {id:"evolution",emoji:"🦎",title:"Evolution & Natural Selection",summary:"Species change over time through natural selection acting on variation.",keyFacts:["Variation: individuals differ within a species","Survival of the fittest: better-adapted individuals survive and reproduce","Inherited traits: successful adaptations passed to offspring","Evidence: fossil record, comparative anatomy, DNA similarities","Speciation: isolated populations diverge into separate species"]},
+  ],
+  "Chemistry (Year 9-10)": [
+    {id:"atomic-structure",emoji:"⚛️",title:"Atomic Structure",summary:"Atoms have protons, neutrons and electrons arranged in a specific way.",keyFacts:["Protons: positive charge, in nucleus","Neutrons: no charge, in nucleus","Electrons: negative charge, in shells around nucleus","Atomic number = number of protons","Mass number = protons + neutrons","Ions: atoms that have gained or lost electrons"],formula:"Atomic number = protons | Mass number = protons + neutrons"},
+    {id:"periodic-table",emoji:"🗂️",title:"The Periodic Table",summary:"Elements arranged by atomic number in groups (columns) and periods (rows).",keyFacts:["Group: column — elements have similar properties","Period: row — same number of electron shells","Metals: left side, conductors, lose electrons to form positive ions","Non-metals: right side, insulators, gain electrons to form negative ions","Noble gases: Group 18, full outer shell, very unreactive","Valence electrons determine reactivity and bonding"]},
+    {id:"chemical-reactions",emoji:"⚗️",title:"Chemical Reactions",summary:"Substances rearrange their atoms to form new products with different properties.",keyFacts:["Reactants → Products (written as chemical equation)","Law of conservation of mass: total mass doesn't change","Balancing equations: same number of each atom on both sides","Exothermic: releases heat (combustion, neutralisation)","Endothermic: absorbs heat (photosynthesis, cooking)","Indicators: show if a substance is acid, neutral or base"],},
+  ],
+  "Physics (Year 9-10)": [
+    {id:"motion-forces",emoji:"🏃",title:"Motion & Forces",summary:"Motion is described by distance, speed, velocity and acceleration. Forces cause changes in motion.",keyFacts:["Speed = distance ÷ time","Velocity: speed with direction (vector)","Acceleration: change in velocity ÷ time","Newton's 1st Law: object stays at rest or constant velocity unless a net force acts","Newton's 2nd Law: F = ma","Newton's 3rd Law: every action has equal and opposite reaction"],formula:"speed = distance/time | F = ma"},
+    {id:"energy-waves",emoji:"🌊",title:"Energy & Waves",summary:"Energy comes in many forms and can be transferred and transformed.",keyFacts:["KE = ½mv² (kinetic energy)","GPE = mgh (gravitational potential energy)","Conservation of energy: total energy stays constant","Waves transfer energy without transferring matter","Frequency (Hz) × wavelength (m) = wave speed (m/s)","Light: reflection, refraction, dispersion"],formula:"wave speed = frequency × wavelength"},
+    {id:"electricity",emoji:"⚡",title:"Electricity & Circuits",summary:"Electric current is the flow of electrons through a conductor.",keyFacts:["Ohm's Law: V = IR (Voltage = Current × Resistance)","Series circuit: same current everywhere, voltages add","Parallel circuit: same voltage, currents add","Power = Voltage × Current (P = VI)","Insulators: don't conduct electricity (rubber, plastic)","Conductors: allow current flow (copper, aluminium)"],formula:"V = IR | P = VI"},
+  ],
+  "Aggregate Demand & Supply": [
+    {id:"aggregate-demand",emoji:"📊",title:"Aggregate Demand (AD)",summary:"Total demand for all goods and services in an economy at a given price level.",keyFacts:["AD = C + I + G + (X - M)","C = consumption (households), I = investment (businesses)","G = government spending, X = exports, M = imports","AD shifts right: more spending, lower interest rates, higher confidence","Multiplier effect: initial spending increase amplified through economy"],formula:"AD = C + I + G + (X-M)"},
+    {id:"aggregate-supply",emoji:"🏭",title:"Aggregate Supply (AS)",summary:"Total production of goods and services at various price levels.",keyFacts:["Short-run AS: upward sloping (higher prices → more production)","Long-run AS: vertical at potential GDP (full employment output)","AS shifts right: lower input costs, improved technology, more workers","Supply shock: sudden disruption to AS (e.g. oil price spike)","Equilibrium: AD = AS determines price level and real output"]},
+  ],
+
+  // ── VCE ENGLISH ──
+  "Reading & Responding to Texts": [
+    {id:"analysing-authors",emoji:"📖",title:"Analysing How Authors Construct Meaning",summary:"Authors deliberately choose language, structure and literary techniques to shape meaning and influence readers.",keyFacts:["Language features: diction (word choice), syntax, tone, imagery, figurative language","Structure: how a text is organised — chronological, non-linear, cyclical","Perspective: the point of view from which the story is told","Context: historical, social and cultural circumstances of the text","Metalanguage: specific vocabulary for discussing texts (e.g. symbolism, characterisation, motif)"]},
+    {id:"themes-values",emoji:"💡",title:"Ideas, Themes & Values",summary:"Identifying and discussing the central ideas and values explored in a text.",keyFacts:["Theme: a central idea explored throughout the text","Values: beliefs and attitudes promoted or critiqued by the text","Avoid plot summary — focus on what the text is saying about human experience","Use evidence (quotes) to support your interpretation","Consider how different readers might interpret the same text differently"]},
+    {id:"written-response",emoji:"✍️",title:"Writing a Text Response Essay",summary:"A structured argument about a text using evidence and sophisticated analysis.",keyFacts:["Introduction: clear contention (your argument about the text)","Body paragraphs: TEEL — Topic sentence, Evidence, Explanation, Link","Embed quotes: integrate short quotes into your own sentences","Analysis: explain HOW the technique creates meaning, not just WHAT it does","Conclusion: synthesise your argument — don't just repeat introduction","Avoid 'the author wants us to think...' — use 'the author suggests/explores/reveals'"]},
+  ],
+  "Creating & Presenting": [
+    {id:"writing-for-purpose",emoji:"✏️",title:"Writing for a Specific Audience & Purpose",summary:"Adapting your writing style, form and language to suit the task, audience and context.",keyFacts:["Purpose: to inform, persuade, entertain, reflect, or a combination","Audience: who will read your text — formal/informal, specific group","Form: essay, speech, short story, letter, blog post, interview","Voice: the distinctive style and personality of the writer","Register: level of formality — match to audience and purpose"]},
+    {id:"persuasive-techniques",emoji:"🗣️",title:"Persuasive Writing Techniques",summary:"Rhetorical devices and language strategies used to persuade an audience.",keyFacts:["Ethos: appeal to credibility/authority ('As an expert...')","Pathos: appeal to emotion — evoke fear, sympathy, anger, hope","Logos: appeal to logic — statistics, evidence, reasoned argument","Anecdote: personal story to make argument relatable","Rhetorical question: engages reader, implies obvious answer","Rule of three: three examples or points for emphasis and rhythm"]},
+    {id:"imaginative-writing",emoji:"🎨",title:"Imaginative Writing",summary:"Creating original creative texts using narrative techniques and craft.",keyFacts:["Show don't tell: use specific sensory details rather than stating emotions","Characterisation: reveal character through dialogue, action, thought, description","Setting: establishes atmosphere, mood and context","Conflict: drives narrative — internal (character vs self) or external","Voice: first person (I) or third person (he/she/they)","Structure: consider beginning, complication, climax, resolution"]},
+  ],
+  "Analysing Argument": [
+    {id:"identifying-argument",emoji:"🔍",title:"Identifying Contention & Arguments",summary:"Analysing how a writer constructs a persuasive argument.",keyFacts:["Contention: the main argument or position of the author","Supporting arguments: specific points used to support the contention","Identify: Who? What audience? What position? What form? What context?","Arguments can be explicit (directly stated) or implicit (implied)","Consider: what is NOT said as well as what is said"]},
+    {id:"analysing-language",emoji:"💬",title:"Analysing Persuasive Language",summary:"Examining how specific language choices are used to persuade.",keyFacts:["Emotive language: words chosen to trigger emotional response","Loaded language: words with strong positive or negative connotations","Inclusive language: 'we', 'our' — positions reader as part of the argument","Generalisation: broad statements presented as universal truth","Visuals: images, cartoons, graphs used to support or enhance argument","Tone: the attitude conveyed by the writer (outraged, concerned, sarcastic)"]},
+    {id:"formal-analysis",emoji:"📝",title:"Writing a Formal Analytical Response",summary:"A structured analysis of how argument and language are used to persuade.",keyFacts:["Do NOT share your own opinion — analyse the author's techniques","Structure: Introduction → Body paragraphs by argument/technique → Conclusion","Begin body paragraphs with what the author argues, then HOW they persuade","Metalanguage: name the technique, quote it, explain its effect","Discuss the intended effect on the audience","Present tense: 'The author argues...' not 'The author argued...'"]},
+  ],
+
+  // ── VCE MATHS ──
+  "Probability & Statistics (Methods)": [
+    {id:"discrete-rv",emoji:"🎲",title:"Discrete Random Variables",summary:"Variables that can only take countable values, each with an associated probability.",keyFacts:["P(X=x) ≥ 0 for all x, and sum of all probabilities = 1","E(X) = Σ x·P(X=x) — the expected (mean) value","Var(X) = E(X²) − [E(X)]² — how spread out values are","SD(X) = √Var(X)","Binomial distribution: X ~ B(n,p) — n trials, probability p each"],formula:"E(X) = Σ x·P(X=x) | Var(X) = E(X²) - [E(X)]²"},
+    {id:"normal-dist-methods",emoji:"🔔",title:"Normal Distribution",summary:"Bell-shaped distribution described by mean μ and standard deviation σ.",keyFacts:["68% of data within 1σ of mean","95% within 2σ, 99.7% within 3σ (68-95-99.7 rule)","Standardise: z = (x-μ)/σ","Use CAS to find probabilities: normalcdf(lower, upper, μ, σ)","Inverse normal: find x given a probability"],formula:"z = (x - μ) / σ"},
+    {id:"confidence-intervals",emoji:"📊",title:"Statistical Inference & Confidence Intervals",summary:"Using sample data to make inferences about population parameters.",keyFacts:["Sample proportion p̂ estimates population proportion p","Standard error: SE = √(p̂(1-p̂)/n)","95% confidence interval: p̂ ± 1.96 × SE","Larger sample → narrower interval → more precise estimate","Margin of error = 1.96 × SE for 95% CI"],formula:"95% CI: p̂ ± 1.96√(p̂(1-p̂)/n)"},
+  ],
+
+  // ── VCE SPECIALIST MATHS ──
+  "Algebra & Number Systems": [
+    {id:"complex-numbers",emoji:"i",title:"Complex Numbers",summary:"Numbers of the form a + bi where i = √(-1).",keyFacts:["i = √(-1), i² = -1, i³ = -i, i⁴ = 1","Rectangular form: z = a + bi (a = real part, b = imaginary part)","Modulus: |z| = √(a² + b²)","Argument: θ = arctan(b/a) — angle from positive real axis","Polar form: z = r(cos θ + i sin θ) = r·cis(θ)","Complex conjugate: z̄ = a - bi"],formula:"z = a + bi | |z| = √(a² + b²)"},
+    {id:"proof",emoji:"∴",title:"Mathematical Proof",summary:"Rigorous logical arguments that establish mathematical statements as definitely true.",keyFacts:["Direct proof: assume premises, deduce conclusion step by step","Proof by contradiction: assume opposite is true, derive contradiction","Mathematical induction: prove base case, then prove if P(k) true → P(k+1) true","Counterexample: one example that disproves a universal statement","Always state what you're proving and every step must follow logically"]},
+  ],
+
+  // ── VCE GENERAL MATHS ──
+  "Data Analysis": [
+    {id:"univariate-data",emoji:"📊",title:"Univariate Data Analysis",summary:"Analysing data with a single variable using numerical and graphical methods.",keyFacts:["Centre: mean (affected by outliers), median (resistant to outliers)","Spread: range, IQR, standard deviation","Five-number summary: min, Q1, median, Q3, max","Box plots: display five-number summary, show outliers","Outlier: more than 1.5 × IQR above Q3 or below Q1","Symmetry vs skewness: affects which measure of centre to use"]},
+    {id:"bivariate-data",emoji:"📈",title:"Bivariate Data & Regression",summary:"Analysing the relationship between two numerical variables.",keyFacts:["Scatterplot: displays relationship between two variables","Pearson's r: correlation coefficient (-1 to 1)","r close to ±1: strong linear relationship; r near 0: no linear relationship","Least squares regression line: y = a + bx (line of best fit)","Interpolation: predicting within data range (reliable)","Extrapolation: predicting outside data range (unreliable)"],formula:"r measures strength and direction of linear relationship"},
+    {id:"time-series",emoji:"📉",title:"Time Series Analysis",summary:"Data collected over time — identifying trends, seasonality and cycles.",keyFacts:["Trend: long-term increase or decrease","Seasonal variation: regular pattern within each year","Smoothing: moving averages reduce random variation to reveal trend","Seasonal indices: show how much each season differs from average","Deseasonalise: remove seasonal variation to see underlying trend"]},
+  ],
+  "Financial Arithmetic": [
+    {id:"simple-compound",emoji:"💰",title:"Simple & Compound Interest",summary:"Two methods of calculating interest on investments and loans.",keyFacts:["Simple interest: I = Prt (Principal × rate × time)","Compound interest: A = P(1 + r)ⁿ","Compounding period affects final amount (more frequent = more interest)","Effective annual rate: accounts for compounding frequency","Rule of 72: years to double ≈ 72 / interest rate %"],formula:"Simple: I = Prt | Compound: A = P(1+r)ⁿ"},
+    {id:"loans-annuities",emoji:"🏠",title:"Loans, Annuities & Reducible Interest",summary:"Calculating repayments and future values for financial products.",keyFacts:["Reducible interest: calculated on outstanding balance (most loans)","Annuity: regular equal payments over a fixed period","Present value: current value of future payments","Future value: total accumulated after regular deposits","Recurrence relation: Vₙ₊₁ = Vₙ(1+r) - d"],formula:"Vₙ₊₁ = Vₙ(1+r) - d"},
+  ],
+
+  // ── VCE BIOLOGY ──
+  "Genetics & Inheritance": [
+    {id:"mendelian",emoji:"🧬",title:"Mendelian Genetics",summary:"Gregor Mendel's laws describing how traits are inherited from parents.",keyFacts:["Dominant allele (B): expressed even with one copy","Recessive allele (b): only expressed when two copies present (bb)","Homozygous: same alleles (BB or bb); Heterozygous: different alleles (Bb)","Punnett square: predicts offspring ratios","Monohybrid cross: one trait; Dihybrid cross: two traits","Law of segregation: alleles separate during gamete formation"]},
+    {id:"sex-linkage",emoji:"X",title:"Sex Linkage & Non-Mendelian Inheritance",summary:"Genes located on sex chromosomes and patterns that don't follow Mendel's laws.",keyFacts:["Sex chromosomes: females XX, males XY","X-linked genes: carried on X chromosome (e.g. colour blindness, haemophilia)","X-linked recessive: males more often affected (only one X)","Codominance: both alleles expressed (e.g. AB blood type)","Incomplete dominance: intermediate phenotype in heterozygote","Multiple alleles: more than two alleles in population (e.g. ABO blood types)"]},
+    {id:"biotechnology",emoji:"🔬",title:"Biotechnology & Gene Technology",summary:"Techniques used to manipulate, analyse and apply genetic material.",keyFacts:["PCR: Polymerase Chain Reaction — amplifies tiny DNA samples","Gel electrophoresis: separates DNA fragments by size","DNA profiling: unique pattern used in forensics and paternity testing","CRISPR-Cas9: precise gene editing — cut and replace DNA sequences","Recombinant DNA: inserting gene from one organism into another","GMOs: genetically modified organisms — ethical considerations apply"]},
+  ],
+  "Evolution & Biodiversity": [
+    {id:"natural-selection",emoji:"🦎",title:"Natural Selection & Evolution",summary:"Populations change over time as better-adapted individuals survive and reproduce.",keyFacts:["Variation: individuals differ within a population","Heritability: advantageous traits are passed to offspring","Differential reproduction: better-adapted individuals have more offspring","Over many generations: allele frequencies shift","Evidence: fossil record, comparative anatomy, DNA, biogeography","Antibiotic resistance: natural selection in action — real-world example"]},
+    {id:"speciation",emoji:"🌿",title:"Speciation & Classification",summary:"How new species form and how organisms are classified into groups.",keyFacts:["Species: organisms that can interbreed to produce fertile offspring","Allopatric speciation: geographic isolation leads to divergence","Sympatric speciation: new species form in same area (e.g. polyploidy in plants)","Phylogenetic trees (cladograms): show evolutionary relationships","Binomial nomenclature: Genus species (e.g. Homo sapiens)","Domains: Bacteria, Archaea, Eukarya — three domains of life"]},
+  ],
+  "Immunity & Disease": [
+    {id:"innate-immunity",emoji:"🛡️",title:"Innate (Non-Specific) Immunity",summary:"The body's first line of defence — rapid, non-specific response to pathogens.",keyFacts:["Physical barriers: skin, mucus membranes, cilia, stomach acid","Inflammation: redness, heat, swelling — brings immune cells to site","Phagocytes: neutrophils and macrophages engulf and destroy pathogens","Fever: elevated temperature slows pathogen reproduction","Complement system: proteins that attack pathogens and signal immune cells"]},
+    {id:"adaptive-immunity",emoji:"🎯",title:"Adaptive (Specific) Immunity",summary:"Targeted immune response that develops over days and creates memory.",keyFacts:["Antigens: molecules on pathogen surface that trigger immune response","B lymphocytes: produce antibodies specific to the antigen","T helper cells: coordinate immune response","T cytotoxic cells: kill infected body cells directly","Clonal selection: B and T cells multiply rapidly when activated","Memory cells: remain after infection — faster response if exposed again","Antibodies: Y-shaped proteins that bind to specific antigens"]},
+    {id:"vaccination",emoji:"💉",title:"Vaccination & Herd Immunity",summary:"Using vaccines to stimulate adaptive immunity without causing disease.",keyFacts:["Vaccine: contains weakened/dead pathogen or antigen fragments","Stimulates production of antibodies and memory cells","Herd immunity: enough people immune → pathogen can't spread","Herd immunity threshold varies by disease (measles ~95%, COVID ~70%)","Types: live attenuated, killed, subunit, mRNA vaccines","Booster shots: refresh memory cell populations over time"]},
+  ],
+
+  // ── VCE PHYSICS ──
+  "Waves & Light": [
+    {id:"wave-properties",emoji:"🌊",title:"Wave Properties",summary:"All waves share fundamental properties described by frequency, wavelength, amplitude and speed.",keyFacts:["Wave speed v = fλ (frequency × wavelength)","Frequency f: cycles per second (Hz)","Wavelength λ: distance between successive crests","Amplitude: maximum displacement from rest position","Transverse waves: displacement perpendicular to direction (light, water)","Longitudinal waves: displacement parallel to direction (sound)"],formula:"v = fλ  |  T = 1/f"},
+    {id:"interference",emoji:"〰️",title:"Interference & Diffraction",summary:"Waves combine (interference) and spread around obstacles (diffraction).",keyFacts:["Constructive interference: waves add together (crest + crest)","Destructive interference: waves cancel (crest + trough)","Path difference: difference in distance each wave travels","Constructive: path difference = nλ (whole number of wavelengths)","Destructive: path difference = (n + ½)λ","Diffraction: maximum when gap width ≈ wavelength"],formula:"Constructive: Δd = nλ | Destructive: Δd = (n+½)λ"},
+    {id:"photoelectric",emoji:"⚡",title:"Photoelectric Effect & Quantum Model",summary:"Light behaves as particles (photons) — evidence for quantum nature of light.",keyFacts:["Photon: packet of light energy, E = hf","Threshold frequency: minimum frequency to eject electrons","Increasing intensity: more electrons ejected (not faster ones)","Increasing frequency: electrons ejected with more kinetic energy","Einstein's equation: KE_max = hf - W (W = work function)","Wave-particle duality: light (and matter) exhibits both wave and particle behaviour"],formula:"E = hf  |  KE_max = hf - W"},
+  ],
+  "Modern Physics": [
+    {id:"special-relativity",emoji:"⚡",title:"Special Relativity",summary:"Einstein's theory: the laws of physics are the same for all inertial observers, and the speed of light is constant.",keyFacts:["Time dilation: moving clocks run slow: t' = t/√(1-v²/c²)","Length contraction: moving objects are shorter: L' = L√(1-v²/c²)","Mass-energy equivalence: E = mc²","Nothing can reach or exceed the speed of light","Relativistic effects are only significant at speeds close to c","Simultaneity: events simultaneous in one frame may not be in another"],formula:"E = mc²  |  t' = t/√(1-v²/c²)"},
+    {id:"nuclear-physics",emoji:"☢️",title:"Nuclear Physics & Radioactivity",summary:"The nucleus can undergo decay, releasing particles and energy.",keyFacts:["Alpha (α): 2 protons + 2 neutrons — low penetration, stopped by paper","Beta (β): fast electron or positron — stopped by aluminium","Gamma (γ): high-energy photon — stopped by thick lead or concrete","Half-life: time for half the nuclei in a sample to decay","Nuclear fission: heavy nucleus splits → releases enormous energy","Nuclear fusion: light nuclei combine → releases even more energy (powers stars)"]},
+  ],
+
+  // ── VCE PSYCHOLOGY ──
+  "States of Consciousness": [
+    {id:"sleep-stages",emoji:"😴",title:"Sleep Stages & Architecture",summary:"Sleep progresses through NREM and REM stages in ~90 minute cycles.",keyFacts:["NREM Stage 1: light sleep, theta waves, easy to wake, hypnic jerks","NREM Stage 2: sleep spindles, K-complexes, harder to wake","NREM Stage 3 (SWS): delta waves, deep sleep, hardest to wake, growth hormone released","REM sleep: rapid eye movement, vivid dreams, brain as active as waking","Typical night: 4-6 cycles, REM increases in later cycles","Adults need 7-9 hours; teens need 8-10 hours"]},
+    {id:"sleep-deprivation",emoji:"😵",title:"Sleep Deprivation Effects",summary:"Insufficient sleep impairs cognitive, physical and emotional functioning.",keyFacts:["Cognitive effects: impaired attention, memory consolidation, decision-making","Emotional effects: increased irritability, anxiety, emotional reactivity","Physical effects: weakened immune system, weight gain, cardiovascular risk","Microsleeps: involuntary 1-30 second lapses in attention — dangerous when driving","Total sleep deprivation: hallucinations after ~72 hours","Partial sleep deprivation: cumulative 'sleep debt' — can't be fully repaid quickly"]},
+  ],
+  "Research Methods": [
+    {id:"experimental-design",emoji:"🔬",title:"Experimental Design",summary:"The structure of a study that allows researchers to investigate cause and effect.",keyFacts:["Independent variable (IV): what the researcher manipulates","Dependent variable (DV): what is measured","Controlled variables: everything kept constant to isolate IV","Experimental group: receives the treatment/intervention","Control group: does not receive treatment — used for comparison","Random allocation: participants randomly assigned to groups — reduces bias"],},
+    {id:"data-analysis-psych",emoji:"📊",title:"Data Analysis & Validity",summary:"Evaluating research quality and interpreting statistical results.",keyFacts:["Mean, median, mode: measures of central tendency","Standard deviation: measure of spread around the mean","p-value < 0.05: results are statistically significant","Validity: does the study measure what it claims to measure?","Reliability: would the study produce same results if repeated?","Generalisation: can results be applied to the broader population?"]},
+  ],
+
+  // ── VCE LEGAL STUDIES ──
+  "Civil Law": [
+    {id:"tort-law",emoji:"⚖️",title:"Tort Law — Negligence",summary:"Civil wrongs where one party's carelessness causes harm to another.",keyFacts:["Elements of negligence: duty of care, breach, damage (causation + harm)","Duty of care: legal obligation to take reasonable care (e.g. doctor-patient)","Breach: failed to meet the standard of a reasonable person","Causation: breach must have caused the damage ('but for' test)","Remoteness: damage must be a foreseeable result of the breach","Remedies: compensatory damages (to restore plaintiff to original position)"]},
+    {id:"dispute-resolution",emoji:"🤝",title:"Dispute Resolution Methods",summary:"Alternative methods to resolve civil disputes without going to court.",keyFacts:["Negotiation: parties discuss directly, no third party, cheapest","Mediation: neutral mediator helps parties reach agreement — non-binding","Conciliation: conciliator takes more active role, may suggest outcomes","Arbitration: arbitrator makes binding decision (like a private judge)","VCAT: Victorian Civil and Administrative Tribunal — quicker and cheaper than courts","Advantages of alternatives: faster, cheaper, less formal, preserves relationships"]},
+  ],
+  "Law Reform & Justice": [
+    {id:"law-reform-process",emoji:"📜",title:"Law Reform",summary:"The process by which laws are changed to better reflect community values and needs.",keyFacts:["Reasons for reform: changing values, new technology, evidence of injustice","Parliament: can pass new legislation or amend existing laws","Courts: can develop common law through precedent (judge-made law)","Law Reform Commission: independent body that researches and recommends reforms","Royal Commissions: major investigations into serious systemic issues","Community groups, media and individual citizens can all advocate for reform"]},
+    {id:"justice-principles",emoji:"🏛️",title:"Principles of Justice",summary:"The legal system should be fair, equitable and accessible to all.",keyFacts:["Fairness: impartial hearing, evidence tested, unbiased decision-maker","Equality: all treated equally before the law","Access: barriers to the legal system (cost, language, knowledge)","Legal aid: government-funded legal assistance for those who can't afford lawyers","Interpreting services: for those with limited English","Rule of law: everyone — including government — is subject to the law"]},
+  ],
+
+  // ── VCE HISTORY ──
+  "Revolutionary Ideas & Leaders": [
+    {id:"revolutionary-ideology",emoji:"💭",title:"Revolutionary Ideologies",summary:"The ideas and beliefs that motivated and justified revolutionary action.",keyFacts:["Liberalism: individual rights, limited government, rule of law","Republicanism: government based on popular sovereignty, not monarchy","Marxism/Socialism: class struggle, collective ownership, workers' revolution","Nationalism: self-determination, pride in national identity","Enlightenment: reason over tradition — challenged divine right of kings","Propaganda: revolutionary leaders used print, art and speeches to spread ideas"]},
+    {id:"key-figures",emoji:"👤",title:"Key Revolutionary Leaders & Their Roles",summary:"Individuals who shaped the direction, success and character of revolutions.",keyFacts:["Leaders often emerge from educated middle class or military","Charisma and oratory: ability to inspire the masses","Competing factions: moderate vs radical revolutionaries","Role of women: often significant but frequently marginalised afterward","Leaders can be both products of revolution and drivers of its direction","Cult of personality: leaders use symbols and myths to consolidate power"]},
+  ],
+  "Outcomes & Significance": [
+    {id:"short-long-term",emoji:"📅",title:"Short & Long-Term Outcomes",summary:"Evaluating what actually changed as a result of the revolution.",keyFacts:["Political change: new government structure, constitution, voting rights","Social change: class structure, gender roles, rights of minorities","Economic change: land ownership, industry, trade policies","Counter-revolution: attempts by conservative forces to reverse change","Short-term violence vs long-term stability — tensions between them","Did the revolution achieve its stated goals? For whom?"]},
+    {id:"historiography",emoji:"📚",title:"Historiography & Historical Debate",summary:"How historians have interpreted and debated the causes and significance of revolutions.",keyFacts:["Historiography: the study of how history has been written and interpreted","Different historians emphasise: class struggle, individual leaders, ideology, economics","Revisionist historians: challenge the 'standard' interpretation with new evidence","Primary sources: documents, images, speeches from the time","Secondary sources: historians' interpretations written after the event","Evaluating sources: consider origin, purpose, value and limitation"]},
+  ],
+
+  // ── VCE ECONOMICS ──
+  "Government Policy": [
+    {id:"fiscal-policy",emoji:"🏛️",title:"Fiscal Policy",summary:"Government use of spending and taxation to influence economic activity.",keyFacts:["Expansionary: increase spending or cut taxes → stimulate AD","Contractionary: cut spending or raise taxes → reduce inflationary pressure","Budget deficit: spending > revenue (expansionary effect)","Budget surplus: revenue > spending (contractionary effect)","Automatic stabilisers: unemployment benefits, progressive tax — work without action","Fiscal policy is slower to implement than monetary policy (political process)"]},
+    {id:"monetary-policy",emoji:"🏦",title:"Monetary Policy",summary:"Reserve Bank of Australia uses interest rates to manage inflation and growth.",keyFacts:["RBA sets the cash rate (interest rate target)","Lower cash rate: cheaper borrowing → more spending → AD increases","Higher cash rate: more expensive borrowing → less spending → inflation cools","Inflation target: RBA aims for 2-3% annual inflation","Transmission mechanism: cash rate → bank rates → borrowing/saving decisions → AD","Monetary policy is faster to implement than fiscal policy"]},
+  ],
+  "Labour Market": [
+    {id:"unemployment",emoji:"👷",title:"Unemployment",summary:"People who are actively seeking work but cannot find it — a key macroeconomic indicator.",keyFacts:["Unemployment rate = unemployed / labour force × 100","Cyclical unemployment: caused by economic downturns (demand falls)","Structural unemployment: skills mismatch — jobs change, workers don't (or can't move)","Frictional unemployment: temporary — people between jobs","Natural rate of unemployment (NAIRU): unavoidable level in a healthy economy","Underemployment: working fewer hours than desired — also a problem"],formula:"Unemployment rate = (unemployed/labour force) × 100"},
+    {id:"wages",emoji:"💼",title:"Wages & Wage Determination",summary:"How wages are set in Australia and what influences them.",keyFacts:["Fair Work Commission: sets national minimum wage annually","Enterprise bargaining: employers and employees negotiate agreements","Award wages: minimum pay rates set by industry","Inflation: real wages = nominal wages adjusted for inflation","Productivity: wages tend to rise with worker productivity","Skills and education: higher skills → higher wages in most labour markets"]},
+  ],
+
+  // ── VCE ACCOUNTING ──
+  "Recording & Reporting": [
+    {id:"double-entry",emoji:"📒",title:"Double-Entry Accounting",summary:"Every transaction affects at least two accounts — debits always equal credits.",keyFacts:["Accounting equation: Assets = Liabilities + Owner's Equity","Debit: left side of account — increases assets and expenses, decreases liabilities","Credit: right side — increases liabilities and equity, decreases assets","Every journal entry: debit(s) = credit(s) (must balance)","General journal: records all transactions chronologically","General ledger: individual accounts updated from journal entries"],formula:"Assets = Liabilities + Owner's Equity"},
+    {id:"trial-balance",emoji:"✅",title:"Trial Balance & Error Detection",summary:"A list of all ledger accounts with their balances — checks arithmetic accuracy.",keyFacts:["Debit column total must equal credit column total","Trial balance only detects arithmetic errors — not all errors","Errors NOT detected: errors of omission (transaction not recorded at all)","Errors NOT detected: errors of commission (wrong account used)","Errors NOT detected: errors of principle (wrong type of account)","Suspense account: temporary account used while locating errors"]},
+  ],
+  "Financial Statements": [
+    {id:"income-statement",emoji:"📈",title:"Income Statement",summary:"Shows revenue, expenses and profit for a specific accounting period.",keyFacts:["Revenue: income earned from normal business activities","COGS: Cost of Goods Sold = opening stock + purchases - closing stock","Gross Profit = Revenue - COGS","Net Profit = Gross Profit - Operating Expenses","Accrual basis: record revenue when earned, expenses when incurred","Non-cash expenses: depreciation reduces profit without cash outflow"],formula:"Gross Profit = Revenue - COGS | Net Profit = Gross Profit - Expenses"},
+    {id:"balance-sheet",emoji:"⚖️",title:"Balance Sheet",summary:"Shows assets, liabilities and owner's equity at a specific point in time.",keyFacts:["Current assets: cash, receivables, inventory (converted to cash within 12 months)","Non-current assets: equipment, land, vehicles (held long-term)","Current liabilities: payables, short-term loans (due within 12 months)","Non-current liabilities: long-term loans, mortgages","Owner's equity: capital + profit - drawings","Must balance: Total Assets = Total Liabilities + Owner's Equity"]},
+  ],
+
+  // ── VCE BUSINESS MANAGEMENT ──
+  "Human Resource Management": [
+    {id:"motivation-theories",emoji:"⭐",title:"Motivation Theories",summary:"Theories explaining what motivates employees and how to improve performance.",keyFacts:["Maslow's hierarchy: physiological → safety → social → esteem → self-actualisation","Herzberg: hygiene factors (prevent dissatisfaction) vs motivators (drive satisfaction)","Locke's Goal Setting: specific, challenging goals improve performance","Pink's Self-Determination: autonomy, mastery, purpose drive intrinsic motivation","Taylor's Scientific Management: financial incentives motivate workers","Apply theories: different employees may respond to different motivators"]},
+    {id:"employee-relations",emoji:"🤝",title:"Employee Relations & Workplace Disputes",summary:"Management of the relationship between employers and employees.",keyFacts:["Enterprise Bargaining Agreement (EBA): negotiated terms and conditions","Fair Work Commission: resolves workplace disputes, sets minimum wages","Industrial action: strikes, work bans, overtime bans — employee pressure tactics","Lockouts: employer prevents workers from working — employer pressure tactic","Grievance procedures: formal process for employees to raise complaints","Positive employee relations: reduces turnover, increases productivity"]},
+  ],
+  "Change Management": [
+    {id:"lewin-force-field",emoji:"⚡",title:"Lewin's Force Field Analysis",summary:"A tool for analysing the forces driving and resisting change in an organisation.",keyFacts:["Driving forces: push for change (competition, technology, customer demand)","Restraining forces: resist change (employee resistance, cost, tradition)","If driving > restraining: change happens","Strategy: strengthen driving forces OR weaken restraining forces","Unfreeze → Change → Refreeze: Lewin's three-step change model","Large gap between current and desired state → more resistance"]},
+    {id:"resistance-strategies",emoji:"🛡️",title:"Resistance to Change & Strategies",summary:"Why employees resist change and how managers can overcome resistance.",keyFacts:["Fear of the unknown: comfort with familiar routines","Loss of job security: fear of redundancy or role changes","Lack of communication: rumours fill information gaps","Strategies: communicate clearly and early, involve employees in planning","Training: build confidence with new skills and systems","Empathy: acknowledge concerns, provide support and incentives"]},
+  ],
+
+  // ── VCE SOFTWARE DEVELOPMENT ──
+  "Programming Concepts": [
+    {id:"data-structures-prog",emoji:"📦",title:"Data Types & Structures",summary:"The building blocks for storing and organising data in programs.",keyFacts:["Integer: whole numbers (e.g. 5, -3, 100)","Float/Real: decimal numbers (e.g. 3.14, -0.5)","String: text (e.g. 'hello', 'VCE 2025')","Boolean: True or False only","List/Array: ordered collection of items (e.g. [1, 2, 3])","Dictionary: key-value pairs (e.g. {'name': 'Veer', 'age': 17})"]},
+    {id:"oop",emoji:"🔷",title:"Object-Oriented Programming",summary:"Programming paradigm that organises code into objects with attributes and methods.",keyFacts:["Class: blueprint/template for creating objects","Object: instance of a class with its own data","Attribute: data belonging to an object (e.g. name, age)","Method: function belonging to a class (behaviour of object)","Encapsulation: bundling data and methods, hiding internal details","Inheritance: child class inherits attributes/methods from parent class","Polymorphism: same method name, different behaviour in different classes"]},
+    {id:"algorithms-prog",emoji:"🔄",title:"Algorithms & Control Structures",summary:"Step-by-step instructions that solve problems using sequence, selection and iteration.",keyFacts:["Sequence: instructions executed in order","Selection: IF/ELIF/ELSE — executes code based on condition","Iteration: FOR loops (known count) and WHILE loops (condition-based)","Pseudocode: informal language to describe algorithm logic","Trace table: manually tracking variable values through an algorithm","Nested structures: control structures inside other control structures"]},
+  ],
+  "Software Development Lifecycle": [
+    {id:"testing",emoji:"🧪",title:"Testing Strategies",summary:"Systematic methods to find and fix errors before software is released.",keyFacts:["Syntax errors: incorrect code structure (caught by compiler/interpreter)","Logic errors: code runs but gives wrong output (hardest to find)","Runtime errors: crash during execution (e.g. division by zero)","Black-box testing: tests functionality without knowing internal code","White-box testing: tests internal logic with knowledge of code","Unit testing: tests individual components in isolation","Integration testing: tests how components work together","User acceptance testing (UAT): end users test in real conditions"]},
+  ],
+
+  // ── VCE MEDIA ──
+  "Media Codes & Conventions": [
+    {id:"technical-codes",emoji:"🎬",title:"Technical Codes",summary:"The technical choices that create meaning in media texts.",keyFacts:["Camera angles: low angle (powerful), high angle (vulnerable), eye-level (neutral)","Camera shots: extreme close-up (emotion), wide shot (context), mid shot (relationship)","Lighting: high-key (positive/happy), low-key (dark/sinister), backlighting (mystery)","Editing: cut, fade, dissolve — control pacing and mood","Sound: diegetic (within the story world) vs non-diegetic (soundtrack, voiceover)","Mise-en-scène: everything visible in the frame — setting, costume, props, expression"]},
+    {id:"narrative-codes",emoji:"📖",title:"Narrative Codes & Genre",summary:"How stories are constructed and how genre shapes audience expectations.",keyFacts:["Narrative structure: Equilibrium → Disruption → Resolution (Todorov)","Character types: hero, villain, helper, mentor (Propp's character functions)","Genre: set of conventions audiences recognise and expect","Genre codes: iconography, settings, character types, narrative patterns","Hybridisation: combining elements of different genres","Subverting conventions: deliberately breaking genre expectations for effect"]},
+  ],
+
+  // ── VCE DRAMA ──
+  "Drama Elements & Techniques": [
+    {id:"elements-drama",emoji:"🎭",title:"Elements of Drama",summary:"The building blocks that all drama uses to create meaning and engage audiences.",keyFacts:["Role & Character: who the performer is being — layered, believable characterisation","Relationships: how characters relate to each other — power, conflict, intimacy","Tension: what drives drama — conflict, mystery, surprise, dilemma","Focus: where the audience's attention is directed","Space: how performers use the performance area — proxemics, levels, staging","Time: pace, rhythm, duration — slowing down or speeding up time in performance","Language: what is said and how (subtext is often more important than text)"]},
+    {id:"voice-movement",emoji:"🎤",title:"Voice & Movement",summary:"The performer's primary instruments for creating and communicating character.",keyFacts:["Voice: volume, pitch, pace, tone, articulation, accent, rhythm","Projection: making voice heard without shouting","Physicality: posture, gesture, facial expression, gait","Status: how body language conveys power relationships","Stillness: can be more powerful than constant movement","Eye contact: direct, averted, shared — each communicates differently"]},
+  ],
+
+  // ── VCE MUSIC ──
+  "Music Theory & Notation": [
+    {id:"pitch-scales",emoji:"🎵",title:"Pitch, Scales & Keys",summary:"The fundamental building blocks of melody and harmony in Western music.",keyFacts:["Major scale: whole, whole, half, whole, whole, whole, half pattern (W W H W W W H)","Natural minor scale: W H W W H W W pattern","Key signature: sharps or flats at start of staff — indicates the key","Intervals: distance between two pitches (unison, 2nd, 3rd...octave)","Chromatic scale: all 12 semitones","Relative major/minor: share same key signature (e.g. C major and A minor)"]},
+    {id:"rhythm-metre",emoji:"🥁",title:"Rhythm, Metre & Notation",summary:"How music is organised in time — beat, rhythm patterns and time signatures.",keyFacts:["Beat: steady pulse underlying music","Tempo: speed of the beat (BPM = beats per minute)","Time signature: top = beats per bar, bottom = beat note value","4/4: four crotchet beats per bar (most common)","3/4: three crotchet beats (waltz feel)","Syncopation: emphasis on off-beats — creates rhythmic interest","Note values: semibreve (4), minim (2), crotchet (1), quaver (½), semiquaver (¼)"]},
+    {id:"music-analysis",emoji:"🎼",title:"Analysing Music — SHMRG",summary:"A framework for analysing and describing music systematically.",keyFacts:["S — Sound: instrumentation, timbre, texture (monophonic, homophonic, polyphonic)","H — Harmony: chords, key, major/minor, dissonance/consonance, modulation","M — Melody: shape, range, intervals, sequence, conjunct/disjunct motion","R — Rhythm: tempo, metre, syncopation, rhythmic patterns","G — Growth/Structure: form (binary AB, ternary ABA, rondo, sonata), dynamics, development","Use SHMRG as a framework for written analysis responses"]},
+  ],
+
+  // ── VCE VISUAL COMMUNICATION DESIGN ──
+  "Design Process": [
+    {id:"design-elements",emoji:"🎨",title:"Elements & Principles of Design",summary:"The fundamental visual tools and organising principles used in all design.",keyFacts:["Elements: line, shape, form, colour, texture, tone, space","Principles: balance, contrast, emphasis/focal point, pattern, repetition, unity, movement","Colour theory: hue, saturation, value; colour wheel relationships","Typography: typeface, font weight, tracking, leading, kerning","Visual hierarchy: arrangement that guides viewer through design","Gestalt principles: proximity, similarity, closure, figure-ground"]},
+    {id:"design-methods",emoji:"📐",title:"Design Methods & Drawing Techniques",summary:"Systematic processes and technical drawing skills used in design.",keyFacts:["Freehand drawing: quick idea generation, thumbnails, sketches","Instrumental drawing: precise technical drawings using tools","CAD: computer-aided design — accuracy and easy editing","Orthographic projection: front, top, side views on 2D surface","Isometric drawing: 3D representation — no vanishing points","Rendering: adding tone, texture and colour to communicate materials"]},
+  ],
+
+  // ── VCE FOOD STUDIES ──
+  "Food Safety & Hygiene": [
+    {id:"food-hazards",emoji:"⚠️",title:"Food Hazards & HACCP",summary:"Identifying and controlling hazards to ensure food is safe to eat.",keyFacts:["Biological hazards: bacteria, viruses, parasites (most common cause of illness)","Chemical hazards: pesticides, cleaning agents, food additives","Physical hazards: glass, metal, bone, pits","HACCP: Hazard Analysis Critical Control Points — systematic food safety system","Critical control points: steps where hazards must be controlled","Temperature danger zone: 5°C – 60°C — bacteria multiply rapidly","2-hour/4-hour rule: discard if in danger zone >4 hours total"]},
+    {id:"pathogens",emoji:"🦠",title:"Food-Borne Illness & Pathogens",summary:"Micro-organisms that cause illness through contaminated food.",keyFacts:["Salmonella: raw poultry, eggs — causes gastroenteritis 6-72 hours after consumption","Campylobacter: undercooked chicken — most common food-borne illness in Australia","Staphylococcus aureus: food handlers with skin infections — toxin not destroyed by heat","E. coli: undercooked beef, unpasteurised juice — can cause serious kidney damage","Prevent: cook to correct temperature, separate raw/cooked, chill promptly, clean hands"]},
+  ],
+
+  // ── VCE OUTDOOR ED ──
+  "Personal & Social Development": [
+    {id:"risk-management",emoji:"⛰️",title:"Risk Management in Outdoor Education",summary:"Identifying, assessing and managing risks in outdoor environments.",keyFacts:["Hazard: something that could cause harm (wet rocks, weather change)","Risk: likelihood and consequence of harm occurring","Risk assessment: identify hazard → assess likelihood → assess consequence → control","Hierarchy of controls: eliminate → substitute → isolate → engineering → administrative → PPE","Dynamic risk management: ongoing assessment as conditions change","Safety vs challenge: managed risk is educational — aim for 'stretch zone' not 'panic zone'"]},
+    {id:"leadership",emoji:"👥",title:"Leadership & Group Dynamics",summary:"How leadership and group cohesion affect outcomes in outdoor experiences.",keyFacts:["Autocratic leadership: leader decides — best in emergencies","Democratic leadership: group input — builds ownership and morale","Laissez-faire: minimal direction — works with highly skilled, motivated groups","Tuckman's stages: Forming → Storming → Norming → Performing → Adjourning","Cohesion: task cohesion (shared goal) and social cohesion (relationships)","Communication: clear, assertive, respectful — essential for group safety"]},
+  ],
+
+  // ── VCE PE ──
+  "Energy Systems & Fatigue": [
+    {id:"energy-systems-pe",emoji:"⚡",title:"Three Energy Systems",summary:"The body uses three energy systems to produce ATP — the fuel for all muscle activity.",keyFacts:["ATP-PC (phosphocreatine): 0-10 seconds, explosive power (sprint start, weightlifting), no oxygen, no lactate","Anaerobic glycolysis (lactic acid): 10 seconds-2 minutes, high intensity, produces lactate causing burning sensation","Aerobic system: 2+ minutes, low-moderate intensity, uses oxygen, CO₂ and H₂O as by-products, most ATP produced","Energy system interplay: all three operate simultaneously, one dominates based on intensity","Oxygen uptake: VO₂ max is maximum oxygen body can use — key indicator of aerobic fitness"],formula:"ATP → ADP + Pi + energy (muscle contraction)"},
+    {id:"fatigue-recovery",emoji:"😓",title:"Fatigue & Recovery",summary:"Why muscles fatigue and how the body recovers after exercise.",keyFacts:["Peripheral fatigue: at the muscle — lactate accumulation, fuel depletion, ion imbalance","Central fatigue: in the brain — reduced neural drive to muscles","EPOC (excess post-exercise oxygen consumption): elevated oxygen use after exercise to restore body","Active recovery: light exercise post-training — clears lactate faster than rest","Nutrition: carbohydrates restore glycogen, protein repairs muscle","Sleep: primary time for muscle repair and adaptation (growth hormone released)"]},
+  ],
+  "Cardiovascular & Respiratory Adaptations": [
+    {id:"acute-responses",emoji:"❤️",title:"Acute Responses to Exercise",summary:"Immediate, short-term changes in heart, lungs and blood during exercise.",keyFacts:["Heart rate: increases from ~70 bpm rest to 200+ bpm max exercise","Stroke volume: increases — more blood pumped per beat","Cardiac output = HR × SV: increases to deliver more O₂ to muscles","Breathing rate: increases from ~15 to 50+ breaths/min","Tidal volume: volume of air per breath increases","Blood redistribution: vasoconstriction diverts blood to working muscles"],formula:"Cardiac output = heart rate × stroke volume"},
+    {id:"chronic-adaptations",emoji:"💪",title:"Chronic Training Adaptations",summary:"Long-term structural and functional changes from regular training.",keyFacts:["Cardiac hypertrophy: heart wall thickens — more powerful contractions","Increased stroke volume: at rest and during exercise","Lower resting heart rate: trained athletes 40-60 bpm (more efficient)","Increased VO₂ max: more oxygen delivered and used by muscles","Increased mitochondrial density: more ATP produced aerobically","Increased blood volume and haemoglobin: more oxygen-carrying capacity"]},
+  ],
+
+  // ── VCE HEALTH & HUMAN DEVELOPMENT ──
+  "Health & Wellbeing": [
+    {id:"dimensions-health",emoji:"💚",title:"Dimensions of Health & Wellbeing",summary:"Health is multidimensional — physical, social, emotional, mental and spiritual.",keyFacts:["Physical: body functioning well, fitness, disease-free","Social: quality relationships, sense of belonging, social support","Emotional: manage feelings, resilience, positive self-concept","Mental: positive thinking, effective cognitive functioning, self-esteem","Spiritual: sense of meaning, purpose and connection (may or may not involve religion)","Dimensions are interconnected — a change in one affects others"]},
+    {id:"social-determinants",emoji:"🌍",title:"Social Determinants of Health",summary:"Social, economic and environmental factors that significantly influence health outcomes.",keyFacts:["Income and social status: strong predictor of health — higher income = better health","Education: higher education links to better health literacy and outcomes","Social support networks: isolation linked to poorer mental and physical health","Employment and working conditions: job security, safe conditions matter","Access to healthcare: cost, location, cultural appropriateness","Early life experiences: ACEs (adverse childhood experiences) have lifelong impact"]},
+  ],
+
+  // ── IB SUBJECTS ──
+  "Core Approaches (IB Biology)": [
+    {id:"ib-bio-core",emoji:"🔬",title:"IB Biology Core Concepts",summary:"Key themes that run through all areas of IB Biology.",keyFacts:["Cell theory: all living things are made of cells, cells come from existing cells","Metabolism: sum of all chemical reactions in an organism","Heredity: passing of genetic information from parents to offspring","Evolution: change in heritable characteristics of populations over time","Ecology: study of organisms and their interactions with the environment","Structure and function: form is correlated with function at all levels of organisation"]},
+  ],
+  "Paper 1 — Source Analysis": [
+    {id:"source-analysis",emoji:"📄",title:"IB History Source Analysis Skills",summary:"Evaluating historical sources for their value and limitations.",keyFacts:["OPVL: Origin, Purpose, Value, Limitation","Origin: who created it, when, where — affects reliability","Purpose: why was it created — intended audience affects content","Value: what useful information does it provide for the investigation","Limitation: what does it NOT tell us, bias, incompleteness","Compare and contrast sources: identify agreements, contradictions, gaps","Primary vs secondary: both have value and limitations for historians"]},
+  ],
+  "Theory of Knowledge (TOK)": [
+    {id:"tok-knowledge",emoji:"🤔",title:"Knowledge & The Knower",summary:"Exploring what knowledge is, how we know things, and our role as knowers.",keyFacts:["Knowledge: justified true belief (but challenged by Gettier problems)","Personal knowledge: based on individual experience and intuition","Shared knowledge: accumulated by communities over time","Ways of knowing: reason, emotion, language, sense perception, intuition, memory, imagination, faith","Areas of knowledge: natural sciences, human sciences, history, arts, mathematics, ethics","Knowledge question: open, contestable question about the nature of knowledge itself"]},
+    {id:"tok-exhibition",emoji:"🖼️",title:"TOK Exhibition",summary:"Connecting three objects to a prescribed TOK prompt — worth 33% of final grade.",keyFacts:["Choose one prompt from the IB prescribed list (released annually)","Select 3 objects (physical or digital) that connect to the prompt","Write ~950 words total — approximately 300 words per object","Explain HOW each object connects to the prompt (not just that it does)","Objects should connect to different aspects of the prompt","Real-world connection: objects must be from the real world, not hypothetical","Submit evidence of each object with the written component"]},
+  ],
+  "CAS (Creativity, Activity, Service)": [
+    {id:"cas-requirements",emoji:"🌟",title:"CAS Requirements & Learning Outcomes",summary:"CAS must be completed over the two IB years — it is pass/fail but essential.",keyFacts:["Creativity: arts, design, music, theatre, creative writing, coding — anything creative","Activity: physical exercise — sport, dance, gym, hiking, martial arts","Service: unpaid contribution to community — volunteering, tutoring, environmental projects","CAS project: at least one collaborative project combining two or three strands","7 learning outcomes must be evidenced across all CAS activities","Reflections: meaningful written reflections required — not just descriptions of activities"]},
+  ],
+};
+
+
+// ─────────────────────────────────────────────
+// SUBTOPIC BOOKMARKS COMPONENT
+// ─────────────────────────────────────────────
+function SubtopicBookmarks({ selTopic, subject, curriculum, staticSubtopics, gs }) {
+  const [aiSubtopics, setAiSubtopics] = useState(null);
+  const [loadingAI, setLoadingAI] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+  const [quizStates, setQuizStates] = useState({});
+  const color = getColor(subject);
+
+  useEffect(() => {
+    if (!staticSubtopics) generateAISubtopics();
+  }, [selTopic]);
+
+  const generateAISubtopics = async () => {
+    const cacheKey = `ss_subtopics_${subject}_${selTopic}`.replace(/\s+/g,"_");
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) { setAiSubtopics(JSON.parse(cached)); return; }
+    } catch {}
+    setLoadingAI(true);
+    try {
+      const subjData = VCAA_CURRICULUM[subject];
+      const area = subjData?.areas?.find(a => a.name === selTopic);
+      const dotPoints = area?.dotPoints?.join("\n• ") || selTopic;
+      const prompt = `Generate 5-7 subtopic study cards for "${selTopic}" in ${curriculum} ${subject}.
+
+Official curriculum dot points:
+• ${dotPoints}
+
+For each subtopic return a study card. ONLY return valid JSON, no markdown:
+[{
+  "id": "short-id",
+  "emoji": "single emoji",
+  "title": "Specific Subtopic Name",
+  "summary": "One clear sentence explanation",
+  "keyFacts": ["fact 1 with detail", "fact 2 with detail", "fact 3", "fact 4", "fact 5"],
+  "formula": "key formula in plain text or null"
+}]
+
+Write ALL maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX.`;
+      const raw = await callGemini(prompt);
+      const parsed = JSON.parse(raw.replace(/```json|```/g,"").trim());
+      localStorage.setItem(cacheKey, JSON.stringify(parsed));
+      setAiSubtopics(parsed);
+    } catch { setAiSubtopics([]); }
+    setLoadingAI(false);
+  };
+
+  const subtopics = staticSubtopics || aiSubtopics || [];
+
+  const loadMiniQuiz = async (sub) => {
+    const key = sub.id;
+    if (quizStates[key]?.questions) { setQuizStates(s=>({...s,[key]:{...s[key],showQuiz:!s[key]?.showQuiz}})); return; }
+    setQuizStates(s=>({...s,[key]:{loading:true,showQuiz:true}}));
+    try {
+      const prompt = `Generate 3 exam-style multiple choice questions about "${sub.title}" for ${curriculum} ${subject}.
+
+Key content:
+${sub.keyFacts.map(f=>`• ${f}`).join("\n")}
+
+Write ALL maths in plain text — NO LaTeX. Return ONLY valid JSON:
+[{"question":"...","options":["A...","B...","C...","D..."],"correct":0,"explanation":"..."}]`;
+      const raw = await callGemini(prompt);
+      const parsed = JSON.parse(raw.replace(/```json|```/g,"").trim());
+      setQuizStates(s=>({...s,[key]:{loading:false,showQuiz:true,questions:parsed,qi:0,sel:null,answered:false,score:0,done:false,results:[]}}));
+    } catch {
+      setQuizStates(s=>({...s,[key]:{loading:false,showQuiz:false}}));
+    }
+  };
+
+  const quizChoose = (subId, optIdx) => {
+    const qs = quizStates[subId];
+    if (!qs||qs.answered) return;
+    const correct = qs.questions[qs.qi].correct;
+    const isCorrect = optIdx === correct;
+    setQuizStates(s=>({...s,[subId]:{...s[subId],sel:optIdx,answered:true,score:qs.score+(isCorrect?1:0),results:[...qs.results,{ok:isCorrect}]}}));
+  };
+
+  const quizNext = (subId) => {
+    const qs = quizStates[subId];
+    if (!qs) return;
+    if (qs.qi < qs.questions.length-1) {
+      setQuizStates(s=>({...s,[subId]:{...s[subId],qi:qs.qi+1,sel:null,answered:false}}));
+    } else {
+      if (gs) gs.addXP(qs.score*30, `${subId} mini quiz`);
+      setQuizStates(s=>({...s,[subId]:{...s[subId],done:true}}));
+    }
+  };
+
+  if (loadingAI) return (
+    <div style={{textAlign:"center",padding:"32px",color:"#6060a0"}}>
+      <div style={{fontSize:24,marginBottom:8}}>✨</div>
+      <div style={{fontSize:14,fontWeight:600}}>Generating subtopics from VCAA curriculum...</div>
+      <div style={{fontSize:11,marginTop:4,color:"#40406a"}}>Saved after first load — instant next time</div>
+      <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:12}}>{[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
+    </div>
+  );
+
+  if (subtopics.length === 0 && !loadingAI) return null;
+
+  return (
+    <div>
+      <div style={{fontWeight:800,fontSize:13,color:"#50508a",textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>
+        {staticSubtopics ? "📚 Key Subtopics" : "✨ Subtopics (AI-generated from curriculum)"}
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        {subtopics.map((sub,i) => {
+          const isOpen = expandedId === sub.id;
+          const qs = quizStates[sub.id];
+          return (
+            <div key={sub.id||i} style={{background:"var(--bg2)",border:`1px solid ${isOpen?color+"66":"var(--border)"}`,borderRadius:14,overflow:"hidden",transition:"border-color .2s"}}>
+              {/* Header */}
+              <div style={{padding:"14px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:12}}
+                onClick={()=>setExpandedId(isOpen?null:sub.id)}>
+                <div style={{width:40,height:40,borderRadius:10,background:`${color}18`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>
+                  {sub.emoji}
+                </div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:700,fontSize:14,color:"var(--text)"}}>{sub.title}</div>
+                  <div style={{fontSize:12,color:"#6060a0",marginTop:2,lineHeight:1.4}}>{sub.summary}</div>
+                </div>
+                <div style={{color:"#50508a",fontSize:12,transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▼</div>
+              </div>
+
+              {/* Expanded content */}
+              {isOpen && (
+                <div style={{borderTop:"1px solid var(--border)"}}>
+                  {/* Formula */}
+                  {sub.formula && (
+                    <div style={{margin:"14px 18px 0",background:`${color}10`,border:`1px solid ${color}30`,borderRadius:10,padding:"10px 14px"}}>
+                      <div style={{fontSize:10,fontWeight:700,color:color,marginBottom:4,textTransform:"uppercase",letterSpacing:".06em"}}>Key Formula / Rule</div>
+                      <div style={{fontFamily:"monospace",fontSize:14,color:"var(--text)",fontWeight:600}}>{cleanMath(sub.formula)}</div>
+                    </div>
+                  )}
+
+                  {/* Key facts */}
+                  <div style={{padding:"14px 18px"}}>
+                    <div style={{fontSize:11,fontWeight:700,color:"#50508a",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Key Facts</div>
+                    {sub.keyFacts.map((fact,j)=>(
+                      <div key={j} style={{display:"flex",gap:8,marginBottom:7,alignItems:"flex-start"}}>
+                        <span style={{color:color,fontSize:13,flexShrink:0,marginTop:1}}>•</span>
+                        <span style={{fontSize:13,color:"#c0c0d8",lineHeight:1.6}}>{cleanMath(fact)}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Quiz mode */}
+                  {qs?.showQuiz && (
+                    <div style={{margin:"0 18px 18px",background:"var(--bg3)",borderRadius:10,padding:"14px"}}>
+                      {qs.loading ? (
+                        <div style={{textAlign:"center",color:"#6060a0",fontSize:13,padding:"12px 0"}}>Generating questions... ✨</div>
+                      ) : qs.done ? (
+                        <div style={{textAlign:"center",padding:"12px 0"}}>
+                          <div style={{fontSize:36,fontWeight:900,color:qs.score===3?"var(--a2)":qs.score>=2?"var(--gold)":"var(--a3)"}}>{qs.score}/{qs.questions?.length}</div>
+                          <div style={{fontSize:12,color:"#7070a8",marginBottom:8}}>+{qs.score*30} XP</div>
+                          <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:10}}>
+                            {qs.results.map((r,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:r.ok?"var(--a2)":"var(--a3)"}}/>)}
+                          </div>
+                          <button className="btn btn-g btn-sm" onClick={()=>setQuizStates(s=>({...s,[sub.id]:{...s[sub.id],done:false,qi:0,sel:null,answered:false,score:0,results:[]}}))} >Try Again</button>
+                        </div>
+                      ) : qs.questions ? (
+                        <div>
+                          <div style={{fontSize:11,color:"#50508a",marginBottom:8,fontWeight:700}}>Q{qs.qi+1} of {qs.questions.length}</div>
+                          <div style={{fontWeight:700,fontSize:14,lineHeight:1.5,marginBottom:12,color:"var(--text)"}}>{cleanMath(qs.questions[qs.qi]?.question)}</div>
+                          {qs.questions[qs.qi]?.options?.map((opt,j)=>{
+                            const isCorrect = j===qs.questions[qs.qi].correct;
+                            const isSel = j===qs.sel;
+                            let bg="var(--bg2)",border="1px solid var(--border)",clr="var(--text)";
+                            if(qs.answered&&isCorrect){bg="rgba(92,224,198,.15)";border="1px solid var(--a2)";clr="var(--a2)";}
+                            else if(qs.answered&&isSel){bg="rgba(255,107,107,.15)";border="1px solid var(--a3)";clr="var(--a3)";}
+                            return(
+                              <div key={j} onClick={()=>quizChoose(sub.id,j)}
+                                style={{padding:"9px 12px",borderRadius:8,marginBottom:6,cursor:qs.answered?"default":"pointer",background:bg,border,color:clr,fontSize:13,transition:"all .15s"}}>
+                                <strong>{String.fromCharCode(65+j)}.</strong> {cleanMath(opt)}
+                                {qs.answered&&isCorrect&&<span style={{float:"right"}}>✓</span>}
+                                {qs.answered&&isSel&&!isCorrect&&<span style={{float:"right"}}>✗</span>}
+                              </div>
+                            );
+                          })}
+                          {qs.answered&&(
+                            <>
+                              <div style={{background:"rgba(92,224,198,.08)",border:"1px solid rgba(92,224,198,.15)",borderRadius:8,padding:"9px 12px",marginTop:8,fontSize:12,color:"#9090c0"}}>
+                                💡 {cleanMath(qs.questions[qs.qi]?.explanation)}
+                              </div>
+                              <button className="btn btn-p btn-sm" style={{marginTop:10}} onClick={()=>quizNext(sub.id)}>
+                                {qs.qi<qs.questions.length-1?"Next →":"Finish"}
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {/* Action buttons */}
+                  <div style={{padding:"0 18px 16px",display:"flex",gap:8,flexWrap:"wrap"}}>
+                    <button className="btn btn-sm" style={{background:color,color:"#fff",border:"none"}} onClick={()=>loadMiniQuiz(sub)}>
+                      {qs?.showQuiz?"✕ Hide Quiz":"🎯 Practice Questions"}
+                    </button>
+                    <button className="btn btn-g btn-sm">🔍 Dive Deeper</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
 function SubjectsScreen({ profile, gs }) {
   const [sel, setSel] = useState(null);           // selected subject
   const [selTopic, setSelTopic] = useState(null); // selected topic area
@@ -2442,9 +2975,13 @@ Keep it punchy and exam-focused.`
     setContentLoading(false);
   };
 
-  // ── TOPIC STUDY VIEW ──
+  // ── TOPIC STUDY VIEW — with subtopic bookmarks ──
   if (sel && selTopic) {
     const color = getColor(sel);
+    const subjData = VCAA_CURRICULUM[sel];
+    const topicArea = subjData?.areas?.find(a => a.name === selTopic);
+    const staticSubtopics = SUBTOPICS[selTopic] || null;
+
     const parsedContent = (() => {
       if (!content) return null;
       try { return JSON.parse(content); } catch { return null; }
@@ -2453,7 +2990,7 @@ Keep it punchy and exam-focused.`
     return (
       <div className="content fade-up">
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20}}>
-          <button className="btn btn-g btn-sm" onClick={()=>setSelTopic(null)}>← Back</button>
+          <button className="btn btn-g btn-sm" onClick={()=>{setSelTopic(null);setContent("");setActiveTab("overview");}}>← Back</button>
           <div style={{width:3,height:24,background:color,borderRadius:2}}/>
           <div>
             <div style={{fontWeight:900,fontSize:18}}>{selTopic}</div>
@@ -2461,13 +2998,25 @@ Keep it punchy and exam-focused.`
           </div>
         </div>
 
-        {/* Action tabs */}
+        {/* Official VCAA dot points */}
+        {topicArea?.dotPoints && (
+          <div style={{background:"rgba(124,106,247,.06)",border:"1px solid rgba(124,106,247,.15)",borderRadius:12,padding:"14px 16px",marginBottom:18}}>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--accent)",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>📋 Official VCAA Curriculum</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+              {topicArea.dotPoints.map((dp,i)=>(
+                <span key={i} style={{fontSize:11,background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:20,padding:"3px 10px",color:"#9090c0"}}>{dp.slice(0,50)}{dp.length>50?"...":""}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Generate full content buttons */}
         <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
           {[
-            {id:"study",label:"📖 Study Notes",desc:"Detailed notes"},
-            {id:"quiz",label:"🎯 Practice Quiz",desc:"5 exam questions"},
-            {id:"flashcards",label:"🃏 Flashcards",desc:"8 revision cards"},
-            {id:"notes",label:"📋 Revision Summary",desc:"Quick dot points"},
+            {id:"study",label:"📖 Full Study Notes"},
+            {id:"quiz",label:"🎯 Full Quiz (5 Qs)"},
+            {id:"flashcards",label:"🃏 Flashcard Deck"},
+            {id:"notes",label:"📋 Quick Summary"},
           ].map(t=>(
             <button key={t.id} className="btn btn-sm"
               style={{background:activeTab===t.id?color:"var(--bg3)",color:activeTab===t.id?"#fff":"#7070a8",border:`1px solid ${activeTab===t.id?color:"var(--border)"}`}}
@@ -2477,48 +3026,35 @@ Keep it punchy and exam-focused.`
           ))}
         </div>
 
-        {/* Content area */}
+        {/* Generated content */}
         {contentLoading ? (
-          <div className="card" style={{textAlign:"center",padding:"48px"}}>
-            <div style={{fontSize:32,marginBottom:12}}>✨</div>
+          <div className="card" style={{textAlign:"center",padding:"40px",marginBottom:20}}>
+            <div style={{fontSize:28,marginBottom:10}}>✨</div>
             <div style={{fontWeight:700,marginBottom:6}}>Generating {activeTab} for {selTopic}...</div>
-            <div style={{color:"#6060a0",fontSize:13,marginBottom:16}}>Using official {curriculum} curriculum as source</div>
-            <div style={{display:"flex",gap:8,justifyContent:"center"}}>
-              {[0,.2,.4].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}
-            </div>
+            <div style={{color:"#6060a0",fontSize:13,marginBottom:16}}>Using official {curriculum} curriculum</div>
+            <div style={{display:"flex",gap:8,justifyContent:"center"}}>{[0,.2,.4].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
           </div>
         ) : content ? (
-          <div>
-            {/* Study notes or revision summary */}
+          <div style={{marginBottom:20}}>
             {(activeTab==="study"||activeTab==="notes") && !parsedContent && (
               <div className="card">
-                <div className="ch">
-                  <div className="ct">{activeTab==="study"?"📖 Study Notes":"📋 Revision Summary"} — {selTopic}</div>
-                  <span className="tag tag-a">{curriculum}</span>
-                </div>
-                <div className="cb">
-                  <MarkdownRenderer content={content}/>
-                </div>
+                <div className="ch"><div className="ct">{activeTab==="study"?"📖 Study Notes":"📋 Revision Summary"} — {selTopic}</div><span className="tag tag-a">{curriculum}</span></div>
+                <div className="cb"><MarkdownRenderer content={content}/></div>
               </div>
             )}
-
-            {/* Inline quiz */}
-            {activeTab==="quiz" && parsedContent && Array.isArray(parsedContent) && (
-              <InlineQuiz questions={parsedContent} subject={sel} gs={gs}/>
-            )}
-
-            {/* Inline flashcards */}
-            {activeTab==="flashcards" && parsedContent && Array.isArray(parsedContent) && (
-              <InlineFlashcards cards={parsedContent} subject={sel}/>
-            )}
+            {activeTab==="quiz" && parsedContent && Array.isArray(parsedContent) && <InlineQuiz questions={parsedContent} subject={sel} gs={gs}/>}
+            {activeTab==="flashcards" && parsedContent && Array.isArray(parsedContent) && <InlineFlashcards cards={parsedContent} subject={sel}/>}
           </div>
-        ) : (
-          <div className="card" style={{textAlign:"center",padding:"48px"}}>
-            <div style={{fontSize:48,marginBottom:12}}>👆</div>
-            <div style={{fontWeight:700,fontSize:16,marginBottom:6}}>Choose what to generate</div>
-            <div style={{color:"#6060a0",fontSize:13}}>Select Study Notes, Quiz, Flashcards or Revision Summary above</div>
-          </div>
-        )}
+        ) : null}
+
+        {/* ── SUBTOPIC BOOKMARKS ── */}
+        <SubtopicBookmarks
+          selTopic={selTopic}
+          subject={sel}
+          curriculum={curriculum}
+          staticSubtopics={staticSubtopics}
+          gs={gs}
+        />
       </div>
     );
   }
