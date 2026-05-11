@@ -29,9 +29,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // Use vision model for images, fast model for text
-    const model = hasImages ? "google/gemini-flash-1.5" : "google/gemini-flash-1.5";
-
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -41,7 +38,7 @@ export default async function handler(req, res) {
         "X-Title": "Study Ace"
       },
       body: JSON.stringify({
-        model,
+        model: "google/gemini-2.5-flash-preview:free",
         messages,
         max_tokens: generationConfig?.maxOutputTokens || 1500,
         temperature: generationConfig?.temperature || 0.7,
