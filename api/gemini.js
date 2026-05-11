@@ -29,11 +29,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // Use best free vision model for images, best free text model for text
-    const model = hasImages
-      ? "google/gemma-3-27b-it:free"   // confirmed free vision model
-      : "google/gemma-3-27b-it:free";  // same model works for text too
-
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -43,7 +38,7 @@ export default async function handler(req, res) {
         "X-Title": "Study Ace"
       },
       body: JSON.stringify({
-        model,
+        model: "openrouter/auto",
         messages,
         max_tokens: generationConfig?.maxOutputTokens || 1500,
         temperature: generationConfig?.temperature || 0.7,
@@ -55,6 +50,6 @@ export default async function handler(req, res) {
     const text = data.choices?.[0]?.message?.content || "";
     return res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to reach AI: " + error.message });
+    return res.status(500).json({ error: "Failed: " + error.message });
   }
 }
