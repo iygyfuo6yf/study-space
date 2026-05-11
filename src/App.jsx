@@ -5401,9 +5401,10 @@ export default function App() {
   const [screen, setScreen] = useState("dashboard");
   const [theme, setTheme] = useState(() => localStorage.getItem("ss_theme") || "dark");
 
-  // Apply theme to document
+  // Apply theme to HTML element so CSS vars work everywhere before React paints
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.style.background = theme === "dark" ? "#111110" : "#F2EDE4";
     localStorage.setItem("ss_theme", theme);
   }, [theme]);
 
@@ -5620,7 +5621,7 @@ export default function App() {
   return (
     <>
       <style>{css}</style>
-      <div className="app" data-theme={theme}>
+      <div className="app">
         {/* SIDEBAR — desktop only */}
         <div className="sidebar">
           <div className="logo">
