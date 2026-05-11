@@ -1,38 +1,43 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-    <!-- Study Ace Branding -->
     <title>Study Ace — VCE · IB · Years 9–12</title>
-    <meta name="description" content="Study Ace — AI-powered study platform for Victorian students. VCE, IB and Years 9–12. Curriculum-grounded quizzes, flashcards, AI tutor and more." />
+    <meta name="description" content="Study Ace — AI-powered study platform for Victorian students. VCE, IB and Years 9–12." />
 
-    <!-- PWA / App-like behaviour -->
+    <!-- PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Study Ace" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#111110" />
+    <meta name="format-detection" content="telephone=no" />
 
     <!-- Icons -->
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" />
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="Study Ace" />
-    <meta property="og:description" content="AI-powered study platform for Victorian students. VCE, IB and Years 9–12." />
-    <meta property="og:image" content="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" />
-    <meta property="og:type" content="website" />
-
-    <!-- Prevent phone number detection -->
-    <meta name="format-detection" content="telephone=no" />
-
     <style>
-      /* Prevent flash of unstyled content */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
       html { background: #111110; }
-      body { margin: 0; padding: 0; }
+      html[data-theme="light"] { background: #F2EDE4; }
+      body { background: #111110; color: #F5F2EC; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+      html[data-theme="light"] body { background: #F2EDE4; color: #1A1A1A; }
     </style>
+
+    <!-- Apply saved theme instantly before React loads — prevents black/white flash -->
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('ss_theme') || 'dark';
+          document.documentElement.setAttribute('data-theme', t);
+          document.documentElement.style.background = t === 'light' ? '#F2EDE4' : '#111110';
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
