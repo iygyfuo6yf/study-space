@@ -955,8 +955,16 @@ function useGameState(profile) {
   };
 
   const load = () => {
-    try { return { ...defaultState, ...JSON.parse(localStorage.getItem(key) || "{}") }; }
-    catch { return defaultState; }
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || "{}");
+      const merged = { ...defaultState, ...saved };
+      // Ensure these are always the right types
+      if (!merged.masteryMap || typeof merged.masteryMap !== "object" || Array.isArray(merged.masteryMap)) merged.masteryMap = {};
+      if (!Array.isArray(merged.quizHistory)) merged.quizHistory = [];
+      if (!Array.isArray(merged.calendarEvents)) merged.calendarEvents = [];
+      if (!merged.heatmap || typeof merged.heatmap !== "object") merged.heatmap = {};
+      return merged;
+    } catch { return defaultState; }
   };
 
   const [state, setStateRaw] = useState(load);
@@ -1024,7 +1032,7 @@ function useGameState(profile) {
   // ATAR predictor — based on mastery scores weighted by subject count
   const predictATAR = () => {
     const s = load();
-    const subjects = profile?.selectedSubjects || [];
+    const subjects = Array.isArray(profile?.selectedSubjects) ? profile.selectedSubjects : [];
     if (!subjects.length) return profile?.yearLevel === "ib" ? "38/45" : "75.00";
     const masteries = subjects.map(sub => (s.masteryMap || {})[sub] || 50);
     const avg = masteries.reduce((a, b) => a + b, 0) / masteries.length;
