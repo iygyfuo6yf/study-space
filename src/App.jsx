@@ -995,9 +995,9 @@ function useGameState(profile) {
     const s = load();
     const pct = Math.round((score / total) * 100);
     const history = [{ subject, score, total, pct, date: new Date().toISOString() }, ...s.quizHistory].slice(0, 100);
-    const oldMastery = s.masteryMap[subject] || 50;
+    const oldMastery = (s.masteryMap || {})[subject] || 50;
     const newMastery = Math.min(100, Math.round(oldMastery * 0.7 + pct * 0.3));
-    const masteryMap = { ...s.masteryMap, [subject]: newMastery };
+    const masteryMap = { ...(s.masteryMap || {}), [subject]: newMastery };
     const xpEarned = score * 60;
     const today = new Date().toISOString().slice(0, 10);
     const heat = { ...s.heatmap, [today]: (s.heatmap[today] || 0) + 1 };
@@ -1026,7 +1026,7 @@ function useGameState(profile) {
     const s = load();
     const subjects = profile?.selectedSubjects || [];
     if (!subjects.length) return profile?.yearLevel === "ib" ? "38/45" : "75.00";
-    const masteries = subjects.map(sub => s.masteryMap[sub] || 50);
+    const masteries = subjects.map(sub => (s.masteryMap || {})[sub] || 50);
     const avg = masteries.reduce((a, b) => a + b, 0) / masteries.length;
     if (profile?.yearLevel === "ib") {
       const ibScore = Math.round(24 + (avg / 100) * 21);
