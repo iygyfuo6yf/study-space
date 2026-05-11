@@ -1238,7 +1238,7 @@ function Dashboard({ profile, setScreen, gs }) {
 // GEMINI HELPER — calls YOUR Vercel backend
 // API key is hidden server-side, users need nothing
 // ─────────────────────────────────────────────
-async function callGemini(prompt, _apiKey) {
+async function callGemini(prompt) {
   const res = await fetch("/api/gemini", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -2990,7 +2990,6 @@ function SubjectsScreen({ profile, gs }) {
   const [notesInput, setNotesInput] = useState("");
 
   const subjs = profile.selectedSubjects || [];
-  const apiKey = localStorage.getItem("gemini_key");
   const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label||"Year 9";
 
   const saveCurrentTopic = (subject, topic) => {
@@ -3015,10 +3014,9 @@ function SubjectsScreen({ profile, gs }) {
       setTopicsLoading(false);
       return;
     }
-    if (!apiKey) { setTopics(["Core Concepts","Key Skills","Assessment Prep","Exam Preparation"]); setTopicsLoading(false); return; }
     try {
       const prompt = `List exactly 6 topic areas for ${subject} in the ${curriculum} Australian curriculum. Return ONLY a JSON array of strings, no markdown: ["topic1","topic2",...]`;
-      const raw = await callGemini(prompt, apiKey);
+      const raw = await callGemini(prompt);
       const parsed = JSON.parse(raw.replace(/```json|```/g,"").trim());
       setTopics(Array.isArray(parsed) ? parsed : ["Core Concepts","Key Skills","Assessment Prep","Exam Preparation"]);
     } catch { setTopics(["Core Concepts","Key Skills","Assessment Prep","Exam Preparation"]); }
@@ -3026,7 +3024,6 @@ function SubjectsScreen({ profile, gs }) {
   };
 
   const generateContent = async (type) => {
-    if (!apiKey) { setContent("⚠️ Add your Gemini API key in the AI Tutor tab first."); return; }
     setContentLoading(true); setContent(""); setActiveTab(type);
     const topic = selTopic || currentTopic[sel] || "";
     const notes = userNotes[sel] || "";
@@ -3078,7 +3075,7 @@ Keep it punchy and exam-focused.`
     };
 
     try {
-      const raw = await callGemini(prompts[type], apiKey);
+      const raw = await callGemini(prompts[type]);
       if (type === "quiz" || type === "flashcards") {
         const clean = raw.replace(/```json|```/g,"").trim();
         setContent(JSON.stringify(JSON.parse(clean)));
@@ -3510,13 +3507,10 @@ function QuizScreen({ profile, gs }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selSubj, setSelSubj] = useState(profile.selectedSubjects?.[0] || "");
-  const apiKey = localStorage.getItem("gemini_key");
 
   const generateQuiz = async (subject) => {
     setLoading(true); setError(""); setQuestions([]);
     setQi(0); setSel(null); setAnswered(false); setScore(0); setDone(false); setResults([]);
-
-    if(!apiKey) { setError("Add your Gemini API key in the AI Tutor tab first."); setLoading(false); return; }
 
     try {
       // Get current topic and user notes from localStorage
@@ -3545,7 +3539,7 @@ CRITICAL FORMATTING RULES:
 Respond ONLY with valid JSON, no markdown, no backticks:
 [{"subject":"${selSubj}","question":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
 
-      const raw = await callGemini(prompt, apiKey);
+      const raw = await callGemini(prompt);
       const clean = raw.replace(/```json|```/g,"").trim();
       const parsed = JSON.parse(clean);
       if(!Array.isArray(parsed) || parsed.length===0) throw new Error("Bad response");
@@ -3700,12 +3694,10 @@ function FlashcardsScreen({ profile }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selSubj, setSelSubj] = useState(profile?.selectedSubjects?.[0] || "");
-  const apiKey = localStorage.getItem("gemini_key");
 
   const generateCards = async (subject) => {
     setLoading(true); setError(""); setCards([]);
     setIdx(0); setFlipped(false); setKnown([]); setRev([]); setDone(false);
-    if(!apiKey){ setError("Add your Gemini API key in the AI Tutor tab first."); setLoading(false); return; }
     try {
       const currentTopics = JSON.parse(localStorage.getItem("ss_currentTopics")||"{}");
       const userNotes = JSON.parse(localStorage.getItem("ss_userNotes")||"{}");
@@ -3725,7 +3717,7 @@ CRITICAL FORMATTING RULES:
 
 Return ONLY valid JSON, no markdown:
 [{"q":"question","a":"answer","subject":"${selSubj}"}]`;
-      const raw = await callGemini(prompt, apiKey);
+      const raw = await callGemini(prompt);
       const clean = raw.replace(/```json|```/g,"").trim();
       const parsed = JSON.parse(clean);
       if(!Array.isArray(parsed)||parsed.length===0) throw new Error("Bad response");
@@ -4070,7 +4062,6 @@ function PlannerScreen({ profile, gs }) {
   const [aiPlan, setAiPlan] = useState("");
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [newEvent, setNewEvent] = useState({title:"",subject:subjs[0]||"",date:"",type:"SAC"});
-  const apiKey = localStorage.getItem("gemini_key");
 
   useEffect(()=>{
     if(!running) return;
@@ -4096,7 +4087,6 @@ function PlannerScreen({ profile, gs }) {
 
   const generatePlan = async () => {
     setGenPlan(true); setAiPlan("");
-    if(!apiKey){ setAiPlan("Add your Gemini API key in the AI Tutor tab to generate a personalised study plan."); setGenPlan(false); return; }
     try {
       const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label;
       const prompt = `Create a focused weekly study plan for a ${curriculum} student.
@@ -4105,7 +4095,7 @@ Study intensity: ${profile.hoursPerWeek||"moderate"}
 Goal: ${profile.futurePath||"academic success"}
 
 Write a practical 7-day plan with specific daily tasks. Keep it concise, motivating, and realistic. Use Australian curriculum context.`;
-      const res = await callGemini(prompt, apiKey);
+      const res = await callGemini(prompt);
       setAiPlan(res);
     } catch { setAiPlan("Couldn't generate plan. Check your Gemini key."); }
     setGenPlan(false);
@@ -4769,252 +4759,151 @@ function SearchScreen({ profile, setScreen }) {
   );
 }
 
-
 // ─────────────────────────────────────────────
-// LEADERBOARD — real XP from game state
+// STUDY GROUPS — with built-in leaderboard
 // ─────────────────────────────────────────────
-function LeaderboardScreen({ profile, gs }) {
-  const {state} = gs;
-  const myEntry = {name:profile.userName||"You",xp:state.xp||0,level:state.level||1,streak:state.streak||0,isMe:true,avatar:profile.userName?.[0]?.toUpperCase()||"Y"};
-  const simulated = [
-    {name:"Priya M.",xp:4820,level:10,streak:14,avatar:"P"},
-    {name:"James L.",xp:4510,level:9,streak:8,avatar:"J"},
-    {name:"Sophie K.",xp:3990,level:8,streak:21,avatar:"S"},
-    {name:"Aiden T.",xp:3740,level:8,streak:5,avatar:"A"},
-    {name:"Mei C.",xp:3200,level:7,streak:12,avatar:"M"},
-    {name:"Luca R.",xp:2800,level:6,streak:3,avatar:"L"},
-    {name:"Zara B.",xp:2400,level:5,streak:9,avatar:"Z"},
-  ];
-  const allEntries = [...simulated, myEntry].sort((a,b) => b.xp-a.xp);
-  const myRank = allEntries.findIndex(e => e.isMe) + 1;
-  const rankIcon = i => i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;
+const SB_URL = "https://ybxfjndeckyynhgsgqma.supabase.co/rest/v1";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlieGZqbmRlY2t5eW5oZ3NncW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTcxNTYsImV4cCI6MjA5Mzg5MzE1Nn0.CaPL1ydby2DsPMbM_IsDovZiGWxz7PF0j_cTuLVw4dk";
+const sbH = (token) => ({ "Content-Type": "application/json", apikey: SB_KEY, Authorization: `Bearer ${token}`, Prefer: "return=representation" });
+const sbFetch = (path, token, opts={}) => fetch(`${SB_URL}${path}`, { headers: sbH(token), ...opts });
 
-  return (
-    <div className="content fade-up">
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-        <div>
-          <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",color:"var(--text)"}}>Leaderboard</div>
-          <div style={{fontSize:13,color:"var(--muted)",marginTop:3}}>Your rank: #{myRank} · {(state.xp||0).toLocaleString()} XP</div>
-        </div>
-        <div style={{textAlign:"center",background:"var(--gold-light)",border:"1.5px solid var(--gold)",borderRadius:"var(--r2)",padding:"10px 18px"}}>
-          <div style={{fontSize:22,fontWeight:900,color:"var(--gold)"}}>#{myRank}</div>
-          <div style={{fontSize:10,color:"var(--muted)",fontWeight:700,textTransform:"uppercase",letterSpacing:".06em"}}>Your Rank</div>
-        </div>
-      </div>
 
-      <div className="card" style={{marginBottom:16,borderColor:"var(--gold)"}}>
-        <div className="card-body" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,textAlign:"center"}}>
-          {[
-            {val:(state.xp||0).toLocaleString(),label:"Total XP"},
-            {val:`Lv ${state.level||1}`,label:"Level"},
-            {val:`${state.streak||0}`,label:"Streak"},
-            {val:profile.selectedSubjects?.length||0,label:"Subjects"},
-          ].map((s,i)=>(
-            <div key={i}>
-              <div style={{fontSize:20,fontWeight:900,color:"var(--gold)",letterSpacing:"-.02em"}}>{s.val}</div>
-              <div style={{fontSize:10,color:"var(--muted)",fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginTop:2}}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="card">
-        <div style={{padding:"0 20px"}}>
-          {allEntries.map((entry,i) => (
-            <div key={i} className={`lb-row${entry.isMe?" me":""}`}>
-              <div style={{fontSize:18,width:32,textAlign:"center",flexShrink:0}}>{rankIcon(i)}</div>
-              <div className="av" style={{width:32,height:32,fontSize:12,flexShrink:0,background:entry.isMe?"var(--text)":"var(--bg4)"}}>
-                {entry.avatar}
-              </div>
-              <div style={{flex:1}}>
-                <div style={{fontWeight:700,fontSize:13,color:"var(--text)",display:"flex",alignItems:"center",gap:6}}>
-                  {entry.name}
-                  {entry.isMe && <span style={{fontSize:10,background:"var(--text)",color:"var(--bg2)",borderRadius:20,padding:"1px 7px",fontWeight:800}}>You</span>}
-                </div>
-                <div style={{fontSize:11,color:"var(--muted)"}}>Level {entry.level} · {entry.streak} streak</div>
-              </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontWeight:800,fontSize:13,color:"var(--text)"}}>{entry.xp.toLocaleString()}</div>
-                <div style={{fontSize:10,color:"var(--muted)"}}>XP</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div style={{textAlign:"center",fontSize:11,color:"var(--muted2)",marginTop:8}}>Live leaderboard with real users coming in the mobile app</div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────
-// STUDY GROUPS — real Supabase backend
-// ─────────────────────────────────────────────
-function StudyGroupsScreen({ profile, user }) {
-  const [tab, setTab] = useState("discover");
+function StudyGroupsScreen({ profile, user, gs }) {
+  const [tab, setTab] = useState("mine");
   const [groups, setGroups] = useState([]);
-  const [myGroups, setMyGroups] = useState([]);
   const [myGroupIds, setMyGroupIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [activeGroup, setActiveGroup] = useState(null);
+  const [joinCode, setJoinCode] = useState("");
   const [newName, setNewName] = useState("");
   const [newSubject, setNewSubject] = useState(profile.selectedSubjects?.[0]||"");
   const [newDesc, setNewDesc] = useState("");
   const [creating, setCreating] = useState(false);
+  const [joining, setJoining] = useState(false);
+  const [error, setError] = useState("");
   const token = user?.session?.access_token;
   const userId = user?.userId;
+  const { state } = gs;
 
   useEffect(() => { loadAll(); }, []);
 
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [all, mine] = await Promise.all([
-        supabase.getGroups(token),
-        supabase.getMyGroups(userId, token),
+      const [allRes, myRes] = await Promise.all([
+        sbFetch("/study_groups?order=created_at.desc&select=*", token),
+        sbFetch(`/group_members?user_id=eq.${userId}&select=group_id`, token),
       ]);
+      const all = await allRes.json();
+      const my = await myRes.json();
       setGroups(Array.isArray(all) ? all : []);
-      setMyGroups(Array.isArray(mine) ? mine : []);
-      setMyGroupIds(new Set((mine||[]).map(g=>g.id)));
-    } catch(e) { console.error(e); }
+      setMyGroupIds(new Set(Array.isArray(my) ? my.map(m=>m.group_id) : []));
+    } catch {}
     setLoading(false);
   };
 
-  const handleJoin = async (group) => {
+  const joinGroup = async (group) => {
     try {
-      await supabase.joinGroup(group.id, userId, profile.userName, token);
+      await sbFetch("/group_members", token, { method:"POST", body:JSON.stringify({group_id:group.id,user_id:userId,display_name:profile.userName}) });
+      await sbFetch("/leaderboard_members", token, { method:"POST", headers:{...sbH(token),Prefer:"resolution=merge-duplicates,return=minimal"}, body:JSON.stringify({leaderboard_id:group.id,user_id:userId,display_name:profile.userName,xp:state.xp||0,level:state.level||1,streak:state.streak||0}) }).catch(()=>{});
       setMyGroupIds(s => new Set([...s, group.id]));
-      setMyGroups(g => [...g, group]);
-      setGroups(gs => gs.map(g => g.id===group.id ? {...g, member_count:(g.member_count||1)+1} : g));
-    } catch(e) { alert("Couldn't join: " + (e.message||"try again")); }
-  };
-
-  const handleLeave = async (groupId) => {
-    try {
-      await supabase.leaveGroup(groupId, userId, token);
-      setMyGroupIds(s => { const n=new Set(s); n.delete(groupId); return n; });
-      setMyGroups(g => g.filter(g=>g.id!==groupId));
-    } catch {}
-  };
-
-  const handleCreate = async () => {
-    if (!newName.trim()) return;
-    setCreating(true);
-    try {
-      const group = await supabase.createGroup({name:newName.trim(),subject:newSubject,description:newDesc.trim(),created_by:userId,member_count:1}, token);
-      await supabase.joinGroup(group.id, userId, profile.userName, token);
-      setGroups(gs => [group,...gs]);
-      setMyGroups(mg => [group,...mg]);
-      setMyGroupIds(s => new Set([...s, group.id]));
-      setNewName(""); setNewDesc(""); setTab("mine");
+      setGroups(gs => gs.map(g => g.id===group.id ? {...g,member_count:(g.member_count||1)+1} : g));
       setActiveGroup(group);
-    } catch(e) { alert("Couldn't create: " + (e.message||"")); }
+    } catch(e) { alert("Couldn't join: "+(e.message||"")); }
+  };
+
+  const joinByCode = async () => {
+    const code = joinCode.trim().toUpperCase();
+    if (!code) return;
+    setJoining(true); setError("");
+    try {
+      const res = await sbFetch(`/study_groups?code=eq.${code}&select=*`, token);
+      const data = await res.json();
+      if (!data?.length) { setError("No group found with that code."); setJoining(false); return; }
+      const group = data[0];
+      if (myGroupIds.has(group.id)) { setActiveGroup(group); setJoining(false); return; }
+      await joinGroup(group);
+      setJoinCode("");
+    } catch(e) { setError("Couldn't join: "+(e.message||"")); }
+    setJoining(false);
+  };
+
+  const createGroup = async () => {
+    if (!newName.trim()) return;
+    setCreating(true); setError("");
+    try {
+      const code = "ACE-" + Math.random().toString(36).slice(2,6).toUpperCase();
+      const res = await sbFetch("/study_groups", token, { method:"POST", body:JSON.stringify({name:newName.trim(),subject:newSubject,description:newDesc.trim(),created_by:userId,member_count:1,code}) });
+      const data = await res.json();
+      const group = Array.isArray(data) ? data[0] : data;
+      await sbFetch("/group_members", token, { method:"POST", body:JSON.stringify({group_id:group.id,user_id:userId,display_name:profile.userName}) });
+      await sbFetch("/leaderboard_members", token, { method:"POST", headers:{...sbH(token),Prefer:"resolution=merge-duplicates,return=minimal"}, body:JSON.stringify({leaderboard_id:group.id,user_id:userId,display_name:profile.userName,xp:state.xp||0,level:state.level||1,streak:state.streak||0}) }).catch(()=>{});
+      setNewName(""); setNewDesc("");
+      await loadAll();
+      setActiveGroup(group);
+    } catch(e) { setError("Couldn't create: "+(e.message||"")); }
     setCreating(false);
   };
 
-  if (activeGroup) return <GroupChatScreen group={activeGroup} profile={profile} user={user} onBack={()=>{setActiveGroup(null);loadAll();}}/>;
+  if (activeGroup) return <GroupView group={activeGroup} profile={profile} user={user} gs={gs} isMember={myGroupIds.has(activeGroup.id)} onBack={()=>{setActiveGroup(null);loadAll();}} onJoin={()=>joinGroup(activeGroup)}/>;
+
+  const myGroups = groups.filter(g=>myGroupIds.has(g.id));
+  const otherGroups = groups.filter(g=>!myGroupIds.has(g.id));
 
   return (
     <div className="content fade-up">
       <div style={{marginBottom:20}}>
         <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",color:"var(--text)"}}>Study Groups</div>
-        <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Study together, share notes, ask questions</div>
+        <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Group chat · Leaderboard · Invite your friends</div>
       </div>
-
-      <div style={{display:"flex",gap:8,marginBottom:20}}>
-        {[{id:"discover",label:"Discover"},{id:"mine",label:"My Groups"},{id:"create",label:"Create Group"}].map(t=>(
-          <button key={t.id} onClick={()=>setTab(t.id)} className={`btn btn-sm ${tab===t.id?"btn-primary":"btn-secondary"}`}>{t.label}</button>
+      <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
+        {[{id:"mine",label:"My Groups"},{id:"discover",label:"Discover"},{id:"join",label:"Join with Code"},{id:"create",label:"Create Group"}].map(t=>(
+          <button key={t.id} onClick={()=>{setTab(t.id);setError("");}} className={`btn btn-sm ${tab===t.id?"btn-primary":"btn-secondary"}`}>{t.label}</button>
         ))}
       </div>
 
-      {tab==="discover" && (
-        loading ? (
-          <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>Loading groups...</div>
-        ) : groups.length === 0 ? (
-          <div style={{textAlign:"center",padding:"60px 24px"}}>
-            <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:8}}>No groups yet</div>
-            <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>Create the first one</button>
+      {tab==="mine" && (loading ? <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>Loading...</div> : myGroups.length===0 ? (
+        <div style={{textAlign:"center",padding:"60px 24px"}}>
+          <div style={{fontSize:48,marginBottom:16}}>👥</div>
+          <div style={{fontWeight:700,fontSize:18,color:"var(--text)",marginBottom:8}}>No groups yet</div>
+          <div style={{fontSize:13,color:"var(--muted)",marginBottom:24}}>Create a group and invite friends, or join with a code</div>
+          <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
+            <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>Create Group</button>
+            <button className="btn btn-secondary btn-sm" onClick={()=>setTab("join")}>Join with Code</button>
           </div>
-        ) : (
-          <div style={{display:"flex",flexDirection:"column",gap:12}}>
-            {groups.map(g => (
-              <div key={g.id} className="card" style={{borderLeft:`3px solid ${getColor(g.subject)}`}}>
-                <div className="card-body">
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
-                    <div>
-                      <div style={{fontWeight:800,fontSize:15,color:"var(--text)",letterSpacing:"-.01em"}}>{g.name}</div>
-                      <div style={{fontSize:12,fontWeight:700,color:getColor(g.subject),marginTop:2}}>{g.subject}</div>
-                    </div>
-                    <span style={{fontSize:11,color:"var(--muted)",background:"var(--bg3)",border:"1px solid var(--border-light)",borderRadius:20,padding:"3px 10px",fontWeight:600,flexShrink:0}}>{g.member_count||1} member{(g.member_count||1)!==1?"s":""}</span>
-                  </div>
-                  {g.description && <div style={{fontSize:13,color:"var(--muted)",marginBottom:12,lineHeight:1.5}}>{g.description}</div>}
-                  <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                    {myGroupIds.has(g.id) ? (
-                      <>
-                        <button className="btn btn-primary btn-sm" onClick={()=>setActiveGroup(g)}>Open Chat</button>
-                        <span style={{fontSize:11,color:"var(--success)",fontWeight:700}}>You're a member</span>
-                      </>
-                    ) : (
-                      <button className="btn btn-primary btn-sm" onClick={()=>handleJoin(g)}>Join Group</button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-      )}
+        </div>
+      ) : <div style={{display:"flex",flexDirection:"column",gap:12}}>{myGroups.map(g=><GroupCard key={g.id} group={g} isMember={true} onOpen={()=>setActiveGroup(g)}/>)}</div>)}
 
-      {tab==="mine" && (
-        myGroups.length===0 ? (
-          <div style={{textAlign:"center",padding:"60px 24px"}}>
-            <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:8}}>No groups yet</div>
-            <div style={{display:"flex",gap:8,justifyContent:"center"}}>
-              <button className="btn btn-primary btn-sm" onClick={()=>setTab("discover")}>Find Groups</button>
-              <button className="btn btn-secondary btn-sm" onClick={()=>setTab("create")}>Create Group</button>
-            </div>
+      {tab==="discover" && (loading ? <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>Loading...</div> : otherGroups.length===0 ? (
+        <div style={{textAlign:"center",padding:"60px 24px"}}>
+          <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:8}}>No public groups yet</div>
+          <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>Create the first one</button>
+        </div>
+      ) : <div style={{display:"flex",flexDirection:"column",gap:12}}>{otherGroups.map(g=><GroupCard key={g.id} group={g} isMember={false} onJoin={()=>joinGroup(g)} onOpen={()=>setActiveGroup(g)}/>)}</div>)}
+
+      {tab==="join" && (
+        <div className="card" style={{maxWidth:400}}>
+          <div className="card-head"><div className="card-title">Join with Invite Code</div></div>
+          <div className="card-body" style={{display:"flex",flexDirection:"column",gap:12}}>
+            <div style={{fontSize:13,color:"var(--muted)"}}>Enter the code your friend shared with you.</div>
+            <input className="input" value={joinCode} onChange={e=>setJoinCode(e.target.value.toUpperCase())} placeholder="e.g. ACE-4F2X" maxLength={8} style={{fontSize:20,fontWeight:700,letterSpacing:".12em",textAlign:"center"}}/>
+            {error&&<div style={{fontSize:12,color:"var(--danger)",padding:"8px 12px",background:"var(--danger-bg)",borderRadius:"var(--r)",border:"1px solid var(--danger)"}}>{error}</div>}
+            <button className="btn btn-primary" onClick={joinByCode} disabled={joining||!joinCode.trim()}>{joining?"Joining...":"Join Group"}</button>
           </div>
-        ) : (
-          <div style={{display:"flex",flexDirection:"column",gap:12}}>
-            {myGroups.map(g => (
-              <div key={g.id} className="card">
-                <div className="card-body" style={{display:"flex",alignItems:"center",gap:14}}>
-                  <div style={{width:44,height:44,borderRadius:"var(--r)",background:getColor(g.subject)+"22",border:`1.5px solid ${getColor(g.subject)}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>📚</div>
-                  <div style={{flex:1}}>
-                    <div style={{fontWeight:800,fontSize:14,color:"var(--text)"}}>{g.name}</div>
-                    <div style={{fontSize:12,color:"var(--muted)",marginTop:2}}>{g.subject} · {g.member_count||1} member{(g.member_count||1)!==1?"s":""}</div>
-                  </div>
-                  <div style={{display:"flex",gap:8}}>
-                    <button className="btn btn-primary btn-sm" onClick={()=>setActiveGroup(g)}>Open Chat</button>
-                    <button className="btn btn-ghost btn-sm" style={{color:"var(--danger)"}} onClick={()=>handleLeave(g.id)}>Leave</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )
+        </div>
       )}
 
       {tab==="create" && (
         <div className="card" style={{maxWidth:520}}>
           <div className="card-head"><div className="card-title">Create a Study Group</div></div>
-          <div className="card-body" style={{display:"flex",flexDirection:"column",gap:12}}>
-            <div>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Group Name</div>
-              <input className="input" value={newName} onChange={e=>setNewName(e.target.value)} placeholder="e.g. VCE Chemistry SAC Prep 2026"/>
+          <div className="card-body" style={{display:"flex",flexDirection:"column",gap:14}}>
+            <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Group Name</div><input className="input" value={newName} onChange={e=>setNewName(e.target.value)} placeholder="e.g. Year 12 Chemistry Squad"/></div>
+            <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Subject</div>
+              <select className="input" value={newSubject} onChange={e=>setNewSubject(e.target.value)}>{profile.selectedSubjects?.map(s=><option key={s} value={s}>{s}</option>)}</select>
             </div>
-            <div>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Subject</div>
-              <select className="input" value={newSubject} onChange={e=>setNewSubject(e.target.value)}>
-                {profile.selectedSubjects?.map(s=><option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Description (optional)</div>
-              <textarea className="input" value={newDesc} onChange={e=>setNewDesc(e.target.value)} placeholder="What will this group focus on?"/>
-            </div>
-            <button className="btn btn-primary" onClick={handleCreate} disabled={creating||!newName.trim()}>
-              {creating?"Creating...":"Create Group"}
-            </button>
+            <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Description (optional)</div><textarea className="input" value={newDesc} onChange={e=>setNewDesc(e.target.value)} placeholder="What will this group focus on?"/></div>
+            {error&&<div style={{fontSize:12,color:"var(--danger)",padding:"8px 12px",background:"var(--danger-bg)",borderRadius:"var(--r)",border:"1px solid var(--danger)"}}>{error}</div>}
+            <button className="btn btn-primary" onClick={createGroup} disabled={creating||!newName.trim()}>{creating?"Creating...":"Create Group & Get Invite Code"}</button>
           </div>
         </div>
       )}
@@ -5022,17 +4911,47 @@ function StudyGroupsScreen({ profile, user }) {
   );
 }
 
-function GroupChatScreen({ group, profile, user, onBack }) {
+function GroupCard({ group, isMember, onOpen, onJoin }) {
+  const color = getColor(group.subject);
+  return (
+    <div className="card" style={{borderLeft:`3px solid ${color}`,cursor:"pointer"}} onClick={isMember?onOpen:undefined}>
+      <div className="card-body">
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+          <div>
+            <div style={{fontWeight:800,fontSize:15,color:"var(--text)"}}>{group.name}</div>
+            <div style={{fontSize:12,fontWeight:700,color,marginTop:2}}>{group.subject}</div>
+          </div>
+          <span style={{fontSize:11,color:"var(--muted)",background:"var(--bg3)",border:"1px solid var(--border-light)",borderRadius:20,padding:"3px 10px",fontWeight:600,flexShrink:0}}>{group.member_count||1} member{(group.member_count||1)!==1?"s":""}</span>
+        </div>
+        {group.description&&<div style={{fontSize:13,color:"var(--muted)",marginBottom:12,lineHeight:1.5}}>{group.description}</div>}
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          {isMember ? <button className="btn btn-primary btn-sm" onClick={onOpen}>Open Group</button>
+            : <button className="btn btn-primary btn-sm" onClick={e=>{e.stopPropagation();onJoin();}}>Join Group</button>}
+          {group.code&&<span style={{fontSize:11,color:"var(--muted)",fontWeight:600}}>Code: <span style={{color:"var(--gold)",fontWeight:800}}>{group.code}</span></span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
+  const [tab, setTab] = useState("chat");
   const [messages, setMessages] = useState([]);
+  const [members, setMembers] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loadingMsgs, setLoadingMsgs] = useState(true);
+  const [copied, setCopied] = useState(false);
   const bottomRef = useRef(null);
   const pollRef = useRef(null);
   const token = user?.session?.access_token;
+  const userId = user?.userId;
+  const { state } = gs;
+  const color = getColor(group.subject);
 
   useEffect(() => {
     loadMessages();
+    syncAndLoadLeaderboard();
     pollRef.current = setInterval(loadMessages, 3000);
     return () => clearInterval(pollRef.current);
   }, []);
@@ -5041,73 +4960,162 @@ function GroupChatScreen({ group, profile, user, onBack }) {
 
   const loadMessages = async () => {
     try {
-      const msgs = await supabase.getMessages(group.id, token);
-      if (Array.isArray(msgs)) setMessages(msgs);
+      const res = await sbFetch(`/group_messages?group_id=eq.${group.id}&order=created_at.asc&limit=100`, token);
+      const data = await res.json();
+      if (Array.isArray(data)) setMessages(data);
     } catch {}
-    setLoading(false);
+    setLoadingMsgs(false);
+  };
+
+  const syncAndLoadLeaderboard = async () => {
+    try {
+      await sbFetch("/leaderboard_members", token, { method:"POST", headers:{...sbH(token),Prefer:"resolution=merge-duplicates,return=minimal"}, body:JSON.stringify({leaderboard_id:group.id,user_id:userId,display_name:profile.userName,xp:state.xp||0,level:state.level||1,streak:state.streak||0}) }).catch(()=>{});
+      const res = await sbFetch(`/leaderboard_members?leaderboard_id=eq.${group.id}&order=xp.desc&select=*`, token);
+      const data = await res.json();
+      if (Array.isArray(data)) setMembers(data);
+    } catch {}
   };
 
   const send = async () => {
     if (!input.trim()||sending) return;
     const text = input.trim(); setInput(""); setSending(true);
-    const temp = {id:"temp-"+Date.now(),group_id:group.id,user_id:user.userId,display_name:profile.userName,content:text,created_at:new Date().toISOString()};
+    const temp = {id:"tmp-"+Date.now(),group_id:group.id,user_id:userId,display_name:profile.userName,content:text,created_at:new Date().toISOString()};
     setMessages(m=>[...m,temp]);
     try {
-      await supabase.sendMessage(group.id, user.userId, profile.userName, text, token);
+      await sbFetch("/group_messages", token, {method:"POST",body:JSON.stringify({group_id:group.id,user_id:userId,display_name:profile.userName,content:text})});
       await loadMessages();
     } catch { setMessages(m=>m.filter(m=>m.id!==temp.id)); }
     setSending(false);
   };
 
+  const copyCode = () => { if(group.code){navigator.clipboard.writeText(group.code);setCopied(true);setTimeout(()=>setCopied(false),2000);} };
+  const rankIcon = i => i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;
+
   return (
     <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 56px)"}}>
-      <div style={{padding:"14px 26px",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",display:"flex",alignItems:"center",gap:12,flexShrink:0}}>
+      <div style={{padding:"12px 26px",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",display:"flex",alignItems:"center",gap:12,flexShrink:0}}>
         <button className="btn btn-ghost btn-sm" onClick={onBack}>← Back</button>
-        <div style={{width:34,height:34,borderRadius:"var(--r)",background:getColor(group.subject)+"22",border:`1.5px solid ${getColor(group.subject)}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>📚</div>
-        <div>
-          <div style={{fontWeight:800,fontSize:14,color:"var(--text)"}}>{group.name}</div>
-          <div style={{fontSize:11,color:"var(--muted)"}}>{group.subject} · {group.member_count||1} members</div>
+        <div style={{width:36,height:36,borderRadius:"var(--r)",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>📚</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:800,fontSize:14,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{group.name}</div>
+          <div style={{fontSize:11,color:"var(--muted)"}}>{group.subject}</div>
         </div>
+        {group.code&&(
+          <button onClick={copyCode} style={{background:"var(--gold-light)",border:"1.5px solid var(--gold)",borderRadius:"var(--r)",padding:"6px 12px",cursor:"pointer",fontFamily:"var(--ff)",flexShrink:0,textAlign:"center"}}>
+            <div style={{fontSize:12,fontWeight:800,letterSpacing:".08em",color:"var(--gold)"}}>{group.code}</div>
+            <div style={{fontSize:9,color:"var(--muted)",fontWeight:600}}>{copied?"Copied!":"Invite code"}</div>
+          </button>
+        )}
       </div>
-      <div style={{flex:1,overflowY:"auto",padding:"16px 26px",display:"flex",flexDirection:"column",gap:10}}>
-        {loading ? (
-          <div style={{textAlign:"center",color:"var(--muted)",fontSize:13,marginTop:40}}>Loading messages...</div>
-        ) : messages.length===0 ? (
-          <div style={{textAlign:"center",padding:"40px 24px"}}>
-            <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>No messages yet</div>
-            <div style={{fontSize:13,color:"var(--muted)"}}>Be the first to say something!</div>
-          </div>
-        ) : messages.map((msg,i) => {
-          const isMe = msg.user_id===user.userId;
-          const showName = !isMe && (i===0||messages[i-1].user_id!==msg.user_id);
-          return (
-            <div key={msg.id} style={{display:"flex",flexDirection:isMe?"row-reverse":"row",gap:8,alignItems:"flex-end"}}>
-              {!isMe && <div className="av" style={{width:26,height:26,fontSize:10,flexShrink:0,alignSelf:"flex-start",marginTop:showName?18:0}}>{msg.display_name?.[0]?.toUpperCase()||"?"}</div>}
-              <div style={{maxWidth:"68%"}}>
-                {showName && <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",marginBottom:3,paddingLeft:2}}>{msg.display_name}</div>}
-                <div style={{padding:"10px 14px",borderRadius:isMe?"var(--r2) var(--r2) 4px var(--r2)":"var(--r2) var(--r2) var(--r2) 4px",background:isMe?"var(--text)":"var(--bg2)",color:isMe?"var(--bg2)":"var(--text)",border:"1.5px solid",borderColor:isMe?"var(--text)":"var(--border-light)",fontSize:13,lineHeight:1.6}}>
-                  {msg.content}
-                </div>
-                <div style={{fontSize:10,color:"var(--muted2)",marginTop:2,textAlign:isMe?"right":"left",paddingLeft:isMe?0:2}}>
-                  {new Date(msg.created_at).toLocaleTimeString("en-AU",{hour:"2-digit",minute:"2-digit"})}
+
+      <div style={{display:"flex",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",flexShrink:0}}>
+        {[{id:"chat",label:"💬 Chat"},{id:"leaderboard",label:"🏆 Rankings"},{id:"info",label:"ℹ Info"}].map(t=>(
+          <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="leaderboard")syncAndLoadLeaderboard();}}
+            style={{flex:1,padding:"10px",border:"none",borderBottom:tab===t.id?"2px solid var(--text)":"2px solid transparent",background:"transparent",color:tab===t.id?"var(--text)":"var(--muted)",fontWeight:tab===t.id?800:600,fontSize:13,cursor:"pointer",fontFamily:"var(--ff)"}}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab==="chat" && (<>
+        <div style={{flex:1,overflowY:"auto",padding:"14px 26px",display:"flex",flexDirection:"column",gap:10}}>
+          {!isMember ? (
+            <div style={{textAlign:"center",padding:"40px 24px"}}>
+              <div style={{fontWeight:700,color:"var(--text)",marginBottom:8}}>Join to see messages</div>
+              <button className="btn btn-primary btn-sm" onClick={onJoin}>Join Group</button>
+            </div>
+          ) : loadingMsgs ? <div style={{textAlign:"center",color:"var(--muted)",fontSize:13,marginTop:40}}>Loading...</div>
+          : messages.length===0 ? (
+            <div style={{textAlign:"center",padding:"40px 24px"}}>
+              <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>No messages yet</div>
+              <div style={{fontSize:13,color:"var(--muted)"}}>Say something!</div>
+            </div>
+          ) : messages.map((msg,i) => {
+            const isMe = msg.user_id===userId;
+            const showName = !isMe&&(i===0||messages[i-1].user_id!==msg.user_id);
+            return (
+              <div key={msg.id} style={{display:"flex",flexDirection:isMe?"row-reverse":"row",gap:8,alignItems:"flex-end"}}>
+                {!isMe&&<div className="av" style={{width:26,height:26,fontSize:10,flexShrink:0,alignSelf:"flex-start",marginTop:showName?18:0}}>{msg.display_name?.[0]?.toUpperCase()||"?"}</div>}
+                <div style={{maxWidth:"68%"}}>
+                  {showName&&<div style={{fontSize:10,fontWeight:700,color:"var(--muted)",marginBottom:3,paddingLeft:2}}>{msg.display_name}</div>}
+                  <div style={{padding:"10px 14px",borderRadius:isMe?"var(--r2) var(--r2) 4px var(--r2)":"var(--r2) var(--r2) var(--r2) 4px",background:isMe?"var(--text)":"var(--bg2)",color:isMe?"var(--bg2)":"var(--text)",border:"1.5px solid",borderColor:isMe?"var(--text)":"var(--border-light)",fontSize:13,lineHeight:1.6}}>{msg.content}</div>
+                  <div style={{fontSize:10,color:"var(--muted2)",marginTop:2,textAlign:isMe?"right":"left"}}>{new Date(msg.created_at).toLocaleTimeString("en-AU",{hour:"2-digit",minute:"2-digit"})}</div>
                 </div>
               </div>
+            );
+          })}
+          <div ref={bottomRef}/>
+        </div>
+        {isMember&&(
+          <div style={{padding:"10px 26px 14px",borderTop:"1.5px solid var(--border)",background:"var(--bg2)",flexShrink:0,display:"flex",gap:10}}>
+            <input className="input" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")send();}} placeholder={`Message ${group.name}...`} style={{flex:1}}/>
+            <button className="btn btn-primary" onClick={send} disabled={!input.trim()||sending} style={{padding:"11px 18px"}}>Send</button>
+          </div>
+        )}
+      </>)}
+
+      {tab==="leaderboard" && (
+        <div style={{flex:1,overflowY:"auto",padding:"20px 26px"}}>
+          <div style={{fontWeight:800,fontSize:16,color:"var(--text)",marginBottom:16}}>🏆 {group.name} Rankings</div>
+          {members.length===0 ? (
+            <div style={{textAlign:"center",padding:"40px 24px",color:"var(--muted)"}}>
+              <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>No rankings yet</div>
+              <div style={{fontSize:13}}>Earn XP by completing quizzes and flashcards</div>
             </div>
-          );
-        })}
-        <div ref={bottomRef}/>
-      </div>
-      <div style={{padding:"12px 26px 14px",borderTop:"1.5px solid var(--border)",background:"var(--bg2)",flexShrink:0,display:"flex",gap:10}}>
-        <input className="input" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")send();}} placeholder={`Message ${group.name}...`} style={{flex:1}}/>
-        <button className="btn btn-primary" onClick={send} disabled={!input.trim()||sending} style={{padding:"11px 18px"}}>Send</button>
-      </div>
+          ) : (
+            <div className="card"><div style={{padding:"0 20px"}}>
+              {members.map((m,i)=>(
+                <div key={m.id} className={`lb-row${m.user_id===userId?" me":""}`}>
+                  <div style={{fontSize:18,width:32,textAlign:"center",flexShrink:0}}>{rankIcon(i)}</div>
+                  <div className="av" style={{width:32,height:32,fontSize:12,flexShrink:0,background:m.user_id===userId?"var(--text)":"var(--bg4)"}}>{m.display_name?.[0]?.toUpperCase()||"?"}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontWeight:700,fontSize:13,color:"var(--text)",display:"flex",alignItems:"center",gap:6}}>
+                      {m.display_name}
+                      {m.user_id===userId&&<span style={{fontSize:10,background:"var(--text)",color:"var(--bg2)",borderRadius:20,padding:"1px 7px",fontWeight:800}}>You</span>}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--muted)"}}>Level {m.level||1} · {m.streak||0} streak</div>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontWeight:800,fontSize:14,color:"var(--text)"}}>{(m.xp||0).toLocaleString()}</div>
+                    <div style={{fontSize:10,color:"var(--muted)"}}>XP</div>
+                  </div>
+                </div>
+              ))}
+            </div></div>
+          )}
+        </div>
+      )}
+
+      {tab==="info" && (
+        <div style={{flex:1,overflowY:"auto",padding:"20px 26px"}}>
+          <div className="card" style={{marginBottom:14}}>
+            <div className="card-head"><div className="card-title">Group Info</div></div>
+            <div className="card-body">
+              {[{label:"Name",value:group.name},{label:"Subject",value:group.subject},{label:"Members",value:group.member_count||1},group.description&&{label:"Description",value:group.description}].filter(Boolean).map((item,i,arr)=>(
+                <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:i<arr.length-1?"1px solid var(--border-light)":"none",fontSize:13}}>
+                  <span style={{color:"var(--muted)",fontWeight:600}}>{item.label}</span>
+                  <span style={{fontWeight:700,color:"var(--text)"}}>{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {group.code&&(
+            <div className="card" style={{borderColor:"var(--gold)"}}>
+              <div className="card-head"><div className="card-title">Invite Friends</div></div>
+              <div className="card-body" style={{textAlign:"center"}}>
+                <div style={{fontSize:32,fontWeight:900,letterSpacing:".12em",color:"var(--gold)",marginBottom:8}}>{group.code}</div>
+                <div style={{fontSize:13,color:"var(--muted)",marginBottom:14}}>Share this code — friends enter it under "Join with Code"</div>
+                <button className="btn btn-primary btn-sm" onClick={copyCode}>{copied?"Copied!":"Copy Invite Code"}</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-// ─────────────────────────────────────────────
-// TUTOR MARKETPLACE — real Supabase backend
-// ─────────────────────────────────────────────
+
 function TutorMarketplaceScreen({ profile, user }) {
   const [tab, setTab] = useState("browse");
   const [tutors, setTutors] = useState([]);
@@ -5571,7 +5579,6 @@ export default function App() {
     {id:"planner",icon:"📅",label:"Study Planner",section:"track"},
     {id:"analytics",icon:"📊",label:"Analytics",section:"track"},
     {id:"groups",icon:"👥",label:"Study Groups",section:"community"},
-    {id:"leaderboard",icon:"🏆",label:"Leaderboard",section:"community"},
     {id:"tutors",icon:"🎓",label:"Tutor Marketplace",section:"community"},
     {id:"search",icon:"🔍",label:"Search",section:"hidden"},
     {id:"settings",icon:"⚙️",label:"Settings",section:"hidden"},
@@ -5613,8 +5620,8 @@ export default function App() {
     ai:          <AIScreen profile={profile}/>,
     planner:     <PlannerScreen profile={profile} gs={gs}/>,
     analytics:   <AnalyticsScreen profile={profile} gs={gs}/>,
-    groups:      <StudyGroupsScreen profile={profile} user={user}/>,
-    leaderboard: <LeaderboardScreen profile={profile} gs={gs}/>,
+    groups:      <StudyGroupsScreen profile={profile} user={user} gs={gs}/>,
+    leaderboard: <StudyGroupsScreen profile={profile} user={user} gs={gs}/>,
     tutors:      <TutorMarketplaceScreen profile={profile} user={user}/>,
     search:      <SearchScreen profile={profile} setScreen={setScreen} setSearchTarget={setSearchTarget}/>,
     settings:    <SettingsScreen profile={profile} onUpdateProfile={handleUpdateProfile} onSignOut={handleSignOut} theme={theme} onToggleTheme={toggleTheme}/>,
