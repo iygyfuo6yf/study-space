@@ -133,8 +133,8 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--ff);height:10
   transition:all .15s;margin-bottom:1px;border:1.5px solid transparent;
 }
 .ni:hover{background:var(--bg3);color:var(--text);border-color:var(--border-light);}
-.ni.active{background:var(--text);color:var(--bg2);font-weight:700;border-color:var(--text);}
-[data-theme="dark"] .ni.active{background:var(--accent);color:var(--bg);border-color:var(--accent);}
+.ni.active{background:var(--bg4);color:var(--text);font-weight:800;border-color:var(--border);border-left:3px solid var(--text);}
+[data-theme="dark"] .ni.active{background:var(--bg4);color:var(--accent);font-weight:800;border-color:var(--border);border-left:3px solid var(--accent);}
 .ni-icon{font-size:13px;width:18px;text-align:center;flex-shrink:0;}
 .ni-badge{margin-left:auto;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;background:var(--gold-light);color:var(--gold);border:1px solid var(--gold);}
 
