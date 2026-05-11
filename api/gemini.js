@@ -29,6 +29,11 @@ export default async function handler(req, res) {
       }
     }
 
+    // Use best free vision model for images, best free text model for text
+    const model = hasImages
+      ? "google/gemma-3-27b-it:free"   // confirmed free vision model
+      : "google/gemma-3-27b-it:free";  // same model works for text too
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -38,7 +43,7 @@ export default async function handler(req, res) {
         "X-Title": "Study Ace"
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-preview:free",
+        model,
         messages,
         max_tokens: generationConfig?.maxOutputTokens || 1500,
         temperature: generationConfig?.temperature || 0.7,
