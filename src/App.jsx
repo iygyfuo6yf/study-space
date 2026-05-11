@@ -5573,9 +5573,7 @@ export default function App() {
   const NAV = [
     {id:"dashboard",icon:"⊞",label:"Dashboard",section:"learn"},
     {id:"subjects",icon:"📚",label:"Subjects",section:"learn"},
-    {id:"quiz",icon:"🎯",label:"Practice Quiz",section:"learn"},
-    {id:"flashcards",icon:"🃏",label:"Flashcards",section:"learn"},
-    {id:"ai",icon:"✨",label:"Gemini AI Tutor",badge:"FREE",section:"learn"},
+    {id:"ai",icon:"✨",label:"AI Tutor",badge:"FREE",section:"learn"},
     {id:"planner",icon:"📅",label:"Study Planner",section:"track"},
     {id:"analytics",icon:"📊",label:"Analytics",section:"track"},
     {id:"groups",icon:"👥",label:"Study Groups",section:"community"},
@@ -5586,7 +5584,7 @@ export default function App() {
 
   const TITLES = {
     dashboard:"Dashboard",subjects:"My Subjects",quiz:"Practice Quiz",
-    flashcards:"Flashcards",ai:"Gemini AI Tutor",planner:"Study Planner",
+    flashcards:"Flashcards",ai:"AI Tutor",planner:"Study Planner",
     analytics:"Analytics",groups:"Study Groups",leaderboard:"Leaderboard",
     tutors:"Tutor Marketplace",search:"Search",settings:"Settings"
   };
