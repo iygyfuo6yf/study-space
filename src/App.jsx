@@ -1092,7 +1092,7 @@ function Dashboard({ profile, setScreen, gs }) {
       <div style={{marginBottom:20}}>
         <div style={{fontWeight:900,fontSize:22}}>{greeting()}, {profile.userName?.split(" ")[0]} 👋</div>
         <div style={{color:"#6060a0",fontSize:13,marginTop:3}}>
-          {isIB?"IB Diploma":ALL_SUBJECTS[profile.yearLevel]?.label} · {profile.selectedSubjects?.length} subjects · {today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric"})}
+          {isIB?"IB Diploma":ALL_SUBJECTS[profile.yearLevel]?.label} · {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length} subjects · {today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric"})}
         </div>
       </div>
 
@@ -1131,7 +1131,7 @@ function Dashboard({ profile, setScreen, gs }) {
             <span className="cl" onClick={()=>setScreen("subjects")}>View all →</span>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {profile.selectedSubjects?.slice(0,4).map(s=>{
+            {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,4).map(s=>{
               const mastery = state.masteryMap?.[s] || 50;
               return (
               <div key={s} className="subj-card" onClick={()=>setScreen("subjects")} style={{paddingTop:20}}>
@@ -3348,18 +3348,15 @@ Keep it punchy and exam-focused.`
               const myTopic = currentTopic[s];
               const hasVCAA = !!VCAA_CURRICULUM[s];
               return (
-                <div key={s} className="subj-card" onClick={()=>loadTopics(s)} style={{paddingTop:20}}>
+                <div key={s} className="subj-card" onClick={()=>loadTopics(s)} style={{paddingTop:16}}>
                   <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:getColor(s)}}/>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-                    <div>
-                      <div style={{fontSize:10,fontWeight:700,color:getColor(s),textTransform:"uppercase",letterSpacing:".05em"}}>{profile.yearLevel?.toUpperCase()}</div>
-                      {hasVCAA && <div style={{fontSize:9,color:"#50508a",marginTop:2}}>✅ VCAA curriculum loaded</div>}
-                    </div>
-                    <Ring val={mastery} size={44} stroke={4} color={getColor(s)}/>
+                  <div style={{marginBottom:8}}>
+                    <div style={{fontSize:10,fontWeight:700,color:getColor(s),textTransform:"uppercase",letterSpacing:".05em"}}>{profile.yearLevel?.toUpperCase()}</div>
+                    {hasVCAA && <div style={{fontSize:9,color:"var(--muted)",marginTop:2}}>✅ VCAA curriculum</div>}
                   </div>
                   <div className="sn">{s}</div>
                   {myTopic && <div style={{fontSize:10,color:getColor(s),marginTop:4,fontWeight:600}}>📍 {myTopic}</div>}
-                  <div className="mb" style={{marginTop:8,height:5}}>
+                  <div className="mb" style={{marginTop:10,height:5}}>
                     <div className="mf" style={{width:`${mastery}%`,background:getColor(s)}}/>
                   </div>
                   <div className="ml"><span>Mastery</span><span style={{fontWeight:700,color:getColor(s)}}>{mastery}%</span></div>
@@ -3506,7 +3503,7 @@ function QuizScreen({ profile, gs }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selSubj, setSelSubj] = useState(profile.selectedSubjects?.[0] || "");
+  const [selSubj, setSelSubj] = useState((Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[])[0] || "");
 
   const generateQuiz = async (subject) => {
     setLoading(true); setError(""); setQuestions([]);
@@ -3573,7 +3570,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
   // Subject selector
   const SubjectPicker = ()=>(
     <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
-      {profile.selectedSubjects?.map(s=>(
+      {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).map(s=>(
         <button key={s} onClick={()=>setSelSubj(s)}
           className="btn btn-sm"
           style={{background:selSubj===s?getColor(s):"var(--bg3)",color:selSubj===s?"#fff":"#7070a8",border:`1px solid ${selSubj===s?getColor(s):"var(--border)"}`}}>
@@ -3844,7 +3841,7 @@ function AIScreen({ profile }) {
   const curriculum = profile.yearLevel === "ib" ? "IB Diploma" : profile.yearLevel === "vce" ? "VCE" : ALL_SUBJECTS[profile.yearLevel]?.label || "Victorian secondary";
 
   const [msgs, setMsgs] = useState([
-    {role:"ai", text:`Hey ${firstName}! I'm your AI tutor — powered by Google Gemini.\n\nI know you're studying ${profile.selectedSubjects?.slice(0,3).join(", ")}${profile.selectedSubjects?.length > 3 ? ` and ${profile.selectedSubjects.length - 3} more` : ""} in ${curriculum}.\n\nAsk me anything, or upload a photo of your homework, worksheet or textbook — I'll answer it directly.`}
+    {role:"ai", text:`Hey ${firstName}! I'm your AI tutor — powered by Google Gemini.\n\nI know you're studying ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3).join(", ")}${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length > 3 ? ` and ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length - 3} more` : ""} in ${curriculum}.\n\nAsk me anything, or upload a photo of your homework, worksheet or textbook — I'll answer it directly.`}
   ]);
   const [input, setInput] = useState("");
   const [images, setImages] = useState([]); // [{base64, preview, mediaType}]
@@ -3855,8 +3852,8 @@ function AIScreen({ profile }) {
   const cameraRef = useRef(null);
 
   const systemPrompt = `You are an expert tutor for Australian secondary students in ${curriculum}.
-Student: ${profile.selectedSubjects?.join(", ")} · Goal: ${profile.futurePath || "academic success"}
-VCAA curriculum context: ${profile.selectedSubjects?.slice(0,3).map(s => { const d = VCAA_CURRICULUM[s]; return d ? `${s}: ${d.areas?.map(a=>a.name).join(", ")}` : s; }).join(" | ")}
+Student: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).join(", ")} · Goal: ${profile.futurePath || "academic success"}
+VCAA curriculum context: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3).map(s => { const d = VCAA_CURRICULUM[s]; return d ? `${s}: ${d.areas?.map(a=>a.name).join(", ")}` : s; }).join(" | ")}
 Rules: Australian English. Warm and direct. Plain text maths (², √, ×). Bold **key terms**. If image uploaded, analyse it carefully and solve any questions shown step by step.`;
 
   const processFiles = (files) => {
@@ -3918,7 +3915,7 @@ Rules: Australian English. Warm and direct. Plain text maths (², √, ×). Bold
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }); }, [msgs, loading]);
 
   const sugs = [
-    ...(profile.selectedSubjects?.slice(0,3).map(s => `Explain a key concept in ${s}`) || []),
+    ...((Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3).map(s => `Explain a key concept in ${s}`) || []),
     "Give me practice exam questions",
     `What do I need for ${profile.futurePath === "medicine" ? "Medicine" : profile.futurePath === "law" ? "Law" : "my goal"}?`,
   ];
@@ -4289,7 +4286,7 @@ function AnalyticsScreen({ profile, gs }) {
   const maxW = Math.max(...weeks.map(w=>w.val), 1);
 
   // Per-subject mastery from real data
-  const subjMastery = profile.selectedSubjects?.map(s=>({
+  const subjMastery = (Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).map(s=>({
     name:s, mastery: state.masteryMap?.[s] || 50
   })) || [];
 
@@ -4540,7 +4537,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                 <div>
                   <div style={{fontWeight:800,fontSize:18}}>{profile.userName}</div>
                   <div style={{fontSize:13,color:"#6060a0"}}>{profile.email}</div>
-                  <div style={{fontSize:12,color:"#50508a",marginTop:4}}>{ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel} · {profile.selectedSubjects?.length||0} subjects</div>
+                  <div style={{fontSize:12,color:"#50508a",marginTop:4}}>{ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel} · {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length||0} subjects</div>
                 </div>
               </div>
               {!editing?(
@@ -4549,7 +4546,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                     {label:"Year Level",value:ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel},
                     {label:"Career Goal",value:FUTURE_PATHS.find(f=>f.id===profile.futurePath)?.label||profile.futurePath||"Not set"},
                     {label:"Study Intensity",value:HOURS.find(h=>h.id===profile.hoursPerWeek)?.label||"Moderate"},
-                    {label:"Subjects",value:`${profile.selectedSubjects?.length||0} selected`},
+                    {label:"Subjects",value:`${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length||0} selected`},
                   ].map((item,i)=>(
                     <div key={i} style={{background:"var(--bg3)",borderRadius:10,padding:"12px 14px"}}>
                       <div style={{fontSize:11,color:"#50508a",marginBottom:4,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em"}}>{item.label}</div>
@@ -4674,12 +4671,12 @@ function SearchScreen({ profile, setScreen }) {
     if(!query.trim()){setResults([]);return;}
     const q=query.toLowerCase();
     const found=[];
-    profile.selectedSubjects?.forEach(sub=>{
+    (Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).forEach(sub=>{
       if(sub.toLowerCase().includes(q))
         found.push({type:"subject",title:sub,subtitle:"Subject",color:getColor(sub),action:"subjects"});
     });
     Object.entries(VCAA_CURRICULUM).forEach(([sub,data])=>{
-      if(!profile.selectedSubjects?.includes(sub))return;
+      if(!(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).includes(sub))return;
       data.areas?.forEach(area=>{
         if(area.name.toLowerCase().includes(q))
           found.push({type:"topic",title:area.name,subtitle:sub,color:getColor(sub),action:"subjects"});
@@ -4776,7 +4773,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
   const [activeGroup, setActiveGroup] = useState(null);
   const [joinCode, setJoinCode] = useState("");
   const [newName, setNewName] = useState("");
-  const [newSubject, setNewSubject] = useState(profile.selectedSubjects?.[0]||"");
+  const [newSubject, setNewSubject] = useState((Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[])[0]||"");
   const [newDesc, setNewDesc] = useState("");
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
@@ -4899,7 +4896,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
           <div className="card-body" style={{display:"flex",flexDirection:"column",gap:14}}>
             <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Group Name</div><input className="input" value={newName} onChange={e=>setNewName(e.target.value)} placeholder="e.g. Year 12 Chemistry Squad"/></div>
             <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Subject</div>
-              <select className="input" value={newSubject} onChange={e=>setNewSubject(e.target.value)}>{profile.selectedSubjects?.map(s=><option key={s} value={s}>{s}</option>)}</select>
+              <select className="input" value={newSubject} onChange={e=>setNewSubject(e.target.value)}>{(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).map(s=><option key={s} value={s}>{s}</option>)}</select>
             </div>
             <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Description (optional)</div><textarea className="input" value={newDesc} onChange={e=>setNewDesc(e.target.value)} placeholder="What will this group focus on?"/></div>
             {error&&<div style={{fontSize:12,color:"var(--danger)",padding:"8px 12px",background:"var(--danger-bg)",borderRadius:"var(--r)",border:"1px solid var(--danger)"}}>{error}</div>}
@@ -5162,7 +5159,7 @@ function TutorMarketplaceScreen({ profile, user }) {
         <div>
           <select className="input" style={{maxWidth:220,marginBottom:16}} value={subjectFilter} onChange={e=>setSubjectFilter(e.target.value)}>
             <option value="">All subjects</option>
-            {profile.selectedSubjects?.map(s=><option key={s} value={s}>{s}</option>)}
+            {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).map(s=><option key={s} value={s}>{s}</option>)}
           </select>
           {loading ? (
             <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>Loading tutors...</div>
@@ -5277,7 +5274,7 @@ function TutorDetailView({ tutor, profile, user, onBack, onReviewed }) {
           {tutor.qualifications && <div style={{background:"var(--bg3)",borderRadius:"var(--r)",padding:"10px 14px",marginBottom:12,fontSize:13,color:"var(--muted)"}}><strong style={{color:"var(--text)"}}>Qualifications: </strong>{tutor.qualifications}</div>}
           <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:14}}>{(tutor.subjects||[]).map(s=><span key={s} style={{fontSize:11,background:getColor(s)+"18",color:getColor(s),border:`1px solid ${getColor(s)}44`,borderRadius:20,padding:"3px 10px",fontWeight:700}}>{s}</span>)}</div>
           {tutor.contact_email && tutor.available && (
-            <a href={`mailto:${tutor.contact_email}?subject=Tutoring Enquiry — Study Ace&body=Hi ${tutor.name},%0A%0AI found your profile on Study Ace and would like to enquire about tutoring.%0A%0AYear level: ${profile.yearLevel?.toUpperCase()}%0ASubjects: ${profile.selectedSubjects?.join(", ")}%0A%0AThanks,%0A${profile.userName}`}
+            <a href={`mailto:${tutor.contact_email}?subject=Tutoring Enquiry — Study Ace&body=Hi ${tutor.name},%0A%0AI found your profile on Study Ace and would like to enquire about tutoring.%0A%0AYear level: ${profile.yearLevel?.toUpperCase()}%0ASubjects: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).join(", ")}%0A%0AThanks,%0A${profile.userName}`}
               className="btn btn-primary" style={{display:"inline-flex"}}>Contact {tutor.name?.split(" ")[0]}</a>
           )}
           {!tutor.available && <span style={{fontSize:13,color:"var(--muted)",fontWeight:600}}>Currently unavailable</span>}
@@ -5318,7 +5315,7 @@ function TutorProfileForm({ profile, user, existing, onSaved }) {
   const [name, setName] = useState(existing?.name||profile.userName||"");
   const [bio, setBio] = useState(existing?.bio||"");
   const [quals, setQuals] = useState(existing?.qualifications||"");
-  const [subjects, setSubjects] = useState(existing?.subjects||profile.selectedSubjects?.slice(0,3)||[]);
+  const [subjects, setSubjects] = useState(existing?.subjects||(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3)||[]);
   const [price, setPrice] = useState(existing?.price_per_hour||60);
   const [email, setEmail] = useState(existing?.contact_email||user?.email||"");
   const [available, setAvailable] = useState(existing?.available??true);
@@ -5349,7 +5346,7 @@ function TutorProfileForm({ profile, user, existing, onSaved }) {
         <div>
           <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Subjects You Teach *</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-            {profile.selectedSubjects?.map(s=>(
+            {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).map(s=>(
               <button key={s} onClick={()=>toggle(s)} style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",border:"1.5px solid",transition:"all .15s",background:subjects.includes(s)?"var(--text)":"var(--bg3)",color:subjects.includes(s)?"var(--bg2)":"var(--muted)",borderColor:subjects.includes(s)?"var(--text)":"var(--border-light)"}}>{s}</button>
             ))}
           </div>
@@ -5379,7 +5376,7 @@ function NotificationsPanel({ profile, gs, onClose }) {
   });
   if(state.streak>0) notifications.push({icon:"🔥",title:`${state.streak} day streak! Keep it up!`,subtitle:"Study today to maintain your streak",color:"#FF6B6B",time:"Today"});
   if(state.xp>=100) notifications.push({icon:"⚡",title:`Level ${state.level} — ${500-(state.xp%500)} XP to next level`,subtitle:"Keep studying to level up",color:"var(--accent)",time:"Progress"});
-  const weakSubjects=profile.selectedSubjects?.filter(s=>(state.masteryMap?.[s]||50)<60);
+  const weakSubjects=(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).filter(s=>(state.masteryMap?.[s]||50)<60);
   if(weakSubjects?.length>0) notifications.push({icon:"⚠️",title:`${weakSubjects[0]} needs attention`,subtitle:`Mastery at ${state.masteryMap?.[weakSubjects[0]]||50}% — take a quiz`,color:"var(--gold)",time:"Study tip"});
   if(notifications.length===0) notifications.push({icon:"✅",title:"You're all caught up!",subtitle:"No new notifications",color:"var(--a2)",time:"Now"});
 
@@ -5431,13 +5428,19 @@ export default function App() {
   useEffect(() => {
     const init = async () => {
       try {
+        const toArray = (v) => {
+          if (Array.isArray(v)) return v;
+          if (typeof v === "string") { try { const p = JSON.parse(v); return Array.isArray(p) ? p : []; } catch { return v ? [v] : []; } }
+          return [];
+        };
+
         const normaliseProfile = (saved, userName) => ({
-          yearLevel: saved.year_level || saved.yearLevel,
-          selectedSubjects: saved.selected_subjects || saved.selectedSubjects || [],
-          futurePath: saved.future_path || saved.futurePath,
-          hoursPerWeek: saved.hours_per_week || saved.hoursPerWeek,
-          userName: saved.display_name || userName,
-          email: saved.email,
+          yearLevel: saved.year_level || saved.yearLevel || "year9",
+          selectedSubjects: toArray(saved.selected_subjects || saved.selectedSubjects),
+          futurePath: saved.future_path || saved.futurePath || "",
+          hoursPerWeek: saved.hours_per_week || saved.hoursPerWeek || "moderate",
+          userName: saved.display_name || userName || "Student",
+          email: saved.email || "",
         });
 
         const localProfile = (() => {
