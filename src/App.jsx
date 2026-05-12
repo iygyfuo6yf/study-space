@@ -2197,6 +2197,26 @@ const VCAA_CURRICULUM = {
     ]
   },
 
+  "Digital Technologies (Year 9-10)": {
+    units:"Year 9–10", assessmentType:"Projects + written tasks",
+    areas: [
+      { name:"Data & Information", dotPoints:["Data types: integers, strings, Booleans, floats","Data structures: lists, dictionaries, arrays","Collecting, storing and managing data ethically","Data representation: binary, hexadecimal, ASCII","Databases: tables, queries, relationships"] },
+      { name:"Programming & Algorithms", dotPoints:["Algorithm design: flowcharts, pseudocode, structured English","Programming concepts: sequence, selection, iteration","Functions and procedures: parameters, return values","Debugging strategies: syntax errors, logic errors, runtime errors","Programming in Python or another language: variables, loops, conditionals"] },
+      { name:"Networks & Cybersecurity", dotPoints:["How the internet works: IP addresses, DNS, HTTP, HTTPS","Network types: LAN, WAN, Wi-Fi, Bluetooth","Cybersecurity threats: malware, phishing, ransomware, social engineering","Protecting data: encryption, firewalls, strong passwords, 2FA","Digital privacy: data collection, cookies, terms of service"] },
+      { name:"Digital Systems & Impact", dotPoints:["Hardware components: CPU, RAM, storage, input/output devices","Operating systems and software: functions and types","Emerging technologies: AI, IoT, robotics, machine learning","Ethical use of technology: copyright, plagiarism, digital citizenship","Environmental impact of technology: e-waste, energy consumption"] },
+    ]
+  },
+
+  "Health & PE (Year 9-10)": {
+    units:"Year 9–10", assessmentType:"Practical tasks + written assessments",
+    areas: [
+      { name:"Personal Health & Wellbeing", dotPoints:["Dimensions of health: physical, mental, social, emotional, spiritual","Factors affecting health: lifestyle, environment, access to services","Adolescent health issues: sleep, nutrition, screen time, stress","Mental health literacy: recognising signs, help-seeking strategies","Australia's health system: Medicare, hospitals, GPs, allied health"] },
+      { name:"Movement & Physical Activity", dotPoints:["Components of fitness: cardiovascular endurance, muscular strength, flexibility, speed, power","Principles of training: FITT principle, overload, specificity, reversibility","Energy systems: aerobic and anaerobic pathways","Skill acquisition: cognitive, associative and autonomous stages","Biomechanics: force, balance, motion and their application to sport"] },
+      { name:"Relationships & Sexuality", dotPoints:["Healthy relationships: respect, consent, communication, boundaries","Types of relationships: family, peers, romantic","Sexuality and gender: understanding diversity and identity","Contraception and STI prevention","Rights and responsibilities in relationships: legal age of consent, coercion"] },
+      { name:"Health Literacy & Promotion", dotPoints:["Analysing health information: credibility, bias, reliability","Health promotion campaigns: SunSmart, Slip Slop Slap, anti-bullying","Nutrition: Australian Dietary Guidelines, food groups, portion sizes","Drug and alcohol education: short and long-term effects, legal status","First aid basics: DRSABCD, CPR, managing bleeding, fractures"] },
+    ]
+  },
+
 };
 
 function getCurriculumContext(subject, topic, userNotes, yearLevel) {
@@ -3072,18 +3092,55 @@ function SubjectsScreen({ profile, gs }) {
 
   const loadTopics = async (subject) => {
     setSel(subject); setTopicsLoading(true); setTopics([]); setSelTopic(null); setActiveTab("overview"); setContent("");
-    const subjData = VCAA_CURRICULUM[subject];
+
+    // Alias map — Year 9/10 subjects to their curriculum entries
+    const ALIASES = {
+      "History": "History (Year 9-10)",
+      "Geography": "Geography (Year 9-10)",
+      "Arts": "Visual Arts (Year 9-10)",
+      "Visual Arts": "Visual Arts (Year 9-10)",
+      "Drama": "Drama (Year 9-10)",
+      "Music": "Music (Year 9-10)",
+      "Food Technology": "Food Technology (Year 9-10)",
+      "Digital Technologies": "Digital Technologies (Year 9-10)",
+      "Physical Education": "Health & PE (Year 9-10)",
+    };
+
+    const lookupKey = ALIASES[subject] || subject;
+    const subjData = VCAA_CURRICULUM[lookupKey];
     if (subjData) {
       setTopics(subjData.areas.map(a => a.name));
       setTopicsLoading(false);
       return;
     }
+
+    // Check localStorage cache first
+    const cacheKey = `ss_topics_${subject}`;
     try {
-      const prompt = `List exactly 6 topic areas for ${subject} in the ${curriculum} Australian curriculum. Return ONLY a JSON array of strings, no markdown: ["topic1","topic2",...]`;
+      const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
+      if (cached && Array.isArray(cached) && cached.length > 0) {
+        setTopics(cached);
+        setTopicsLoading(false);
+        return;
+      }
+    } catch {}
+
+    // Generate via AI and cache result
+    try {
+      const prompt = `List exactly 8 topic areas for ${subject} in the ${curriculum} Australian curriculum. Return ONLY a JSON array of strings, no markdown: ["topic1","topic2",...]`;
       const raw = await callGemini(prompt);
-      const parsed = JSON.parse(raw.replace(/```json|```/g,"").trim());
-      setTopics(Array.isArray(parsed) ? parsed : ["Core Concepts","Key Skills","Assessment Prep","Exam Preparation"]);
-    } catch { setTopics(["Core Concepts","Key Skills","Assessment Prep","Exam Preparation"]); }
+      const clean = raw.replace(/```json|```/g,"").trim();
+      const start = clean.indexOf("[");
+      const end = clean.lastIndexOf("]");
+      const parsed = start > -1 ? JSON.parse(clean.slice(start, end+1)) : null;
+      const result = Array.isArray(parsed) && parsed.length > 0 ? parsed : ["Core Concepts","Key Skills","Assessment Preparation","Exam Strategies","Practical Work","Theory","Case Studies","Review"];
+      localStorage.setItem(cacheKey, JSON.stringify(result));
+      setTopics(result);
+    } catch {
+      const fallback = ["Core Concepts","Key Skills","Assessment Preparation","Exam Strategies","Practical Work","Theory","Case Studies","Review"];
+      localStorage.setItem(cacheKey, JSON.stringify(fallback));
+      setTopics(fallback);
+    }
     setTopicsLoading(false);
   };
 
