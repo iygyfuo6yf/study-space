@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+const SUBJ_ALIASES = {"History":"History (Year 9-10)","Geography":"Geography (Year 9-10)","Arts":"Visual Arts (Year 9-10)","Visual Arts":"Visual Arts (Year 9-10)","Drama":"Drama (Year 9-10)","Music":"Music (Year 9-10)","Food Technology":"Food Technology (Year 9-10)","Digital Technologies":"Digital Technologies (Year 9-10)","Physical Education":"Health & PE (Year 9-10)","Media Studies":"Media Studies (Year 9-10)","Japanese":"Japanese (Year 9-10)","French":"French (Year 9-10)","Design & Technology":"Design & Technology (Year 9-10)"};
+const getCurriculum = (s) => VCAA_CURRICULUM[s] || VCAA_CURRICULUM[SUBJ_ALIASES[s]];
+
 
 // ─────────────────────────────────────────────
 // COMPLETE SUBJECT DATABASE — Years 9–12 VCE + IB
@@ -3197,14 +3200,26 @@ Keep it punchy and exam-focused.`
 
     try {
       const raw = await callGemini(prompts[type]);
+      if (!raw || !raw.trim()) {
+        setContent("⚠️ No response received. Try again.");
+        setContentLoading(false);
+        return;
+      }
       if (type === "quiz" || type === "flashcards") {
-        const clean = raw.replace(/```json|```/g,"").trim();
-        setContent(JSON.stringify(JSON.parse(clean)));
+        // Robust JSON extraction
+        let clean = raw.replace(/```json\n?|```\n?/g, "").trim();
+        const start = clean.indexOf("[");
+        const end = clean.lastIndexOf("]");
+        if (start === -1 || end === -1) throw new Error("No JSON array in response");
+        clean = clean.slice(start, end + 1);
+        const parsed = JSON.parse(clean);
+        if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("Empty array");
+        setContent(JSON.stringify(parsed));
       } else {
         setContent(raw);
       }
     } catch(e) {
-      setContent("⚠️ Error generating content. Try again.");
+      setContent("⚠️ Error generating content — " + (e.message || "try again"));
     }
     setContentLoading(false);
   };
@@ -3212,7 +3227,7 @@ Keep it punchy and exam-focused.`
   // ── TOPIC STUDY VIEW — with subtopic bookmarks ──
   if (sel && selTopic) {
     const color = getColor(sel);
-    const subjData = VCAA_CURRICULUM[sel];
+    const subjData = getCurriculum(sel);
     const topicArea = subjData?.areas?.find(a => a.name === selTopic);
     const staticSubtopics = SUBTOPICS[selTopic] || null;
 
@@ -3296,7 +3311,7 @@ Keep it punchy and exam-focused.`
   // ── SUBJECT VIEW ──
   if (sel) {
     const color = getColor(sel);
-    const subjData = VCAA_CURRICULUM[sel];
+    const subjData = getCurriculum(sel);
     const myTopic = currentTopic[sel];
     const myNotes = userNotes[sel];
 
