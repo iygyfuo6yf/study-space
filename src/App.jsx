@@ -962,11 +962,12 @@ function useGameState(profile) {
     try {
       const saved = JSON.parse(localStorage.getItem(key) || "{}");
       const merged = { ...defaultState, ...saved };
-      // Ensure these are always the right types
-      if (!merged.masteryMap || typeof merged.masteryMap !== "object" || Array.isArray(merged.masteryMap)) merged.masteryMap = {};
+      // Always ensure correct types — prevents K.map crashes
+      if (!Array.isArray(merged.masteryMap) && typeof merged.masteryMap !== "object") merged.masteryMap = {};
+      if (Array.isArray(merged.masteryMap)) merged.masteryMap = {};
       if (!Array.isArray(merged.quizHistory)) merged.quizHistory = [];
       if (!Array.isArray(merged.calendarEvents)) merged.calendarEvents = [];
-      if (!merged.heatmap || typeof merged.heatmap !== "object") merged.heatmap = {};
+      if (typeof merged.heatmap !== "object" || Array.isArray(merged.heatmap)) merged.heatmap = {};
       return merged;
     } catch { return defaultState; }
   };
@@ -2993,7 +2994,7 @@ function SubjectsScreen({ profile, gs }) {
   const [topicInput, setTopicInput] = useState("");
   const [notesInput, setNotesInput] = useState("");
 
-  const subjs = profile.selectedSubjects || [];
+  const subjs = (Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]);
   const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label||"Year 9";
 
   const saveCurrentTopic = (subject, topic) => {
@@ -3703,7 +3704,7 @@ function FlashcardsScreen({ profile }) {
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selSubj, setSelSubj] = useState(profile?.selectedSubjects?.[0] || "");
+  const [selSubj, setSelSubj] = useState((Array.isArray(profile?.selectedSubjects)?profile.selectedSubjects:[])[0] || "");
 
   const generateCards = async (subject) => {
     setLoading(true); setError(""); setCards([]);
@@ -3748,7 +3749,7 @@ Return ONLY valid JSON, no markdown:
 
   const SubjectPicker = ()=>(
     <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
-      {profile?.selectedSubjects?.map(s=>(
+      {(Array.isArray(profile?.selectedSubjects)?profile.selectedSubjects:[]).map(s=>(
         <button key={s} onClick={()=>setSelSubj(s)} className="btn btn-sm"
           style={{background:selSubj===s?getColor(s):"var(--bg3)",color:selSubj===s?"#fff":"#7070a8",border:`1px solid ${selSubj===s?getColor(s):"var(--border)"}`}}>
           {s}
@@ -4081,7 +4082,7 @@ function PlannerScreen({ profile, gs }) {
   });
   const todayIdx = dayOfWeek===0?6:dayOfWeek-1;
 
-  const subjs = profile.selectedSubjects || [];
+  const subjs = (Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]);
   const [goals, setGoals] = useState(()=>{ try{return JSON.parse(localStorage.getItem("ss_goals")||"[]");}catch{return [];} });
   const [newGoal, setNewGoal] = useState("");
   const [timer, setTimer] = useState(25*60);
@@ -4125,7 +4126,7 @@ Goal: ${profile.futurePath||"academic success"}
 Write a practical 7-day plan with specific daily tasks. Keep it concise, motivating, and realistic. Use Australian curriculum context.`;
       const res = await callGemini(prompt);
       setAiPlan(res);
-    } catch { setAiPlan("Couldn't generate plan. Check your Gemini key."); }
+    } catch { setAiPlan("Couldn't generate plan — try again."); }
     setGenPlan(false);
   };
 
@@ -4467,16 +4468,39 @@ function AnalyticsScreen({ profile, gs }) {
             <div className="ch"><div className="ct">⚠️ Focus Areas</div></div>
             <div className="cb">
               {subjMastery.length === 0 ? (
-                <div style={{color:"#50508a",fontSize:13}}>Take quizzes to identify your weak areas!</div>
+                <div style={{color:"var(--muted)",fontSize:13}}>Take quizzes to identify your weak areas!</div>
               ) : subjMastery.sort((a,b)=>a.mastery-b.mastery).slice(0,3).map((s,i)=>(
                 <div key={s.name} style={{marginBottom:12}}>
                   <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,fontSize:12,fontWeight:600}}>
-                    <span>{s.name}</span><span style={{fontWeight:700,color:"var(--a3)"}}>{s.mastery}%</span>
+                    <span style={{color:"var(--text)"}}>{s.name}</span>
+                    <span style={{fontWeight:700,color:"var(--danger)"}}>{s.mastery}%</span>
                   </div>
-                  <div className="mb" style={{height:6}}><div className="mf" style={{width:`${s.mastery}%`,background:"var(--a3)"}}/></div>
+                  <div className="mb" style={{height:6}}><div className="mf" style={{width:`${s.mastery}%`,background:"var(--danger)"}}/></div>
                 </div>
               ))}
-              <button className="btn btn-p btn-sm btn-full" style={{marginTop:4}}>✨ AI Study Plan for Weak Areas</button>
+              <button className="btn btn-primary btn-sm btn-full" style={{marginTop:4}}
+                onClick={async()=>{
+                  const weak = subjMastery.sort((a,b)=>a.mastery-b.mastery).slice(0,3).map(s=>s.name);
+                  if(!weak.length){alert("Take some quizzes first to identify your weak areas!");return;}
+                  const btn = document.activeElement;
+                  btn.textContent="Generating..."; btn.disabled=true;
+                  try {
+                    const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label||"Year 9";
+                    const prompt = `Create a targeted study plan for a ${curriculum} student who needs to improve in: ${weak.join(", ")}.
+
+For each weak subject, provide:
+1. The 2-3 most important concepts to review
+2. Specific study strategies for that subject
+3. A 3-day focused action plan
+
+Keep it practical, motivating and specific to the Australian ${curriculum} curriculum.`;
+                    const res = await callGemini(prompt);
+                    setAiPlan(res);
+                  } catch(e) { setAiPlan("Couldn't generate plan — try again."); }
+                  btn.textContent="✨ AI Study Plan for Weak Areas"; btn.disabled=false;
+                }}>
+                ✨ AI Study Plan for Weak Areas
+              </button>
             </div>
           </div>
 
@@ -4542,7 +4566,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
   const [tab, setTab] = useState("profile");
   const [editing, setEditing] = useState(false);
   const [yearLevel, setYearLevel] = useState(profile.yearLevel);
-  const [selectedSubjects, setSelectedSubjects] = useState(profile.selectedSubjects || []);
+  const [selectedSubjects, setSelectedSubjects] = useState((Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]));
   const [futurePath, setFuturePath] = useState(profile.futurePath || "");
   const [hoursPerWeek, setHoursPerWeek] = useState(profile.hoursPerWeek || "moderate");
   const [saved, setSaved] = useState(false);
@@ -4737,10 +4761,12 @@ function SearchScreen({ profile, setScreen }) {
       });
     });
     const screens=[
-      {name:"dashboard",label:"Dashboard",icon:"⊞"},{name:"quiz",label:"Practice Quiz",icon:"🎯"},
-      {name:"flashcards",label:"Flashcards",icon:"🃏"},{name:"planner",label:"Study Planner",icon:"📅"},
-      {name:"analytics",label:"Analytics",icon:"📊"},{name:"ai",label:"AI Tutor",icon:"✨"},
-      {name:"leaderboard",label:"Leaderboard",icon:"🏆"},{name:"groups",label:"Study Groups",icon:"👥"},
+      {name:"dashboard",label:"Dashboard",icon:"⊞"},
+      {name:"planner",label:"Study Planner",icon:"📅"},
+      {name:"analytics",label:"Analytics",icon:"📊"},
+      {name:"ai",label:"AI Tutor",icon:"✨"},
+      {name:"groups",label:"Study Groups",icon:"👥"},
+      {name:"tutors",label:"Tutor Marketplace",icon:"🎓"},
       {name:"settings",label:"Settings",icon:"⚙️"},
     ];
     screens.forEach(s=>{
@@ -4751,9 +4777,12 @@ function SearchScreen({ profile, setScreen }) {
   },[query]);
 
   const QUICK=[
-    {icon:"📚",label:"My Subjects",screen:"subjects"},{icon:"🎯",label:"Practice Quiz",screen:"quiz"},
-    {icon:"🃏",label:"Flashcards",screen:"flashcards"},{icon:"✨",label:"AI Tutor",screen:"ai"},
-    {icon:"📅",label:"Study Planner",screen:"planner"},{icon:"📊",label:"Analytics",screen:"analytics"},
+    {icon:"📚",label:"My Subjects",screen:"subjects"},
+    {icon:"✨",label:"AI Tutor",screen:"ai"},
+    {icon:"📅",label:"Study Planner",screen:"planner"},
+    {icon:"📊",label:"Analytics",screen:"analytics"},
+    {icon:"👥",label:"Study Groups",screen:"groups"},
+    {icon:"🎓",label:"Tutor Marketplace",screen:"tutors"},
   ];
 
   return(
@@ -4830,6 +4859,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
   const [newName, setNewName] = useState("");
   const [newSubject, setNewSubject] = useState((Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[])[0]||"");
   const [newDesc, setNewDesc] = useState("");
+  const [newPublic, setNewPublic] = useState(true);
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState("");
@@ -4894,6 +4924,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
 
   const createGroup = async () => {
     if (!newName.trim()) return;
+    if (!token) { setError("Not logged in — please sign out and sign back in."); return; }
     setCreating(true); setError("");
     try {
       const code = "ACE-"+Math.random().toString(36).slice(2,6).toUpperCase();
@@ -4901,9 +4932,13 @@ function StudyGroupsScreen({ profile, user, gs }) {
       const res = await fetch(`${SB}/study_groups`, {
         method: "POST",
         headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"return=minimal" },
-        body: JSON.stringify({ name:newName.trim(), subject:newSubject, description:newDesc.trim(), created_by:userId, member_count:1, code })
+        body: JSON.stringify({ name:newName.trim(), subject:newSubject, description:newDesc.trim(), created_by:userId, member_count:1, code, is_public:newPublic })
       });
-      if (!res.ok) throw new Error("Failed to create group");
+      if (!res.ok) {
+        let errMsg = `HTTP ${res.status}`;
+        try { const errData = await res.json(); errMsg = errData?.message || errData?.error || errMsg; } catch {}
+        throw new Error(errMsg);
+      }
       // Fetch the group we just created by code
       const data = await sg(`/study_groups?code=eq.${code}&select=*`, token);
       const group = Array.isArray(data) ? data[0] : data;
@@ -4937,7 +4972,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
   );
 
   const myGroups = allGroups.filter(g => myGroupIds.has(g.id));
-  const otherGroups = allGroups.filter(g => !myGroupIds.has(g.id));
+  const otherGroups = allGroups.filter(g => !myGroupIds.has(g.id) && g.is_public !== false);
 
   return (
     <div className="content fade-up">
@@ -5021,6 +5056,15 @@ function StudyGroupsScreen({ profile, user, gs }) {
               <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Description (optional)</div>
               <textarea className="input" value={newDesc} onChange={e=>setNewDesc(e.target.value)} placeholder="What will this group focus on?"/>
             </div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderTop:"1px solid var(--border-light)"}}>
+              <div>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>Public Group</div>
+                <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{newPublic?"Anyone can discover and join":"Only joinable via invite code"}</div>
+              </div>
+              <div className={`switch ${newPublic?"on":""}`} onClick={()=>setNewPublic(p=>!p)}>
+                <div className="switch-knob"/>
+              </div>
+            </div>
             {error&&<div style={{fontSize:12,color:"var(--danger)",padding:"8px 12px",background:"var(--danger-bg)",borderRadius:"var(--r)",border:"1px solid var(--danger)"}}>{error}</div>}
             <button className="btn btn-primary" onClick={createGroup} disabled={creating||!newName.trim()}>
               {creating?"Creating...":"Create Group & Get Invite Code"}
@@ -5040,7 +5084,10 @@ function SGroupCard({ group, isMember, onOpen, onJoin }) {
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
           <div style={{flex:1}}>
             <div style={{fontWeight:800,fontSize:15,color:"var(--text)",letterSpacing:"-.01em"}}>{group.name}</div>
-            <div style={{fontSize:12,fontWeight:700,color,marginTop:2}}>{group.subject}</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,marginTop:2}}>
+              <div style={{fontSize:12,fontWeight:700,color}}>{group.subject}</div>
+              {group.is_public===false && <span style={{fontSize:10,background:"var(--bg4)",color:"var(--muted)",borderRadius:20,padding:"1px 7px",fontWeight:700,border:"1px solid var(--border-light)"}}>🔒 Private</span>}
+            </div>
           </div>
           <span style={{fontSize:11,color:"var(--muted)",background:"var(--bg3)",border:"1px solid var(--border-light)",borderRadius:20,padding:"3px 10px",fontWeight:600,flexShrink:0,marginLeft:8}}>
             {group.member_count||1} member{(group.member_count||1)!==1?"s":""}
@@ -5307,6 +5354,26 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
                 <div style={{fontSize:34,fontWeight:900,letterSpacing:".12em",color:"var(--gold)",marginBottom:8}}>{group.code}</div>
                 <div style={{fontSize:13,color:"var(--muted)",marginBottom:14,lineHeight:1.6}}>Share this code with friends — they enter it under "Join with Code" to instantly join</div>
                 <button className="btn btn-primary btn-sm" onClick={copyCode}>{copied?"✓ Copied!":"Copy Invite Code"}</button>
+              </div>
+            </div>
+          )}
+          {group.created_by === userId && (
+            <div className="card" style={{marginTop:14}}>
+              <div className="card-head"><div className="card-title">👑 Owner Settings</div></div>
+              <div className="card-body">
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>Public Group</div>
+                    <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{group.is_public!==false?"Visible in Discover":"Hidden — invite code only"}</div>
+                  </div>
+                  <div className={`switch ${group.is_public!==false?"on":""}`} onClick={async()=>{
+                    const newVal = group.is_public===false;
+                    await fetch(`${SB}/study_groups?id=eq.${group.id}`,{method:"PATCH",headers:{"Content-Type":"application/json",apikey:SB_KEY,Authorization:`Bearer ${token}`,Prefer:"return=minimal"},body:JSON.stringify({is_public:newVal})}).catch(()=>{});
+                    group.is_public = newVal;
+                  }}>
+                    <div className="switch-knob"/>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -5633,7 +5700,15 @@ export default function App() {
       try {
         const toArray = (v) => {
           if (Array.isArray(v)) return v;
-          if (typeof v === "string") { try { const p = JSON.parse(v); return Array.isArray(p) ? p : []; } catch { return v ? [v] : []; } }
+          if (!v) return [];
+          if (typeof v === "string") {
+            // Handle "{Mathematics,Science}" PostgreSQL array format
+            if (v.startsWith("{") && v.endsWith("}")) {
+              return v.slice(1,-1).split(",").map(s=>s.trim().replace(/^"|"$/g,'')).filter(Boolean);
+            }
+            try { const p = JSON.parse(v); return Array.isArray(p) ? p : []; } catch {}
+            return v ? [v] : [];
+          }
           return [];
         };
 
