@@ -1305,13 +1305,13 @@ function Dashboard({ profile, setScreen, gs }) {
 // GEMINI HELPER — calls YOUR Vercel backend
 // API key is hidden server-side, users need nothing
 // ─────────────────────────────────────────────
-async function callGemini(prompt) {
+async function callGemini(prompt, maxTokens = 4000) {
   const res = await fetch("/api/gemini", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+      generationConfig: { temperature: 0.7, maxOutputTokens: maxTokens }
     })
   });
   const data = await res.json();
@@ -3154,52 +3154,55 @@ function SubjectsScreen({ profile, gs }) {
     const ctx = getCurriculumContext(sel, topic, notes, profile.yearLevel);
 
     const prompts = {
-      study: `You are an expert ${curriculum} tutor. Using ONLY the following official curriculum content, write comprehensive study notes.
+      study: `You are an expert ${curriculum} tutor. Write comprehensive study notes for:
 
 ${ctx}
 
-Write detailed, exam-focused study notes covering:
-1. Key definitions and concepts (bold them using **bold**)
-2. Important formulas or rules (write them in plain text — use × for multiply, ÷ for divide, ² for squared, √ for square root, NOT LaTeX)
-3. Common exam question types and how to answer them
-4. Worked examples where relevant
+Cover ALL of these sections:
+1. Key definitions and concepts (bold with **bold**)
+2. Important formulas or rules (plain text — use ², ³, √, ×, ÷, ≤, ≥, π, Δ — NOT LaTeX)
+3. Common exam question types and model answers
+4. Worked examples
 5. Key things examiners look for
-6. Common student mistakes to avoid
+6. Common mistakes to avoid
 
-IMPORTANT FORMATTING RULES:
-- Use ## for section headings, ### for subheadings
-- Use bullet points with - for lists
-- Write all maths in plain readable text: use ², ³, √, ×, ÷, ≤, ≥, π, Δ — NOT LaTeX ($...$) 
-- Bold key terms with **term**
-- Be specific to the ${curriculum} course, not generic`,
+Use ## headings, ### subheadings, - bullet points. Be thorough and specific to ${curriculum}.`,
 
-      quiz: `Generate 5 ${curriculum} exam-style questions based on:
-${ctx}
-IMPORTANT: Write ALL maths in plain text — use ², ³, √, ×, ÷, π — NEVER use LaTeX ($...$).
-Return ONLY valid JSON array, no markdown:
-[{"question":"...","options":["A","B","C","D"],"correct":0,"explanation":"...","marks":2}]`,
-
-      flashcards: `Generate 8 spaced-repetition flashcards based on:
-${ctx}
-IMPORTANT: Write ALL maths in plain text — use ², ³, √, ×, ÷, π — NEVER use LaTeX ($...$).
-Return ONLY valid JSON array, no markdown:
-[{"q":"...","a":"..."}]`,
-
-      notes: `Based on this curriculum content:
+      quiz: `Generate exactly 5 multiple choice questions for ${curriculum} on:
 ${ctx}
 
-Create a concise dot-point revision summary perfect for last-minute exam study. Include:
+Rules:
+- Each question must have exactly 4 options (A, B, C, D)
+- correct is the INDEX (0, 1, 2 or 3) of the correct answer
+- Include a clear explanation
+- Write maths in plain text: ², √, ×, ÷, π — NO LaTeX
+
+Return ONLY this JSON array with no other text, no markdown, no backticks:
+[{"question":"...","options":["A...","B...","C...","D..."],"correct":0,"explanation":"..."},{"question":"...","options":["A...","B...","C...","D..."],"correct":1,"explanation":"..."},{"question":"...","options":["A...","B...","C...","D..."],"correct":2,"explanation":"..."},{"question":"...","options":["A...","B...","C...","D..."],"correct":0,"explanation":"..."},{"question":"...","options":["A...","B...","C...","D..."],"correct":3,"explanation":"..."}]`,
+
+      flashcards: `Generate exactly 8 flashcards for ${curriculum} on:
+${ctx}
+
+Write maths in plain text: ², √, ×, ÷, π — NO LaTeX.
+
+Return ONLY this JSON array with no other text, no markdown, no backticks:
+[{"q":"question 1","a":"answer 1"},{"q":"question 2","a":"answer 2"},{"q":"question 3","a":"answer 3"},{"q":"question 4","a":"answer 4"},{"q":"question 5","a":"answer 5"},{"q":"question 6","a":"answer 6"},{"q":"question 7","a":"answer 7"},{"q":"question 8","a":"answer 8"}]`,
+
+      notes: `Create a concise dot-point revision summary for ${curriculum} on:
+${ctx}
+
+Include:
 • All key terms and definitions
-• Important formulas/rules (write in plain text — use ², √, ×, ÷, π, Δ — NOT LaTeX)
+• Important formulas/rules (plain text — ², √, ×, ÷, π, Δ — NOT LaTeX)
 • Key cause-effect relationships
 • Common exam traps to avoid
 
-FORMATTING: Use ## headings, - bullet points, **bold** for key terms. NO LaTeX or $ symbols.
-Keep it punchy and exam-focused.`
+Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exam-focused.`
     };
 
     try {
-      const raw = await callGemini(prompts[type]);
+      const tokenLimits = { study: 8000, quiz: 2000, flashcards: 2000, notes: 3000 };
+      const raw = await callGemini(prompts[type], tokenLimits[type] || 4000);
       if (!raw || !raw.trim()) {
         setContent("⚠️ No response received. Try again.");
         setContentLoading(false);
