@@ -593,6 +593,65 @@ const supabase = (() => {
       });
       const d = await r.json();
       return Array.isArray(d) ? d[0] : null;
+    },
+
+    // ── TUTOR MARKETPLACE ──
+    getTutors: async (token) => {
+      const r = await fetch(`${base}/rest/v1/tutor_profiles?order=rating.desc&select=*`, {
+        headers: { ...headers, Authorization: `Bearer ${token}` }
+      });
+      return r.json();
+    },
+
+    getMyTutorProfile: async (userId, token) => {
+      const r = await fetch(`${base}/rest/v1/tutor_profiles?user_id=eq.${userId}&select=*`, {
+        headers: { ...headers, Authorization: `Bearer ${token}` }
+      });
+      const d = await r.json();
+      return Array.isArray(d) ? d[0] : null;
+    },
+
+    createTutorProfile: async (profile, token) => {
+      const r = await fetch(`${base}/rest/v1/tutor_profiles`, {
+        method: "POST",
+        headers: { ...headers, Authorization: `Bearer ${token}`, Prefer: "return=representation" },
+        body: JSON.stringify(profile)
+      });
+      const d = await r.json();
+      return Array.isArray(d) ? d[0] : d;
+    },
+
+    updateTutorProfile: async (userId, profile, token) => {
+      const r = await fetch(`${base}/rest/v1/tutor_profiles?user_id=eq.${userId}`, {
+        method: "PATCH",
+        headers: { ...headers, Authorization: `Bearer ${token}`, Prefer: "return=representation" },
+        body: JSON.stringify({ ...profile, updated_at: new Date().toISOString() })
+      });
+      const d = await r.json();
+      return Array.isArray(d) ? d[0] : d;
+    },
+
+    deleteTutorProfile: async (userId, token) => {
+      await fetch(`${base}/rest/v1/tutor_profiles?user_id=eq.${userId}`, {
+        method: "DELETE",
+        headers: { ...headers, Authorization: `Bearer ${token}` }
+      });
+    },
+
+    getReviews: async (tutorId, token) => {
+      const r = await fetch(`${base}/rest/v1/tutor_reviews?tutor_id=eq.${tutorId}&order=created_at.desc`, {
+        headers: { ...headers, Authorization: `Bearer ${token}` }
+      });
+      return r.json();
+    },
+
+    addReview: async (tutorId, reviewerId, reviewerName, rating, comment, token) => {
+      const r = await fetch(`${base}/rest/v1/tutor_reviews`, {
+        method: "POST",
+        headers: { ...headers, Authorization: `Bearer ${token}`, Prefer: "return=representation" },
+        body: JSON.stringify({ tutor_id: tutorId, reviewer_id: reviewerId, reviewer_name: reviewerName, rating, comment })
+      });
+      return r.json();
     }
   };
 })();
