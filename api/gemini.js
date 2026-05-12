@@ -7,9 +7,7 @@ export default async function handler(req, res) {
   try {
     const { contents, systemInstruction, generationConfig } = req.body;
 
-    // gemini-1.5-flash — free tier works in Australia, supports vision
-    const model = "gemini-1.5-flash";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
 
     const body = { contents };
     if (systemInstruction) body.systemInstruction = systemInstruction;
