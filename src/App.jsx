@@ -4630,11 +4630,10 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
               )}
             </div>
           </div>
-          <div className="card" style={{borderColor:"rgba(255,107,107,.2)"}}>
-            <div className="ch"><div className="ct" style={{color:"var(--a3)"}}>⚠️ Account</div></div>
-            <div className="cb" style={{display:"flex",gap:10}}>
-              <button className="btn btn-sm" style={{border:"1px solid rgba(255,107,107,.3)",color:"var(--a3)"}} onClick={onSignOut}>Sign Out</button>
-              <button className="btn btn-sm btn-g" onClick={()=>{localStorage.clear();onSignOut();}}>Clear All Data & Sign Out</button>
+          <div className="card" style={{borderColor:"var(--danger)"}}>
+            <div className="ch"><div className="ct" style={{color:"var(--danger)"}}>Account</div></div>
+            <div className="cb" style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+              <button className="btn btn-danger btn-sm" onClick={onSignOut}>Sign Out</button>
             </div>
           </div>
         </div>
