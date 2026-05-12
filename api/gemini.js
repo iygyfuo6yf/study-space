@@ -6,11 +6,9 @@ export default async function handler(req, res) {
 
   try {
     const { contents, systemInstruction, generationConfig } = req.body;
-    const hasImages = contents?.some(c => c.parts?.some(p => p.inline_data));
 
-    // Use vision model for images, flash for text
-    const model = hasImages ? "gemini-2.0-flash" : "gemini-2.0-flash";
-
+    // gemini-1.5-flash — free tier works in Australia, supports vision
+    const model = "gemini-1.5-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
 
     const body = { contents };
@@ -24,11 +22,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-
-    if (data.error) {
-      return res.status(400).json({ error: data.error.message || "Gemini error" });
-    }
-
+    if (data.error) return res.status(400).json({ error: data.error.message || "Gemini error" });
     return res.status(200).json(data);
   } catch (error) {
     return res.status(500).json({ error: "Failed: " + error.message });
