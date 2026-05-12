@@ -29,8 +29,11 @@ export default async function handler(req, res) {
       }
     }
 
-    // gemini-2.0-flash-lite — fast, free, supports vision
-    const model = "google/gemini-2.0-flash-lite:free";
+    // Use vision model for images, fast model for text
+    // Both confirmed free and working as of May 2026
+    const model = hasImages
+      ? "google/gemma-3-27b-it:free"      // free, vision capable
+      : "meta-llama/llama-4-maverick:free"; // free, fast, great quality
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
