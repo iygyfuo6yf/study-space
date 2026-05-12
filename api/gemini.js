@@ -9,9 +9,14 @@ export default async function handler(req, res) {
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
 
-    const body = { contents };
+    const body = {
+      contents,
+      generationConfig: {
+        temperature: generationConfig?.temperature ?? 0.7,
+        maxOutputTokens: generationConfig?.maxOutputTokens ?? 4000,
+      }
+    };
     if (systemInstruction) body.systemInstruction = systemInstruction;
-    if (generationConfig) body.generationConfig = generationConfig;
 
     const response = await fetch(url, {
       method: "POST",
