@@ -29,6 +29,10 @@ export default async function handler(req, res) {
       }
     }
 
+    // openrouter/free = guaranteed $0, routes only to free models
+    // For images we need a vision-capable free model
+    const model = hasImages ? "google/gemma-3-12b-it:free" : "openrouter/free";
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -38,7 +42,7 @@ export default async function handler(req, res) {
         "X-Title": "Study Ace"
       },
       body: JSON.stringify({
-        model: "openrouter/auto",
+        model,
         messages,
         max_tokens: generationConfig?.maxOutputTokens || 1500,
         temperature: generationConfig?.temperature || 0.7,
