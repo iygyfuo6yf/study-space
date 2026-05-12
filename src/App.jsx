@@ -128,15 +128,19 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--ff);height:10
 .nav-section{padding:10px 8px 0;}
 .nav-lbl{font-size:9px;font-weight:800;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;padding:0 8px;margin-bottom:3px;}
 .ni{
-  display:flex;align-items:center;gap:8px;padding:8px 10px;
-  border-radius:var(--r);cursor:pointer;font-size:12.5px;font-weight:600;color:var(--muted);
-  transition:all .15s;margin-bottom:1px;border:1.5px solid transparent;
+  display:flex;align-items:center;gap:9px;padding:9px 12px;
+  border-radius:var(--r2);cursor:pointer;font-size:12.5px;font-weight:600;color:var(--muted);
+  transition:all .15s;margin-bottom:3px;border:1.5px solid transparent;
+  background:transparent;width:100%;text-align:left;font-family:var(--ff);
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
 }
 .ni:hover{background:var(--bg3);color:var(--text);border-color:var(--border-light);}
-.ni.active{background:var(--bg4);color:var(--text);font-weight:800;border-color:var(--border);border-left:3px solid var(--text);}
-[data-theme="dark"] .ni.active{background:var(--bg4);color:var(--accent);font-weight:800;border-color:var(--border);border-left:3px solid var(--accent);}
-.ni-icon{font-size:13px;width:18px;text-align:center;flex-shrink:0;}
+.ni.active{background:var(--bg3);color:var(--text);font-weight:800;border-color:var(--border-light);border-left:3px solid var(--text);}
+[data-theme="dark"] .ni.active{background:var(--bg3);color:var(--accent);font-weight:800;border-color:var(--border);border-left:3px solid var(--accent);}
+.ni-icon{font-size:14px;width:20px;text-align:center;flex-shrink:0;}
 .ni-badge{margin-left:auto;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;background:var(--gold-light);color:var(--gold);border:1px solid var(--gold);}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border-color:var(--danger);}
+.btn-danger:hover{opacity:.85;}
 
 .sb-bottom{margin-top:auto;border-top:1.5px solid var(--border);padding:12px 10px;}
 .user-row{display:flex;align-items:center;gap:9px;padding:8px;border-radius:var(--r);cursor:pointer;border:1.5px solid transparent;transition:all .15s;}
@@ -1174,9 +1178,9 @@ function Dashboard({ profile, setScreen, gs }) {
           <div className="card">
             <div className="ch"><div className="ct">⚡ Quick Actions</div></div>
             <div className="cb" style={{display:"flex",flexDirection:"column",gap:7}}>
-              <button className="btn btn-p btn-full" onClick={()=>setScreen("quiz")}>🎯 Practice Quiz</button>
-              <button className="btn btn-s btn-full" onClick={()=>setScreen("flashcards")}>🃏 Flashcards</button>
-              <button className="btn btn-g btn-full" onClick={()=>setScreen("ai")}>✨ Ask Gemini AI Tutor</button>
+              <button className="btn btn-p btn-full" onClick={()=>setScreen("subjects")}>📚 Study a Subject</button>
+              <button className="btn btn-s btn-full" onClick={()=>setScreen("ai")}>✨ Ask AI Tutor</button>
+              <button className="btn btn-g btn-full" onClick={()=>setScreen("planner")}>📅 Study Planner</button>
             </div>
           </div>
         </div>
@@ -3537,12 +3541,21 @@ Respond ONLY with valid JSON, no markdown, no backticks:
 [{"subject":"${selSubj}","question":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
 
       const raw = await callGemini(prompt);
-      const clean = raw.replace(/```json|```/g,"").trim();
+      // Robust JSON extraction — handles markdown, extra text, etc.
+      let clean = raw.replace(/```json\n?|```\n?/g, "").trim();
+      // Find the JSON array
+      const start = clean.indexOf("[");
+      const end = clean.lastIndexOf("]");
+      if (start === -1 || end === -1) throw new Error("No JSON array found");
+      clean = clean.slice(start, end + 1);
       const parsed = JSON.parse(clean);
-      if(!Array.isArray(parsed) || parsed.length===0) throw new Error("Bad response");
-      setQuestions(parsed);
+      if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("Bad response");
+      // Validate each question has options array
+      const valid = parsed.filter(q => q.question && Array.isArray(q.options) && q.options.length >= 2);
+      if (valid.length === 0) throw new Error("No valid questions");
+      setQuestions(valid);
     } catch(e) {
-      setError("Couldn't generate questions. Check your Gemini API key in the AI Tutor tab.");
+      setError("Couldn't generate questions — " + (e.message || "try again"));
     }
     setLoading(false);
   };
@@ -3839,10 +3852,26 @@ Return ONLY valid JSON, no markdown:
 function AIScreen({ profile }) {
   const firstName = profile.userName?.split(" ")[0] || "there";
   const curriculum = profile.yearLevel === "ib" ? "IB Diploma" : profile.yearLevel === "vce" ? "VCE" : ALL_SUBJECTS[profile.yearLevel]?.label || "Victorian secondary";
+  const MEMORY_KEY = `ss_chat_${profile.userName||"user"}`;
 
-  const [msgs, setMsgs] = useState([
-    {role:"ai", text:`Hey ${firstName}! I'm your AI tutor — powered by Google Gemini.\n\nI know you're studying ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3).join(", ")}${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length > 3 ? ` and ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length - 3} more` : ""} in ${curriculum}.\n\nAsk me anything, or upload a photo of your homework, worksheet or textbook — I'll answer it directly.`}
-  ]);
+  const welcomeMsg = {role:"ai", text:`Hey ${firstName}! I'm your AI tutor — powered by Google Gemini.\n\nI know you're studying ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3).join(", ")}${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length > 3 ? ` and ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length - 3} more` : ""} in ${curriculum}.\n\nAsk me anything, or upload a photo of your homework, worksheet or textbook — I'll answer it directly.`};
+
+  const [msgs, setMsgs] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(MEMORY_KEY) || "null");
+      if (Array.isArray(saved) && saved.length > 0) return saved;
+    } catch {}
+    return [welcomeMsg];
+  });
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    try {
+      // Only save text messages (not images - too large)
+      const toSave = msgs.map(m => ({...m, images: undefined})).slice(-30); // keep last 30
+      localStorage.setItem(MEMORY_KEY, JSON.stringify(toSave));
+    } catch {}
+  }, [msgs]);
   const [input, setInput] = useState("");
   const [images, setImages] = useState([]); // [{base64, preview, mediaType}]
   const [loading, setLoading] = useState(false);
@@ -4029,10 +4058,12 @@ Rules: Australian English. Warm and direct. Plain text maths (², √, ×). Bold
           </button>
         </div>
 
-        <div style={{fontSize:10,color:"var(--muted2)",marginTop:8,display:"flex",gap:12,alignItems:"center"}}>
-          <span>Powered by Google Gemini · {curriculum}</span>
-          <span style={{color:"var(--border-light)"}}>·</span>
-          <span>📎 Attach · 📷 Camera · Paste image · Drag & drop</span>
+        <div style={{fontSize:10,color:"var(--muted2)",marginTop:8,display:"flex",gap:12,alignItems:"center",justifyContent:"space-between"}}>
+          <span>Powered by Google Gemini · {curriculum} · Chat saved</span>
+          <button onClick={()=>{ localStorage.removeItem(MEMORY_KEY); setMsgs([welcomeMsg]); }}
+            style={{fontSize:10,color:"var(--muted)",background:"none",border:"none",cursor:"pointer",fontFamily:"var(--ff)",padding:0,textDecoration:"underline"}}>
+            Clear chat
+          </button>
         </div>
       </div>
     </div>
@@ -4272,6 +4303,16 @@ function AnalyticsScreen({ profile, gs }) {
   const { state, predictATAR } = gs;
   const isIB = profile.yearLevel === "ib";
   const predicted = predictATAR();
+  const [targetATAR, setTargetATAR] = useState(() => {
+    const saved = localStorage.getItem("ss_targetATAR");
+    if (saved) return parseFloat(saved);
+    return {medicine:99,law:95,engineering:90,cs:85,business:80,arts_hum:70,science:85,education:65,creative:60,trades:50}[profile.futurePath] || 75;
+  });
+
+  const updateTarget = (val) => {
+    setTargetATAR(val);
+    localStorage.setItem("ss_targetATAR", val);
+  };
 
   // Build last 12 weeks of activity for chart
   const weeks = Array.from({length:12},(_,i)=>{
@@ -4305,8 +4346,6 @@ function AnalyticsScreen({ profile, gs }) {
     : 0;
   const totalHours = Math.round((state.totalMinutes||0)/60);
 
-  // ATAR breakdown
-  const targetATAR = {medicine:99,law:95,engineering:90,cs:85,business:80,arts_hum:70,science:85,education:65,creative:60}[profile.futurePath]||75;
   const currentNum = parseFloat(predicted) || 0;
   const gap = isIB ? null : Math.max(0, targetATAR - currentNum).toFixed(2);
 
@@ -4367,8 +4406,20 @@ function AnalyticsScreen({ profile, gs }) {
                 <div style={{fontSize:11,color:"#50508a"}}>Goal</div>
               </div>
             </div>
-            <div style={{fontSize:12,color:"#7070a8",background:"var(--bg3)",borderRadius:8,padding:"10px 14px"}}>
-              💡 Your ATAR prediction improves as you complete quizzes and raise your subject mastery scores. Take more quizzes to get a more accurate prediction.
+            <div style={{fontSize:12,color:"var(--muted)",background:"var(--bg3)",borderRadius:8,padding:"10px 14px",marginBottom:12}}>
+              💡 Your ATAR prediction improves as you complete quizzes and raise your subject mastery scores.
+            </div>
+            <div>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:12,fontWeight:700,color:"var(--muted)",marginBottom:6}}>
+                <span>Set your target ATAR</span>
+                <span style={{color:"var(--gold)",fontWeight:900}}>{targetATAR}</span>
+              </div>
+              <input type="range" min="50" max="99.95" step="0.05" value={targetATAR}
+                onChange={e=>updateTarget(parseFloat(e.target.value))}
+                style={{width:"100%",accentColor:"var(--gold)",cursor:"pointer"}}/>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"var(--muted2)",marginTop:2}}>
+                <span>50</span><span>75</span><span>90</span><span>99.95</span>
+              </div>
             </div>
           </div>
         </div>
@@ -4757,18 +4808,23 @@ function SearchScreen({ profile, setScreen }) {
 }
 
 // ─────────────────────────────────────────────
-// STUDY GROUPS — with built-in leaderboard
+// STUDY GROUPS — full rebuild with persistence,
+// image upload, reliable chat, leaderboard
 // ─────────────────────────────────────────────
-const SB_URL = "https://ybxfjndeckyynhgsgqma.supabase.co/rest/v1";
+const SB = "https://ybxfjndeckyynhgsgqma.supabase.co/rest/v1";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlieGZqbmRlY2t5eW5oZ3NncW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTcxNTYsImV4cCI6MjA5Mzg5MzE1Nn0.CaPL1ydby2DsPMbM_IsDovZiGWxz7PF0j_cTuLVw4dk";
-const sbH = (token) => ({ "Content-Type": "application/json", apikey: SB_KEY, Authorization: `Bearer ${token}`, Prefer: "return=representation" });
-const sbFetch = (path, token, opts={}) => fetch(`${SB_URL}${path}`, { headers: sbH(token), ...opts });
-
+const sh = (token, extra={}) => ({ "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"return=representation", ...extra });
+const sg = async (path, token, opts={}) => {
+  const r = await fetch(`${SB}${path}`, { headers:sh(token), ...opts });
+  return r.json();
+};
 
 function StudyGroupsScreen({ profile, user, gs }) {
   const [tab, setTab] = useState("mine");
-  const [groups, setGroups] = useState([]);
-  const [myGroupIds, setMyGroupIds] = useState(new Set());
+  const [allGroups, setAllGroups] = useState([]);
+  const [myGroupIds, setMyGroupIds] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem("ss_my_groups")||"[]")); } catch { return new Set(); }
+  });
   const [loading, setLoading] = useState(true);
   const [activeGroup, setActiveGroup] = useState(null);
   const [joinCode, setJoinCode] = useState("");
@@ -4780,33 +4836,46 @@ function StudyGroupsScreen({ profile, user, gs }) {
   const [error, setError] = useState("");
   const token = user?.session?.access_token;
   const userId = user?.userId;
-  const { state } = gs;
 
   useEffect(() => { loadAll(); }, []);
 
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [allRes, myRes] = await Promise.all([
-        sbFetch("/study_groups?order=created_at.desc&select=*", token),
-        sbFetch(`/group_members?user_id=eq.${userId}&select=group_id`, token),
-      ]);
-      const all = await allRes.json();
-      const my = await myRes.json();
-      setGroups(Array.isArray(all) ? all : []);
-      setMyGroupIds(new Set(Array.isArray(my) ? my.map(m=>m.group_id) : []));
-    } catch {}
+      // Get my memberships
+      const memberships = await sg(`/group_members?user_id=eq.${userId}&select=group_id`, token);
+      const ids = Array.isArray(memberships) ? memberships.map(m=>m.group_id) : [];
+      const newSet = new Set(ids);
+      setMyGroupIds(newSet);
+      localStorage.setItem("ss_my_groups", JSON.stringify(ids));
+
+      // Get all groups
+      const groups = await sg("/study_groups?order=created_at.desc&select=*", token);
+      setAllGroups(Array.isArray(groups) ? groups : []);
+    } catch(e) { console.error("loadAll error:", e); }
     setLoading(false);
   };
 
-  const joinGroup = async (group) => {
+  const doJoinGroup = async (group) => {
     try {
-      await sbFetch("/group_members", token, { method:"POST", body:JSON.stringify({group_id:group.id,user_id:userId,display_name:profile.userName}) });
-      await sbFetch("/leaderboard_members", token, { method:"POST", headers:{...sbH(token),Prefer:"resolution=merge-duplicates,return=minimal"}, body:JSON.stringify({leaderboard_id:group.id,user_id:userId,display_name:profile.userName,xp:state.xp||0,level:state.level||1,streak:state.streak||0}) }).catch(()=>{});
-      setMyGroupIds(s => new Set([...s, group.id]));
-      setGroups(gs => gs.map(g => g.id===group.id ? {...g,member_count:(g.member_count||1)+1} : g));
+      await sg("/group_members", token, {
+        method: "POST",
+        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        body: JSON.stringify({ group_id:group.id, user_id:userId, display_name:profile.userName, role:"member" })
+      });
+      // Also add to leaderboard
+      await sg("/leaderboard_members", token, {
+        method: "POST",
+        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        body: JSON.stringify({ leaderboard_id:group.id, user_id:userId, display_name:profile.userName, xp:gs.state.xp||0, level:gs.state.level||1, streak:gs.state.streak||0 })
+      }).catch(()=>{});
+      // Update local state
+      const newIds = new Set([...myGroupIds, group.id]);
+      setMyGroupIds(newIds);
+      localStorage.setItem("ss_my_groups", JSON.stringify([...newIds]));
+      setAllGroups(prev => prev.map(g => g.id===group.id ? {...g, member_count:(g.member_count||1)+1} : g));
       setActiveGroup(group);
-    } catch(e) { alert("Couldn't join: "+(e.message||"")); }
+    } catch(e) { alert("Couldn't join: "+(e.message||"try again")); }
   };
 
   const joinByCode = async () => {
@@ -4814,14 +4883,15 @@ function StudyGroupsScreen({ profile, user, gs }) {
     if (!code) return;
     setJoining(true); setError("");
     try {
-      const res = await sbFetch(`/study_groups?code=eq.${code}&select=*`, token);
-      const data = await res.json();
-      if (!data?.length) { setError("No group found with that code."); setJoining(false); return; }
+      const data = await sg(`/study_groups?code=eq.${code}&select=*`, token);
+      if (!Array.isArray(data) || data.length === 0) {
+        setError("No group found with that code. Check and try again."); setJoining(false); return;
+      }
       const group = data[0];
       if (myGroupIds.has(group.id)) { setActiveGroup(group); setJoining(false); return; }
-      await joinGroup(group);
+      await doJoinGroup(group);
       setJoinCode("");
-    } catch(e) { setError("Couldn't join: "+(e.message||"")); }
+    } catch(e) { setError("Error: "+(e.message||"try again")); }
     setJoining(false);
   };
 
@@ -4829,63 +4899,104 @@ function StudyGroupsScreen({ profile, user, gs }) {
     if (!newName.trim()) return;
     setCreating(true); setError("");
     try {
-      const code = "ACE-" + Math.random().toString(36).slice(2,6).toUpperCase();
-      const res = await sbFetch("/study_groups", token, { method:"POST", body:JSON.stringify({name:newName.trim(),subject:newSubject,description:newDesc.trim(),created_by:userId,member_count:1,code}) });
-      const data = await res.json();
+      const code = "ACE-"+Math.random().toString(36).slice(2,6).toUpperCase();
+      const data = await sg("/study_groups", token, {
+        method: "POST",
+        body: JSON.stringify({ name:newName.trim(), subject:newSubject, description:newDesc.trim(), created_by:userId, member_count:1, code })
+      });
       const group = Array.isArray(data) ? data[0] : data;
-      await sbFetch("/group_members", token, { method:"POST", body:JSON.stringify({group_id:group.id,user_id:userId,display_name:profile.userName}) });
-      await sbFetch("/leaderboard_members", token, { method:"POST", headers:{...sbH(token),Prefer:"resolution=merge-duplicates,return=minimal"}, body:JSON.stringify({leaderboard_id:group.id,user_id:userId,display_name:profile.userName,xp:state.xp||0,level:state.level||1,streak:state.streak||0}) }).catch(()=>{});
+      if (!group?.id) throw new Error("Group creation failed");
+      // Join as creator
+      await sg("/group_members", token, {
+        method: "POST",
+        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        body: JSON.stringify({ group_id:group.id, user_id:userId, display_name:profile.userName, role:"creator" })
+      });
+      await sg("/leaderboard_members", token, {
+        method: "POST",
+        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        body: JSON.stringify({ leaderboard_id:group.id, user_id:userId, display_name:profile.userName, xp:gs.state.xp||0, level:gs.state.level||1, streak:gs.state.streak||0 })
+      }).catch(()=>{});
+      const newIds = new Set([...myGroupIds, group.id]);
+      setMyGroupIds(newIds);
+      localStorage.setItem("ss_my_groups", JSON.stringify([...newIds]));
+      setAllGroups(prev => [group, ...prev]);
       setNewName(""); setNewDesc("");
-      await loadAll();
       setActiveGroup(group);
-    } catch(e) { setError("Couldn't create: "+(e.message||"")); }
+    } catch(e) { setError("Couldn't create: "+(e.message||"try again")); }
     setCreating(false);
   };
 
-  if (activeGroup) return <GroupView group={activeGroup} profile={profile} user={user} gs={gs} isMember={myGroupIds.has(activeGroup.id)} onBack={()=>{setActiveGroup(null);loadAll();}} onJoin={()=>joinGroup(activeGroup)}/>;
+  if (activeGroup) return (
+    <GroupView group={activeGroup} profile={profile} user={user} gs={gs}
+      isMember={myGroupIds.has(activeGroup.id)}
+      onBack={()=>{ setActiveGroup(null); loadAll(); }}
+      onJoin={()=>doJoinGroup(activeGroup)}/>
+  );
 
-  const myGroups = groups.filter(g=>myGroupIds.has(g.id));
-  const otherGroups = groups.filter(g=>!myGroupIds.has(g.id));
+  const myGroups = allGroups.filter(g => myGroupIds.has(g.id));
+  const otherGroups = allGroups.filter(g => !myGroupIds.has(g.id));
 
   return (
     <div className="content fade-up">
       <div style={{marginBottom:20}}>
         <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",color:"var(--text)"}}>Study Groups</div>
-        <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Group chat · Leaderboard · Invite your friends</div>
+        <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Group chat · XP leaderboard · Invite friends with a code</div>
       </div>
+
       <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
         {[{id:"mine",label:"My Groups"},{id:"discover",label:"Discover"},{id:"join",label:"Join with Code"},{id:"create",label:"Create Group"}].map(t=>(
-          <button key={t.id} onClick={()=>{setTab(t.id);setError("");}} className={`btn btn-sm ${tab===t.id?"btn-primary":"btn-secondary"}`}>{t.label}</button>
+          <button key={t.id} onClick={()=>{setTab(t.id);setError("");}}
+            className={`btn btn-sm ${tab===t.id?"btn-primary":"btn-secondary"}`}>{t.label}</button>
         ))}
       </div>
 
-      {tab==="mine" && (loading ? <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>Loading...</div> : myGroups.length===0 ? (
-        <div style={{textAlign:"center",padding:"60px 24px"}}>
-          <div style={{fontSize:48,marginBottom:16}}>👥</div>
-          <div style={{fontWeight:700,fontSize:18,color:"var(--text)",marginBottom:8}}>No groups yet</div>
-          <div style={{fontSize:13,color:"var(--muted)",marginBottom:24}}>Create a group and invite friends, or join with a code</div>
-          <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
-            <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>Create Group</button>
-            <button className="btn btn-secondary btn-sm" onClick={()=>setTab("join")}>Join with Code</button>
+      {tab==="mine" && (
+        loading ? <div style={{textAlign:"center",padding:40,color:"var(--muted)"}}>Loading your groups...</div>
+        : myGroups.length===0 ? (
+          <div style={{textAlign:"center",padding:"60px 24px"}}>
+            <div style={{fontSize:48,marginBottom:16}}>👥</div>
+            <div style={{fontWeight:700,fontSize:18,color:"var(--text)",marginBottom:8}}>No groups yet</div>
+            <div style={{fontSize:13,color:"var(--muted)",marginBottom:20}}>Create a group and invite friends, or join with a code</div>
+            <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
+              <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>Create Group</button>
+              <button className="btn btn-secondary btn-sm" onClick={()=>setTab("join")}>Join with Code</button>
+            </div>
           </div>
-        </div>
-      ) : <div style={{display:"flex",flexDirection:"column",gap:12}}>{myGroups.map(g=><GroupCard key={g.id} group={g} isMember={true} onOpen={()=>setActiveGroup(g)}/>)}</div>)}
+        ) : (
+          <div style={{display:"flex",flexDirection:"column",gap:12}}>
+            {myGroups.map(g=><SGroupCard key={g.id} group={g} isMember={true} onOpen={()=>setActiveGroup(g)}/>)}
+          </div>
+        )
+      )}
 
-      {tab==="discover" && (loading ? <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>Loading...</div> : otherGroups.length===0 ? (
-        <div style={{textAlign:"center",padding:"60px 24px"}}>
-          <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:8}}>No public groups yet</div>
-          <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>Create the first one</button>
-        </div>
-      ) : <div style={{display:"flex",flexDirection:"column",gap:12}}>{otherGroups.map(g=><GroupCard key={g.id} group={g} isMember={false} onJoin={()=>joinGroup(g)} onOpen={()=>setActiveGroup(g)}/>)}</div>)}
+      {tab==="discover" && (
+        loading ? <div style={{textAlign:"center",padding:40,color:"var(--muted)"}}>Loading...</div>
+        : otherGroups.length===0 ? (
+          <div style={{textAlign:"center",padding:"60px 24px"}}>
+            <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:8}}>No other groups yet</div>
+            <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>Create the first one</button>
+          </div>
+        ) : (
+          <div style={{display:"flex",flexDirection:"column",gap:12}}>
+            {otherGroups.map(g=><SGroupCard key={g.id} group={g} isMember={false} onJoin={()=>doJoinGroup(g)} onOpen={()=>setActiveGroup(g)}/>)}
+          </div>
+        )
+      )}
 
       {tab==="join" && (
         <div className="card" style={{maxWidth:400}}>
           <div className="card-head"><div className="card-title">Join with Invite Code</div></div>
           <div className="card-body" style={{display:"flex",flexDirection:"column",gap:12}}>
             <div style={{fontSize:13,color:"var(--muted)"}}>Enter the code your friend shared with you.</div>
-            <input className="input" value={joinCode} onChange={e=>setJoinCode(e.target.value.toUpperCase())} placeholder="e.g. ACE-4F2X" maxLength={8} style={{fontSize:20,fontWeight:700,letterSpacing:".12em",textAlign:"center"}}/>
+            <input className="input" value={joinCode} onChange={e=>setJoinCode(e.target.value.toUpperCase())}
+              placeholder="ACE-XXXX" maxLength={8}
+              style={{fontSize:22,fontWeight:800,letterSpacing:".12em",textAlign:"center"}}
+              onKeyDown={e=>e.key==="Enter"&&joinByCode()}/>
             {error&&<div style={{fontSize:12,color:"var(--danger)",padding:"8px 12px",background:"var(--danger-bg)",borderRadius:"var(--r)",border:"1px solid var(--danger)"}}>{error}</div>}
-            <button className="btn btn-primary" onClick={joinByCode} disabled={joining||!joinCode.trim()}>{joining?"Joining...":"Join Group"}</button>
+            <button className="btn btn-primary" onClick={joinByCode} disabled={joining||!joinCode.trim()}>
+              {joining?"Finding group...":"Join Group"}
+            </button>
           </div>
         </div>
       )}
@@ -4894,13 +5005,24 @@ function StudyGroupsScreen({ profile, user, gs }) {
         <div className="card" style={{maxWidth:520}}>
           <div className="card-head"><div className="card-title">Create a Study Group</div></div>
           <div className="card-body" style={{display:"flex",flexDirection:"column",gap:14}}>
-            <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Group Name</div><input className="input" value={newName} onChange={e=>setNewName(e.target.value)} placeholder="e.g. Year 12 Chemistry Squad"/></div>
-            <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Subject</div>
-              <select className="input" value={newSubject} onChange={e=>setNewSubject(e.target.value)}>{(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).map(s=><option key={s} value={s}>{s}</option>)}</select>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Group Name *</div>
+              <input className="input" value={newName} onChange={e=>setNewName(e.target.value)} placeholder="e.g. Year 12 Chemistry Squad"/>
             </div>
-            <div><div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Description (optional)</div><textarea className="input" value={newDesc} onChange={e=>setNewDesc(e.target.value)} placeholder="What will this group focus on?"/></div>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Subject</div>
+              <select className="input" value={newSubject} onChange={e=>setNewSubject(e.target.value)}>
+                {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).map(s=><option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Description (optional)</div>
+              <textarea className="input" value={newDesc} onChange={e=>setNewDesc(e.target.value)} placeholder="What will this group focus on?"/>
+            </div>
             {error&&<div style={{fontSize:12,color:"var(--danger)",padding:"8px 12px",background:"var(--danger-bg)",borderRadius:"var(--r)",border:"1px solid var(--danger)"}}>{error}</div>}
-            <button className="btn btn-primary" onClick={createGroup} disabled={creating||!newName.trim()}>{creating?"Creating...":"Create Group & Get Invite Code"}</button>
+            <button className="btn btn-primary" onClick={createGroup} disabled={creating||!newName.trim()}>
+              {creating?"Creating...":"Create Group & Get Invite Code"}
+            </button>
           </div>
         </div>
       )}
@@ -4908,23 +5030,27 @@ function StudyGroupsScreen({ profile, user, gs }) {
   );
 }
 
-function GroupCard({ group, isMember, onOpen, onJoin }) {
+function SGroupCard({ group, isMember, onOpen, onJoin }) {
   const color = getColor(group.subject);
   return (
-    <div className="card" style={{borderLeft:`3px solid ${color}`,cursor:"pointer"}} onClick={isMember?onOpen:undefined}>
+    <div className="card" style={{borderLeft:`3px solid ${color}`,cursor:isMember?"pointer":"default"}} onClick={isMember?onOpen:undefined}>
       <div className="card-body">
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
-          <div>
-            <div style={{fontWeight:800,fontSize:15,color:"var(--text)"}}>{group.name}</div>
+          <div style={{flex:1}}>
+            <div style={{fontWeight:800,fontSize:15,color:"var(--text)",letterSpacing:"-.01em"}}>{group.name}</div>
             <div style={{fontSize:12,fontWeight:700,color,marginTop:2}}>{group.subject}</div>
           </div>
-          <span style={{fontSize:11,color:"var(--muted)",background:"var(--bg3)",border:"1px solid var(--border-light)",borderRadius:20,padding:"3px 10px",fontWeight:600,flexShrink:0}}>{group.member_count||1} member{(group.member_count||1)!==1?"s":""}</span>
+          <span style={{fontSize:11,color:"var(--muted)",background:"var(--bg3)",border:"1px solid var(--border-light)",borderRadius:20,padding:"3px 10px",fontWeight:600,flexShrink:0,marginLeft:8}}>
+            {group.member_count||1} member{(group.member_count||1)!==1?"s":""}
+          </span>
         </div>
         {group.description&&<div style={{fontSize:13,color:"var(--muted)",marginBottom:12,lineHeight:1.5}}>{group.description}</div>}
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
-          {isMember ? <button className="btn btn-primary btn-sm" onClick={onOpen}>Open Group</button>
-            : <button className="btn btn-primary btn-sm" onClick={e=>{e.stopPropagation();onJoin();}}>Join Group</button>}
-          {group.code&&<span style={{fontSize:11,color:"var(--muted)",fontWeight:600}}>Code: <span style={{color:"var(--gold)",fontWeight:800}}>{group.code}</span></span>}
+          {isMember
+            ? <button className="btn btn-primary btn-sm" onClick={onOpen}>Open Group</button>
+            : <button className="btn btn-primary btn-sm" onClick={e=>{e.stopPropagation();onJoin();}}>Join Group</button>
+          }
+          {group.code&&<span style={{fontSize:11,color:"var(--muted)"}}>Code: <strong style={{color:"var(--gold)"}}>{group.code}</strong></span>}
         </div>
       </div>
     </div>
@@ -4939,8 +5065,10 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
   const [sending, setSending] = useState(false);
   const [loadingMsgs, setLoadingMsgs] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [imgPreview, setImgPreview] = useState(null); // {base64, dataUrl}
   const bottomRef = useRef(null);
   const pollRef = useRef(null);
+  const fileRef = useRef(null);
   const token = user?.session?.access_token;
   const userId = user?.userId;
   const { state } = gs;
@@ -4948,8 +5076,8 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
 
   useEffect(() => {
     loadMessages();
-    syncAndLoadLeaderboard();
-    pollRef.current = setInterval(loadMessages, 3000);
+    syncLeaderboard();
+    pollRef.current = setInterval(loadMessages, 4000);
     return () => clearInterval(pollRef.current);
   }, []);
 
@@ -4957,75 +5085,126 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
 
   const loadMessages = async () => {
     try {
-      const res = await sbFetch(`/group_messages?group_id=eq.${group.id}&order=created_at.asc&limit=100`, token);
-      const data = await res.json();
+      const data = await sg(`/group_messages?group_id=eq.${group.id}&order=created_at.asc&limit=80`, token);
       if (Array.isArray(data)) setMessages(data);
     } catch {}
     setLoadingMsgs(false);
   };
 
-  const syncAndLoadLeaderboard = async () => {
+  const syncLeaderboard = async () => {
     try {
-      await sbFetch("/leaderboard_members", token, { method:"POST", headers:{...sbH(token),Prefer:"resolution=merge-duplicates,return=minimal"}, body:JSON.stringify({leaderboard_id:group.id,user_id:userId,display_name:profile.userName,xp:state.xp||0,level:state.level||1,streak:state.streak||0}) }).catch(()=>{});
-      const res = await sbFetch(`/leaderboard_members?leaderboard_id=eq.${group.id}&order=xp.desc&select=*`, token);
-      const data = await res.json();
+      await sg("/leaderboard_members", token, {
+        method: "POST",
+        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        body: JSON.stringify({ leaderboard_id:group.id, user_id:userId, display_name:profile.userName, xp:state.xp||0, level:state.level||1, streak:state.streak||0 })
+      });
+      const data = await sg(`/leaderboard_members?leaderboard_id=eq.${group.id}&order=xp.desc&select=*`, token);
       if (Array.isArray(data)) setMembers(data);
     } catch {}
   };
 
+  const handleImageSelect = (file) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      const base64 = dataUrl.split(",")[1];
+      setImgPreview({ base64, dataUrl, mediaType: file.type });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const send = async () => {
-    if (!input.trim()||sending) return;
-    const text = input.trim(); setInput(""); setSending(true);
-    const temp = {id:"tmp-"+Date.now(),group_id:group.id,user_id:userId,display_name:profile.userName,content:text,created_at:new Date().toISOString()};
-    setMessages(m=>[...m,temp]);
+    if ((!input.trim() && !imgPreview) || sending) return;
+    setSending(true);
     try {
-      await sbFetch("/group_messages", token, {method:"POST",body:JSON.stringify({group_id:group.id,user_id:userId,display_name:profile.userName,content:text})});
+      let content = input.trim();
+      // If there's an image, embed it as a special format
+      if (imgPreview) {
+        content = `[IMG:${imgPreview.mediaType}:${imgPreview.base64}]${content ? "\n"+content : ""}`;
+      }
+      const temp = { id:"tmp-"+Date.now(), group_id:group.id, user_id:userId, display_name:profile.userName, content, created_at:new Date().toISOString() };
+      setMessages(m=>[...m, temp]);
+      setInput(""); setImgPreview(null);
+      await sg("/group_messages", token, {
+        method: "POST",
+        headers: sh(token, {Prefer:"return=minimal"}),
+        body: JSON.stringify({ group_id:group.id, user_id:userId, display_name:profile.userName, content })
+      });
       await loadMessages();
-    } catch { setMessages(m=>m.filter(m=>m.id!==temp.id)); }
+    } catch {}
     setSending(false);
   };
 
-  const copyCode = () => { if(group.code){navigator.clipboard.writeText(group.code);setCopied(true);setTimeout(()=>setCopied(false),2000);} };
+  const copyCode = () => {
+    if (group.code) { navigator.clipboard.writeText(group.code); setCopied(true); setTimeout(()=>setCopied(false),2000); }
+  };
+
   const rankIcon = i => i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;
+
+  // Render message content — handles images embedded as [IMG:...]
+  const renderContent = (content) => {
+    if (!content) return null;
+    if (content.startsWith("[IMG:")) {
+      const end = content.indexOf("]");
+      const parts = content.slice(5, end).split(":");
+      const mediaType = parts[0]+":"+parts[1];
+      const base64 = parts.slice(2).join(":");
+      const text = content.slice(end+1).trim();
+      return (
+        <>
+          <img src={`data:${mediaType};base64,${base64}`} alt="shared image"
+            style={{maxWidth:"100%",maxHeight:200,borderRadius:"var(--r)",border:"1.5px solid var(--border)",display:"block",marginBottom:text?6:0}}/>
+          {text && <div style={{whiteSpace:"pre-wrap"}}>{text}</div>}
+        </>
+      );
+    }
+    return <div style={{whiteSpace:"pre-wrap"}}>{content}</div>;
+  };
 
   return (
     <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 56px)"}}>
-      <div style={{padding:"12px 26px",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",display:"flex",alignItems:"center",gap:12,flexShrink:0}}>
+      {/* Header */}
+      <div style={{padding:"10px 20px",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
         <button className="btn btn-ghost btn-sm" onClick={onBack}>← Back</button>
-        <div style={{width:36,height:36,borderRadius:"var(--r)",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>📚</div>
+        <div style={{width:34,height:34,borderRadius:"var(--r)",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>📚</div>
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontWeight:800,fontSize:14,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{group.name}</div>
+          <div style={{fontWeight:800,fontSize:14,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{group.name}</div>
           <div style={{fontSize:11,color:"var(--muted)"}}>{group.subject}</div>
         </div>
-        {group.code&&(
-          <button onClick={copyCode} style={{background:"var(--gold-light)",border:"1.5px solid var(--gold)",borderRadius:"var(--r)",padding:"6px 12px",cursor:"pointer",fontFamily:"var(--ff)",flexShrink:0,textAlign:"center"}}>
-            <div style={{fontSize:12,fontWeight:800,letterSpacing:".08em",color:"var(--gold)"}}>{group.code}</div>
-            <div style={{fontSize:9,color:"var(--muted)",fontWeight:600}}>{copied?"Copied!":"Invite code"}</div>
+        {group.code && (
+          <button onClick={copyCode} style={{background:"var(--gold-light)",border:"1.5px solid var(--gold)",borderRadius:"var(--r)",padding:"5px 10px",cursor:"pointer",fontFamily:"var(--ff)",flexShrink:0,textAlign:"center"}}>
+            <div style={{fontSize:12,fontWeight:900,letterSpacing:".08em",color:"var(--gold)"}}>{group.code}</div>
+            <div style={{fontSize:9,color:"var(--muted)",fontWeight:600}}>{copied?"Copied!":"Tap to copy"}</div>
           </button>
         )}
       </div>
 
+      {/* Tab bar */}
       <div style={{display:"flex",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",flexShrink:0}}>
         {[{id:"chat",label:"💬 Chat"},{id:"leaderboard",label:"🏆 Rankings"},{id:"info",label:"ℹ Info"}].map(t=>(
-          <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="leaderboard")syncAndLoadLeaderboard();}}
-            style={{flex:1,padding:"10px",border:"none",borderBottom:tab===t.id?"2px solid var(--text)":"2px solid transparent",background:"transparent",color:tab===t.id?"var(--text)":"var(--muted)",fontWeight:tab===t.id?800:600,fontSize:13,cursor:"pointer",fontFamily:"var(--ff)"}}>
+          <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="leaderboard")syncLeaderboard();}}
+            style={{flex:1,padding:"10px 4px",border:"none",borderBottom:tab===t.id?"2.5px solid var(--text)":"2.5px solid transparent",background:"transparent",color:tab===t.id?"var(--text)":"var(--muted)",fontWeight:tab===t.id?800:600,fontSize:12,cursor:"pointer",fontFamily:"var(--ff)",transition:"all .15s"}}>
             {t.label}
           </button>
         ))}
       </div>
 
+      {/* CHAT */}
       {tab==="chat" && (<>
-        <div style={{flex:1,overflowY:"auto",padding:"14px 26px",display:"flex",flexDirection:"column",gap:10}}>
+        <div style={{flex:1,overflowY:"auto",padding:"14px 20px",display:"flex",flexDirection:"column",gap:10}}>
           {!isMember ? (
             <div style={{textAlign:"center",padding:"40px 24px"}}>
               <div style={{fontWeight:700,color:"var(--text)",marginBottom:8}}>Join to see messages</div>
               <button className="btn btn-primary btn-sm" onClick={onJoin}>Join Group</button>
             </div>
-          ) : loadingMsgs ? <div style={{textAlign:"center",color:"var(--muted)",fontSize:13,marginTop:40}}>Loading...</div>
-          : messages.length===0 ? (
+          ) : loadingMsgs ? (
+            <div style={{textAlign:"center",color:"var(--muted)",marginTop:40}}>Loading messages...</div>
+          ) : messages.length===0 ? (
             <div style={{textAlign:"center",padding:"40px 24px"}}>
+              <div style={{fontSize:32,marginBottom:8}}>💬</div>
               <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>No messages yet</div>
-              <div style={{fontSize:13,color:"var(--muted)"}}>Say something!</div>
+              <div style={{fontSize:13,color:"var(--muted)"}}>Be the first to say something!</div>
             </div>
           ) : messages.map((msg,i) => {
             const isMe = msg.user_id===userId;
@@ -5033,76 +5212,99 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
             return (
               <div key={msg.id} style={{display:"flex",flexDirection:isMe?"row-reverse":"row",gap:8,alignItems:"flex-end"}}>
                 {!isMe&&<div className="av" style={{width:26,height:26,fontSize:10,flexShrink:0,alignSelf:"flex-start",marginTop:showName?18:0}}>{msg.display_name?.[0]?.toUpperCase()||"?"}</div>}
-                <div style={{maxWidth:"68%"}}>
+                <div style={{maxWidth:"70%"}}>
                   {showName&&<div style={{fontSize:10,fontWeight:700,color:"var(--muted)",marginBottom:3,paddingLeft:2}}>{msg.display_name}</div>}
-                  <div style={{padding:"10px 14px",borderRadius:isMe?"var(--r2) var(--r2) 4px var(--r2)":"var(--r2) var(--r2) var(--r2) 4px",background:isMe?"var(--text)":"var(--bg2)",color:isMe?"var(--bg2)":"var(--text)",border:"1.5px solid",borderColor:isMe?"var(--text)":"var(--border-light)",fontSize:13,lineHeight:1.6}}>{msg.content}</div>
-                  <div style={{fontSize:10,color:"var(--muted2)",marginTop:2,textAlign:isMe?"right":"left"}}>{new Date(msg.created_at).toLocaleTimeString("en-AU",{hour:"2-digit",minute:"2-digit"})}</div>
+                  <div style={{padding:"10px 14px",borderRadius:isMe?"var(--r2) var(--r2) 4px var(--r2)":"var(--r2) var(--r2) var(--r2) 4px",background:isMe?"var(--text)":"var(--bg2)",color:isMe?"var(--bg2)":"var(--text)",border:"1.5px solid",borderColor:isMe?"var(--text)":"var(--border-light)",fontSize:13,lineHeight:1.6}}>
+                    {renderContent(msg.content)}
+                  </div>
+                  <div style={{fontSize:10,color:"var(--muted2)",marginTop:2,textAlign:isMe?"right":"left"}}>
+                    {new Date(msg.created_at).toLocaleTimeString("en-AU",{hour:"2-digit",minute:"2-digit"})}
+                  </div>
                 </div>
               </div>
             );
           })}
           <div ref={bottomRef}/>
         </div>
-        {isMember&&(
-          <div style={{padding:"10px 26px 14px",borderTop:"1.5px solid var(--border)",background:"var(--bg2)",flexShrink:0,display:"flex",gap:10}}>
-            <input className="input" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")send();}} placeholder={`Message ${group.name}...`} style={{flex:1}}/>
-            <button className="btn btn-primary" onClick={send} disabled={!input.trim()||sending} style={{padding:"11px 18px"}}>Send</button>
+
+        {isMember && (
+          <div style={{borderTop:"1.5px solid var(--border)",background:"var(--bg2)",flexShrink:0,padding:"10px 16px 12px"}}>
+            {imgPreview && (
+              <div style={{marginBottom:8,position:"relative",display:"inline-block"}}>
+                <img src={imgPreview.dataUrl} alt="preview" style={{height:60,borderRadius:"var(--r)",border:"1.5px solid var(--border)",objectFit:"cover"}}/>
+                <button onClick={()=>setImgPreview(null)} style={{position:"absolute",top:-6,right:-6,width:18,height:18,borderRadius:"50%",background:"var(--danger)",color:"#fff",border:"none",cursor:"pointer",fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
+              </div>
+            )}
+            <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{if(e.target.files[0])handleImageSelect(e.target.files[0]);e.target.value="";}}/>
+            <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
+              <button onClick={()=>fileRef.current?.click()} style={{width:38,height:38,borderRadius:"var(--r)",border:"1.5px solid var(--border-light)",background:"var(--bg3)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>📷</button>
+              <input className="input" value={input} onChange={e=>setInput(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}
+                placeholder={`Message ${group.name}...`} style={{flex:1}}/>
+              <button className="btn btn-primary" onClick={send} disabled={(!input.trim()&&!imgPreview)||sending} style={{padding:"10px 16px",flexShrink:0}}>
+                {sending?"...":"Send"}
+              </button>
+            </div>
           </div>
         )}
       </>)}
 
+      {/* LEADERBOARD */}
       {tab==="leaderboard" && (
-        <div style={{flex:1,overflowY:"auto",padding:"20px 26px"}}>
+        <div style={{flex:1,overflowY:"auto",padding:"20px"}}>
           <div style={{fontWeight:800,fontSize:16,color:"var(--text)",marginBottom:16}}>🏆 {group.name} Rankings</div>
           {members.length===0 ? (
             <div style={{textAlign:"center",padding:"40px 24px",color:"var(--muted)"}}>
               <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>No rankings yet</div>
-              <div style={{fontSize:13}}>Earn XP by completing quizzes and flashcards</div>
+              <div style={{fontSize:13}}>Earn XP by completing quizzes to appear here</div>
             </div>
           ) : (
-            <div className="card"><div style={{padding:"0 20px"}}>
-              {members.map((m,i)=>(
-                <div key={m.id} className={`lb-row${m.user_id===userId?" me":""}`}>
-                  <div style={{fontSize:18,width:32,textAlign:"center",flexShrink:0}}>{rankIcon(i)}</div>
-                  <div className="av" style={{width:32,height:32,fontSize:12,flexShrink:0,background:m.user_id===userId?"var(--text)":"var(--bg4)"}}>{m.display_name?.[0]?.toUpperCase()||"?"}</div>
-                  <div style={{flex:1}}>
-                    <div style={{fontWeight:700,fontSize:13,color:"var(--text)",display:"flex",alignItems:"center",gap:6}}>
-                      {m.display_name}
-                      {m.user_id===userId&&<span style={{fontSize:10,background:"var(--text)",color:"var(--bg2)",borderRadius:20,padding:"1px 7px",fontWeight:800}}>You</span>}
+            <div className="card">
+              <div style={{padding:"0 18px"}}>
+                {members.map((m,i)=>(
+                  <div key={m.id||i} className={`lb-row${m.user_id===userId?" me":""}`}>
+                    <div style={{fontSize:18,width:30,textAlign:"center",flexShrink:0}}>{rankIcon(i)}</div>
+                    <div className="av" style={{width:30,height:30,fontSize:11,flexShrink:0,background:m.user_id===userId?"var(--text)":"var(--bg4)"}}>{m.display_name?.[0]?.toUpperCase()||"?"}</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:700,fontSize:13,color:"var(--text)",display:"flex",alignItems:"center",gap:6}}>
+                        {m.display_name}
+                        {m.user_id===userId&&<span style={{fontSize:9,background:"var(--text)",color:"var(--bg2)",borderRadius:20,padding:"1px 6px",fontWeight:800}}>You</span>}
+                      </div>
+                      <div style={{fontSize:11,color:"var(--muted)"}}>Level {m.level||1} · {m.streak||0} streak</div>
                     </div>
-                    <div style={{fontSize:11,color:"var(--muted)"}}>Level {m.level||1} · {m.streak||0} streak</div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontWeight:800,fontSize:14,color:"var(--text)"}}>{(m.xp||0).toLocaleString()}</div>
+                      <div style={{fontSize:10,color:"var(--muted)"}}>XP</div>
+                    </div>
                   </div>
-                  <div style={{textAlign:"right"}}>
-                    <div style={{fontWeight:800,fontSize:14,color:"var(--text)"}}>{(m.xp||0).toLocaleString()}</div>
-                    <div style={{fontSize:10,color:"var(--muted)"}}>XP</div>
-                  </div>
-                </div>
-              ))}
-            </div></div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}
 
+      {/* INFO */}
       {tab==="info" && (
-        <div style={{flex:1,overflowY:"auto",padding:"20px 26px"}}>
+        <div style={{flex:1,overflowY:"auto",padding:"20px"}}>
           <div className="card" style={{marginBottom:14}}>
-            <div className="card-head"><div className="card-title">Group Info</div></div>
+            <div className="card-head"><div className="card-title">Group Details</div></div>
             <div className="card-body">
-              {[{label:"Name",value:group.name},{label:"Subject",value:group.subject},{label:"Members",value:group.member_count||1},group.description&&{label:"Description",value:group.description}].filter(Boolean).map((item,i,arr)=>(
+              {[{l:"Name",v:group.name},{l:"Subject",v:group.subject},{l:"Members",v:group.member_count||1},group.description&&{l:"Description",v:group.description}].filter(Boolean).map((item,i,arr)=>(
                 <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:i<arr.length-1?"1px solid var(--border-light)":"none",fontSize:13}}>
-                  <span style={{color:"var(--muted)",fontWeight:600}}>{item.label}</span>
-                  <span style={{fontWeight:700,color:"var(--text)"}}>{item.value}</span>
+                  <span style={{color:"var(--muted)",fontWeight:600}}>{item.l}</span>
+                  <span style={{fontWeight:700,color:"var(--text)"}}>{item.v}</span>
                 </div>
               ))}
             </div>
           </div>
-          {group.code&&(
+          {group.code && (
             <div className="card" style={{borderColor:"var(--gold)"}}>
-              <div className="card-head"><div className="card-title">Invite Friends</div></div>
+              <div className="card-head"><div className="card-title">📨 Invite Friends</div></div>
               <div className="card-body" style={{textAlign:"center"}}>
-                <div style={{fontSize:32,fontWeight:900,letterSpacing:".12em",color:"var(--gold)",marginBottom:8}}>{group.code}</div>
-                <div style={{fontSize:13,color:"var(--muted)",marginBottom:14}}>Share this code — friends enter it under "Join with Code"</div>
-                <button className="btn btn-primary btn-sm" onClick={copyCode}>{copied?"Copied!":"Copy Invite Code"}</button>
+                <div style={{fontSize:34,fontWeight:900,letterSpacing:".12em",color:"var(--gold)",marginBottom:8}}>{group.code}</div>
+                <div style={{fontSize:13,color:"var(--muted)",marginBottom:14,lineHeight:1.6}}>Share this code with friends — they enter it under "Join with Code" to instantly join</div>
+                <button className="btn btn-primary btn-sm" onClick={copyCode}>{copied?"✓ Copied!":"Copy Invite Code"}</button>
               </div>
             </div>
           )}
@@ -5111,7 +5313,6 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
     </div>
   );
 }
-
 
 function TutorMarketplaceScreen({ profile, user }) {
   const [tab, setTab] = useState("browse");
