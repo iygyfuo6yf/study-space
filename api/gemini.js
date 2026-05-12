@@ -7,8 +7,7 @@ export default async function handler(req, res) {
   try {
     const { contents, systemInstruction, generationConfig } = req.body;
 
-    // gemini-2.5-flash-lite — 1,000 requests/day free, fast, supports vision
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=${geminiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiKey}`;
 
     const body = {
       contents,
