@@ -5850,8 +5850,7 @@ export default function App() {
           <div className="nav-section">
             <div className="nav-lbl">Learn</div>
             {NAV.filter(n=>n.section==="learn").map(n=>(
-              <button key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}
-                style={{background:"none",border:"1.5px solid transparent",width:"100%",textAlign:"left",cursor:"pointer"}}>
+              <button key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}>
                 <span className="ni-icon">{n.icon}</span>{n.label}
                 {n.badge&&<span className="ni-badge">{n.badge}</span>}
               </button>
@@ -5861,8 +5860,7 @@ export default function App() {
           <div className="nav-section" style={{marginTop:8}}>
             <div className="nav-lbl">Track</div>
             {NAV.filter(n=>n.section==="track").map(n=>(
-              <button key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}
-                style={{background:"none",border:"1.5px solid transparent",width:"100%",textAlign:"left",cursor:"pointer"}}>
+              <button key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}>
                 <span className="ni-icon">{n.icon}</span>{n.label}
               </button>
             ))}
@@ -5871,8 +5869,7 @@ export default function App() {
           <div className="nav-section" style={{marginTop:8}}>
             <div className="nav-lbl">Community</div>
             {NAV.filter(n=>n.section==="community").map(n=>(
-              <button key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}
-                style={{background:"none",border:"1.5px solid transparent",width:"100%",textAlign:"left",cursor:"pointer"}}>
+              <button key={n.id} className={`ni${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}>
                 <span className="ni-icon">{n.icon}</span>{n.label}
               </button>
             ))}
