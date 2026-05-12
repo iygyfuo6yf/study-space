@@ -29,9 +29,8 @@ export default async function handler(req, res) {
       }
     }
 
-    // openrouter/free = guaranteed $0, routes only to free models
-    // For images we need a vision-capable free model
-    const model = hasImages ? "google/gemma-3-12b-it:free" : "openrouter/free";
+    // gemini-2.0-flash-lite — fast, free, supports vision
+    const model = "google/gemini-2.0-flash-lite:free";
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
