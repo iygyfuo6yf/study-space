@@ -4857,18 +4857,16 @@ function StudyGroupsScreen({ profile, user, gs }) {
 
   const doJoinGroup = async (group) => {
     try {
-      await sg("/group_members", token, {
+      await fetch(`${SB}/group_members`, {
         method: "POST",
-        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ group_id:group.id, user_id:userId, display_name:profile.userName, role:"member" })
       });
-      // Also add to leaderboard
-      await sg("/leaderboard_members", token, {
+      await fetch(`${SB}/leaderboard_members`, {
         method: "POST",
-        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ leaderboard_id:group.id, user_id:userId, display_name:profile.userName, xp:gs.state.xp||0, level:gs.state.level||1, streak:gs.state.streak||0 })
       }).catch(()=>{});
-      // Update local state
       const newIds = new Set([...myGroupIds, group.id]);
       setMyGroupIds(newIds);
       localStorage.setItem("ss_my_groups", JSON.stringify([...newIds]));
@@ -4899,21 +4897,26 @@ function StudyGroupsScreen({ profile, user, gs }) {
     setCreating(true); setError("");
     try {
       const code = "ACE-"+Math.random().toString(36).slice(2,6).toUpperCase();
-      const data = await sg("/study_groups", token, {
+      // Use minimal return to avoid empty JSON issue, then fetch the created group
+      const res = await fetch(`${SB}/study_groups`, {
         method: "POST",
+        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"return=minimal" },
         body: JSON.stringify({ name:newName.trim(), subject:newSubject, description:newDesc.trim(), created_by:userId, member_count:1, code })
       });
+      if (!res.ok) throw new Error("Failed to create group");
+      // Fetch the group we just created by code
+      const data = await sg(`/study_groups?code=eq.${code}&select=*`, token);
       const group = Array.isArray(data) ? data[0] : data;
       if (!group?.id) throw new Error("Group creation failed");
       // Join as creator
-      await sg("/group_members", token, {
+      await fetch(`${SB}/group_members`, {
         method: "POST",
-        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ group_id:group.id, user_id:userId, display_name:profile.userName, role:"creator" })
       });
-      await sg("/leaderboard_members", token, {
+      await fetch(`${SB}/leaderboard_members`, {
         method: "POST",
-        headers: sh(token, {Prefer:"resolution=merge-duplicates,return=minimal"}),
+        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ leaderboard_id:group.id, user_id:userId, display_name:profile.userName, xp:gs.state.xp||0, level:gs.state.level||1, streak:gs.state.streak||0 })
       }).catch(()=>{});
       const newIds = new Set([...myGroupIds, group.id]);
