@@ -29,28 +29,37 @@ export default async function handler(req, res) {
       }
     }
 
-    // openrouter/free — automatically picks best available free model,
-    // supports vision, 1000 req/day with $10 credits
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://study-space-jet.vercel.app",
-        "X-Title": "Study Ace"
-      },
-      body: JSON.stringify({
-        model: "openrouter/free",
-        messages,
-        max_tokens: generationConfig?.maxOutputTokens || 4000,
-        temperature: generationConfig?.temperature || 0.7,
-      })
-    });
+    // For images: try vision-capable free models in order
+    // For text: use openrouter/free
+    const models = hasImages
+      ? ["google/gemini-2.0-flash:free", "meta-llama/llama-4-scout:free", "qwen/qwen2.5-vl-72b-instruct:free"]
+      : ["openrouter/free"];
 
-    const data = await response.json();
-    if (data.error) return res.status(400).json({ error: data.error.message || "OpenRouter error" });
-    const text = data.choices?.[0]?.message?.content || "";
-    return res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
+    let lastError = "";
+    for (const model of models) {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+          "HTTP-Referer": "https://study-space-jet.vercel.app",
+          "X-Title": "Study Ace"
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          max_tokens: generationConfig?.maxOutputTokens || 4000,
+          temperature: generationConfig?.temperature || 0.7,
+        })
+      });
+
+      const data = await response.json();
+      if (data.error) { lastError = data.error.message; continue; }
+      const text = data.choices?.[0]?.message?.content || "";
+      if (text) return res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
+    }
+
+    return res.status(400).json({ error: lastError || "No response from AI" });
   } catch (error) {
     return res.status(500).json({ error: "Failed: " + error.message });
   }
