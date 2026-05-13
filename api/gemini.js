@@ -29,10 +29,9 @@ export default async function handler(req, res) {
       }
     }
 
-    // Try multiple non-Google free models in order
-    const models = hasImages
-      ? ["meta-llama/llama-4-scout:free", "qwen/qwen2.5-vl-7b-instruct:free", "mistralai/mistral-small-3.1-24b-instruct:free"]
-      : ["deepseek/deepseek-chat-v3-0324:free", "meta-llama/llama-4-scout:free", "mistralai/mistral-small-3.1-24b-instruct:free", "qwen/qwen3-14b:free"];
+    // Primary: Gemini 2.0 Flash free — fast, smart, supports vision
+    // Fallback: DeepSeek if Gemini is down
+    const models = ["google/gemini-2.0-flash:free", "deepseek/deepseek-chat-v3-0324:free"];
 
     let lastError = "";
     for (const model of models) {
@@ -53,7 +52,7 @@ export default async function handler(req, res) {
       });
 
       const data = await response.json();
-      if (data.error) { lastError = data.error.message || "error"; continue; }
+      if (data.error) { lastError = data.error.message; continue; }
       const text = data.choices?.[0]?.message?.content || "";
       if (text) return res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
     }
