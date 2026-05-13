@@ -29,11 +29,10 @@ export default async function handler(req, res) {
       }
     }
 
-    // For images: try vision-capable free models in order
-    // For text: use openrouter/free
+    // Vision models for images, text models for text — all confirmed working
     const models = hasImages
-      ? ["google/gemini-2.0-flash:free", "meta-llama/llama-4-scout:free", "qwen/qwen2.5-vl-72b-instruct:free"]
-      : ["openrouter/free"];
+      ? ["nvidia/nemotron-nano-12b-v2-vl:free", "minimax/minimax-m2.5", "openrouter/free"]
+      : ["minimax/minimax-m2.5", "nvidia/nemotron-nano-9b-v2:free", "openrouter/free"];
 
     let lastError = "";
     for (const model of models) {
