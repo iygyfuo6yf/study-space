@@ -1,32 +1,54 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const geminiKey = process.env.GEMINI_API_KEY;
-  if (!geminiKey) return res.status(500).json({ error: "Gemini API key not configured" });
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: "API key not configured" });
 
   try {
     const { contents, systemInstruction, generationConfig } = req.body;
+    const hasImages = contents?.some(c => c.parts?.some(p => p.inline_data));
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiKey}`;
+    const messages = [];
+    if (systemInstruction?.parts?.[0]?.text) {
+      messages.push({ role: "system", content: systemInstruction.parts[0].text });
+    }
 
-    const body = {
-      contents,
-      generationConfig: {
-        temperature: generationConfig?.temperature ?? 0.7,
-        maxOutputTokens: generationConfig?.maxOutputTokens ?? 4000,
+    for (const c of (contents || [])) {
+      const role = c.role === "model" ? "assistant" : "user";
+      if (!c.parts?.length) continue;
+      const hasImg = c.parts.some(p => p.inline_data);
+      if (hasImg) {
+        const content = c.parts.map(p => {
+          if (p.inline_data) return { type: "image_url", image_url: { url: `data:${p.inline_data.mime_type};base64,${p.inline_data.data}` } };
+          return { type: "text", text: p.text || "" };
+        }).filter(p => p.type !== "text" || p.text);
+        messages.push({ role, content });
+      } else {
+        const text = c.parts.map(p => p.text || "").join("\n").trim();
+        if (text) messages.push({ role, content: text });
       }
-    };
-    if (systemInstruction) body.systemInstruction = systemInstruction;
+    }
 
-    const response = await fetch(url, {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://study-space-jet.vercel.app",
+        "X-Title": "Study Ace"
+      },
+      body: JSON.stringify({
+        model: "openrouter/auto",
+        messages,
+        max_tokens: generationConfig?.maxOutputTokens || 4000,
+        temperature: generationConfig?.temperature || 0.7,
+      })
     });
 
     const data = await response.json();
-    if (data.error) return res.status(400).json({ error: data.error.message || "Gemini error" });
-    return res.status(200).json(data);
+    if (data.error) return res.status(400).json({ error: data.error.message || "OpenRouter error" });
+    const text = data.choices?.[0]?.message?.content || "";
+    return res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
   } catch (error) {
     return res.status(500).json({ error: "Failed: " + error.message });
   }
