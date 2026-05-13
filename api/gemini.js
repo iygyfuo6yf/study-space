@@ -29,26 +29,36 @@ export default async function handler(req, res) {
       }
     }
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://study-space-jet.vercel.app",
-        "X-Title": "Study Ace"
-      },
-      body: JSON.stringify({
-        model: "openrouter/auto",
-        messages,
-        max_tokens: generationConfig?.maxOutputTokens || 4000,
-        temperature: generationConfig?.temperature || 0.7,
-      })
-    });
+    // Try multiple non-Google free models in order
+    const models = hasImages
+      ? ["meta-llama/llama-4-scout:free", "qwen/qwen2.5-vl-7b-instruct:free", "mistralai/mistral-small-3.1-24b-instruct:free"]
+      : ["deepseek/deepseek-chat-v3-0324:free", "meta-llama/llama-4-scout:free", "mistralai/mistral-small-3.1-24b-instruct:free", "qwen/qwen3-14b:free"];
 
-    const data = await response.json();
-    if (data.error) return res.status(400).json({ error: data.error.message || "OpenRouter error" });
-    const text = data.choices?.[0]?.message?.content || "";
-    return res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
+    let lastError = "";
+    for (const model of models) {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+          "HTTP-Referer": "https://study-space-jet.vercel.app",
+          "X-Title": "Study Ace"
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          max_tokens: generationConfig?.maxOutputTokens || 4000,
+          temperature: generationConfig?.temperature || 0.7,
+        })
+      });
+
+      const data = await response.json();
+      if (data.error) { lastError = data.error.message || "error"; continue; }
+      const text = data.choices?.[0]?.message?.content || "";
+      if (text) return res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
+    }
+
+    return res.status(400).json({ error: "All models unavailable: " + lastError });
   } catch (error) {
     return res.status(500).json({ error: "Failed: " + error.message });
   }
