@@ -5136,9 +5136,13 @@ const SB = (import.meta.env.VITE_SUPABASE_URL || "https://ybxfjndeckyynhgsgqma.s
 const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlieGZqbmRlY2t5eW5oZ3NncW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTcxNTYsImV4cCI6MjA5Mzg5MzE1Nn0.CaPL1ydby2DsPMbM_IsDovZiGWxz7PF0j_cTuLVw4dk";
 const sh = (token, extra={}) => ({ "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"return=representation", ...extra });
 const sg = async (path, token, opts={}) => {
-  const r = await fetch(`${SB}${path}`, { headers:sh(token), ...opts });
-  return r.json();
-};
+    const r = await fetch(`${SB}${path}`, { headers:sh(token), ...opts });
+    if (r.status === 401) {
+      const rr = await fetch(`${SB}${path}`, { headers:sh(SB_KEY), ...opts });
+      return rr.json();
+    }
+    return r.json();
+  };
 
 function StudyGroupsScreen({ profile, user, gs }) {
   const [tab, setTab] = useState("mine");
