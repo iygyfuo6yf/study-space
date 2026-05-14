@@ -2850,6 +2850,7 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
       <div style={{fontSize:24,marginBottom:8}}>✨</div>
       <div style={{fontSize:14,fontWeight:600}}>Generating subtopics from VCAA curriculum...</div>
       <div style={{fontSize:11,marginTop:4,color:"var(--muted2)"}}>Saved after first load — instant next time</div>
+      {slowMsg && <div style={{fontSize:11,color:"var(--gold)",marginTop:8,textAlign:"center"}}>⏳ Free AI models can be slow — hang tight!</div>}
       <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:12}}>{[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
     </div>
   );
