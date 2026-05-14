@@ -4156,17 +4156,21 @@ function PlannerScreen({ profile, gs }) {
   const [timer, setTimer] = useState(25*60);
   const [running, setRunning] = useState(false);
   const [genPlan, setGenPlan] = useState(false);
-  const [aiPlan, setAiPlan] = useState("");
+  const [showPlanForm, setShowPlanForm] = useState(false);
+  const [planFocus, setPlanFocus] = useState("");
+  const [planStart, setPlanStart] = useState(() => new Date().toISOString().split("T")[0]);
+  const [planEnd, setPlanEnd] = useState(() => { const d=new Date(); d.setDate(d.getDate()+7); return d.toISOString().split("T")[0]; });
+  const [planSubjects, setPlanSubjects] = useState(subjs.slice(0,4));
+  const [planHours, setPlanHours] = useState(2);
+  const [studyPlan, setStudyPlan] = useState(() => { try { return JSON.parse(localStorage.getItem("ss_study_plan")||"null"); } catch { return null; } });
+  const [doneDays, setDoneDays] = useState(() => { try { return JSON.parse(localStorage.getItem("ss_plan_done")||"[]"); } catch { return []; } });
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [newEvent, setNewEvent] = useState({title:"",subject:subjs[0]||"",date:"",type:"SAC"});
 
   useEffect(()=>{
     if(!running) return;
     const t = setInterval(()=>{
-      setTimer(s=>{
-        if(s<=1){ setRunning(false); addMinutes(25); return 25*60; }
-        return s-1;
-      });
+      setTimer(s=>{ if(s<=1){ setRunning(false); addMinutes(25); return 25*60; } return s-1; });
     },1000);
     return ()=>clearInterval(t);
   },[running]);
@@ -4174,6 +4178,11 @@ function PlannerScreen({ profile, gs }) {
   const saveGoals = (g)=>{ setGoals(g); localStorage.setItem("ss_goals",JSON.stringify(g)); };
   const addGoal = ()=>{ if(!newGoal.trim()) return; saveGoals([...goals,{text:newGoal,done:false}]); setNewGoal(""); };
   const toggleGoal = (i)=>{ const g=[...goals]; g[i].done=!g[i].done; saveGoals(g); };
+  const toggleSubjPlan = (s) => setPlanSubjects(p => p.includes(s)?p.filter(x=>x!==s):[...p,s]);
+  const toggleDone = (idx) => {
+    const next = doneDays.includes(idx)?doneDays.filter(i=>i!==idx):[...doneDays,idx];
+    setDoneDays(next); localStorage.setItem("ss_plan_done",JSON.stringify(next));
+  };
 
   const handleAddEvent = ()=>{
     if(!newEvent.title||!newEvent.date) return;
@@ -4183,18 +4192,54 @@ function PlannerScreen({ profile, gs }) {
   };
 
   const generatePlan = async () => {
-    setGenPlan(true); setAiPlan("");
+    if (!planStart||!planEnd||planSubjects.length===0) return;
+    setGenPlan(true);
     try {
-      const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label;
-      const prompt = `Create a focused weekly study plan for a ${curriculum} student.
-Subjects: ${subjs.join(", ")}
-Study intensity: ${profile.hoursPerWeek||"moderate"}
-Goal: ${profile.futurePath||"academic success"}
+      const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label||"Year 9";
+      const start = new Date(planStart);
+      const end = new Date(planEnd);
+      const dayCount = Math.min(30, Math.ceil((end-start)/(1000*60*60*24))+1);
+      const upcomingEvents = (state.calendarEvents||[])
+        .filter(e=>new Date(e.date)>=start&&new Date(e.date)<=end)
+        .map(e=>`${e.title} (${e.subject}) on ${new Date(e.date).toLocaleDateString("en-AU",{weekday:"short",month:"short",day:"numeric"})}`);
+      const prompt = `Create a ${dayCount}-day study plan for a ${curriculum} student.
+Start: ${new Date(planStart).toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+End: ${new Date(planEnd).toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+Subjects: ${planSubjects.join(", ")}
+Hours per day: ${planHours}
+${planFocus?`Special focus: ${planFocus}`:""}
+${upcomingEvents.length?`Upcoming assessments:\n${upcomingEvents.join("\n")}`:""}
 
-Write a practical 7-day plan with specific daily tasks. Keep it concise, motivating, and realistic. Use Australian curriculum context.`;
-      const res = await callGemini(prompt);
-      setAiPlan(res);
-    } catch { setAiPlan("Couldn't generate plan — try again."); }
+Return ONLY a valid JSON array — no markdown, no backticks:
+[{"date":"YYYY-MM-DD","day":"Monday","subject":"Biology","topic":"Cell Division","activity":"Study Notes","duration":60,"focus":"Mitosis vs meiosis phases"},...]
+
+Rules: dates must be between ${planStart} and ${planEnd}, activity is one of: Study Notes, Quiz Practice, Flashcards, Past Paper, Revision, Rest, duration in minutes, generate exactly ${dayCount} entries one per day.`;
+      const raw = await callGemini(prompt, 4000);
+      const clean = raw.replace(/```json\n?|```\n?/g,"").trim();
+      const s = clean.indexOf("["); const e = clean.lastIndexOf("]");
+      if (s===-1) throw new Error("No JSON");
+      const parsed = JSON.parse(clean.slice(s,e+1));
+      if (!Array.isArray(parsed)||parsed.length===0) throw new Error("Empty");
+      setStudyPlan(parsed); setDoneDays([]);
+      localStorage.setItem("ss_study_plan",JSON.stringify(parsed));
+      localStorage.setItem("ss_plan_done","[]");
+      // Auto-add SACs/exams from plan focus text to calendar
+      if (planFocus) {
+        const examWords = ["sac","exam","test","assessment","assignment","due"];
+        const hasExam = examWords.some(w => planFocus.toLowerCase().includes(w));
+        if (hasExam && planEnd) {
+          const subjectMatch = planSubjects.find(s => planFocus.toLowerCase().includes(s.toLowerCase()));
+          addEvent({
+            title: planFocus,
+            subject: subjectMatch || planSubjects[0] || "General",
+            date: planEnd,
+            type: planFocus.toLowerCase().includes("sac") ? "SAC" : planFocus.toLowerCase().includes("exam") ? "EXAM" : "Test",
+            color: getColor(subjectMatch || planSubjects[0] || "")
+          });
+        }
+      }
+      setShowPlanForm(false);
+    } catch(e) { alert("Couldn't generate: "+(e.message||"try again")); }
     setGenPlan(false);
   };
 
@@ -4222,46 +4267,176 @@ Write a practical 7-day plan with specific daily tasks. Keep it concise, motivat
     <div className="content fade-up">
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <div>
-          <div style={{fontWeight:900,fontSize:22}}>Study Planner</div>
+          <div style={{fontWeight:900,fontSize:22,color:"var(--text)"}}>Study Planner</div>
           <div style={{color:"var(--muted)",fontSize:13,marginTop:3}}>{today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric",year:"numeric"})}</div>
         </div>
         <div style={{display:"flex",gap:8}}>
-          <button className="btn btn-s btn-sm" onClick={()=>setShowAddEvent(v=>!v)}>+ Add Event</button>
-          <button className="btn btn-p btn-sm" onClick={generatePlan} disabled={genPlan}>{genPlan?"✨ Generating...":"✨ AI Generate Plan"}</button>
+          <button className="btn btn-secondary btn-sm" onClick={()=>setShowAddEvent(v=>!v)}>+ Add Event</button>
+          <button className="btn btn-primary btn-sm" onClick={()=>setShowPlanForm(v=>!v)}>✨ Generate Plan</button>
         </div>
       </div>
 
-      {/* Add event form */}
-      {showAddEvent && (
-        <div className="card" style={{marginBottom:16,borderColor:"rgba(124,106,247,.3)"}}>
-          <div className="ch"><div className="ct">📅 Add Assessment or Event</div><button className="btn btn-g btn-sm" onClick={()=>setShowAddEvent(false)}>✕</button></div>
-          <div className="cb">
-            <div className="g2" style={{gap:10,marginBottom:10}}>
-              <input placeholder="Title (e.g. Calculus SAC, Practice Exam...)"
-                value={newEvent.title} onChange={e=>setNewEvent(v=>({...v,title:e.target.value}))}
-                style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"9px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}/>
-              <input type="date" value={newEvent.date} onChange={e=>setNewEvent(v=>({...v,date:e.target.value}))}
-                style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"9px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}/>
+      {/* Plan generation form */}
+      {showPlanForm && (
+        <div className="card" style={{marginBottom:16}}>
+          <div className="card-head">
+            <div className="card-title">✨ Generate AI Study Plan</div>
+            <button className="btn btn-ghost btn-sm" onClick={()=>setShowPlanForm(false)}>✕</button>
+          </div>
+          <div className="card-body" style={{display:"flex",flexDirection:"column",gap:14}}>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>What do you want to focus on? (optional)</div>
+              <input className="input" value={planFocus} onChange={e=>setPlanFocus(e.target.value)}
+                placeholder="e.g. Chemistry SAC prep, Maths Methods calculus, English essay"/>
             </div>
-            <div className="g2" style={{gap:10,marginBottom:12}}>
-              <select value={newEvent.subject} onChange={e=>setNewEvent(v=>({...v,subject:e.target.value}))}
-                style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"9px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}>
-                {subjs.map(s=><option key={s} value={s}>{s}</option>)}
-              </select>
-              <select value={newEvent.type} onChange={e=>setNewEvent(v=>({...v,type:e.target.value}))}
-                style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"9px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}>
-                {["SAC","EXAM","Assignment","Test","Revision","Other"].map(t=><option key={t}>{t}</option>)}
-              </select>
+            <div className="g2" style={{gap:12}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Start Date</div>
+                <input type="date" className="input" value={planStart} onChange={e=>setPlanStart(e.target.value)}/>
+              </div>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>End Date</div>
+                <input type="date" className="input" value={planEnd} onChange={e=>setPlanEnd(e.target.value)}/>
+              </div>
             </div>
-            <button className="btn btn-p" onClick={handleAddEvent}>Add to Calendar ✓</button>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Subjects to Include</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+                {subjs.map(s=>(
+                  <button key={s} onClick={()=>toggleSubjPlan(s)}
+                    style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",border:"1.5px solid",transition:"all .15s",
+                      background:planSubjects.includes(s)?getColor(s):"var(--bg3)",
+                      color:planSubjects.includes(s)?"#fff":"var(--muted)",
+                      borderColor:planSubjects.includes(s)?getColor(s):"var(--border-light)"}}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>
+                <span>Hours Per Day</span><span style={{color:"var(--text)",fontWeight:900}}>{planHours}h</span>
+              </div>
+              <input type="range" min={1} max={8} step={0.5} value={planHours} onChange={e=>setPlanHours(Number(e.target.value))}
+                style={{width:"100%",accentColor:"var(--gold)",cursor:"pointer"}}/>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"var(--muted2)",marginTop:2}}>
+                <span>1h</span><span>4h</span><span>8h</span>
+              </div>
+            </div>
+            <button className="btn btn-primary" onClick={generatePlan} disabled={genPlan||!planStart||!planEnd||planSubjects.length===0}>
+              {genPlan?"Generating your plan...":"✨ Generate Plan"}
+            </button>
           </div>
         </div>
       )}
 
-      {aiPlan && (
-        <div className="card" style={{marginBottom:18,borderColor:"rgba(124,106,247,.3)"}}>
-          <div className="ch"><div className="ct">✨ Your AI Study Plan</div><button className="btn btn-g btn-sm" onClick={()=>setAiPlan("")}>✕</button></div>
-          <div className="cb"><RenderMD text={aiPlan} style={{color:"var(--text2)"}}/></div>
+      {/* Interactive study plan cards */}
+      {studyPlan && studyPlan.length > 0 && (
+        <div className="card" style={{marginBottom:16}}>
+          <div className="card-head">
+            <div className="card-title">📅 Your Study Plan — {doneDays.length}/{studyPlan.filter(d=>d.activity!=="Rest").length} days done</div>
+            <div style={{display:"flex",gap:8}}>
+              <div style={{height:6,width:120,background:"var(--bg4)",borderRadius:4,alignSelf:"center",overflow:"hidden"}}>
+                <div style={{height:"100%",background:"var(--success)",borderRadius:4,width:`${(doneDays.length/Math.max(1,studyPlan.filter(d=>d.activity!=="Rest").length))*100}%`,transition:"width .4s"}}/>
+              </div>
+              <button className="btn btn-ghost btn-sm" onClick={()=>{setStudyPlan(null);setDoneDays([]);localStorage.removeItem("ss_study_plan");localStorage.removeItem("ss_plan_done");}}>Clear</button>
+              <button className="btn btn-secondary btn-sm" onClick={()=>setShowPlanForm(true)}>Regenerate</button>
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:0}}>
+            {studyPlan.map((day, idx) => {
+              const isRest = day.activity === "Rest";
+              const isDone = doneDays.includes(idx);
+              const isToday = day.date === new Date().toISOString().split("T")[0];
+              const color = isRest ? "var(--muted2)" : getColor(day.subject);
+              const actIcon = {
+                "Study Notes":"📖","Quiz Practice":"🎯","Flashcards":"🃏",
+                "Past Paper":"📄","Revision":"🔄","Rest":"😴"
+              }[day.activity] || "📚";
+              const ytQuery = encodeURIComponent(`${day.subject} ${day.topic} ${profile.yearLevel?.toUpperCase()||""} tutorial`);
+              return (
+                <div key={idx} style={{
+                  display:"flex",alignItems:"center",gap:14,padding:"12px 20px",
+                  borderBottom:idx<studyPlan.length-1?"1px solid var(--border-light)":"none",
+                  background:isToday?"var(--gold-light)":isDone?"var(--success-bg)":"transparent",
+                  opacity:isDone&&!isToday?0.6:1,
+                  transition:"all .2s"
+                }}>
+                  {/* Date */}
+                  <div style={{flexShrink:0,textAlign:"center",width:44}}>
+                    <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",textTransform:"uppercase"}}>{day.day?.slice(0,3)}</div>
+                    <div style={{fontSize:18,fontWeight:900,color:isToday?"var(--gold)":"var(--text)",lineHeight:1.2}}>
+                      {new Date(day.date+"T12:00:00").getDate()}
+                    </div>
+                  </div>
+                  {/* Color bar */}
+                  <div style={{width:3,height:44,borderRadius:2,background:color,flexShrink:0}}/>
+                  {/* Content */}
+                  <div style={{flex:1,minWidth:0}}>
+                    {isRest ? (
+                      <div style={{fontSize:14,fontWeight:700,color:"var(--muted)"}}>😴 Rest Day</div>
+                    ) : (
+                      <>
+                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2}}>
+                          <span style={{fontSize:10,fontWeight:800,color,textTransform:"uppercase",letterSpacing:".06em"}}>{day.subject}</span>
+                          <span style={{fontSize:10,color:"var(--muted)"}}>· {day.duration}min</span>
+                        </div>
+                        <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:2}}>{actIcon} {day.topic}</div>
+                        {day.focus && <div style={{fontSize:11,color:"var(--muted)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{day.focus}</div>}
+                      </>
+                    )}
+                  </div>
+                  {/* Actions */}
+                  <div style={{display:"flex",gap:6,flexShrink:0}}>
+                    {!isRest && (
+                      <a href={`https://www.youtube.com/results?search_query=${ytQuery}`} target="_blank" rel="noreferrer"
+                        className="btn btn-secondary btn-sm" style={{fontSize:11,padding:"4px 10px",textDecoration:"none"}}>
+                        🎬 Video
+                      </a>
+                    )}
+                    {!isRest && (
+                      <button onClick={()=>toggleDone(idx)} className={`btn btn-sm ${isDone?"btn-secondary":"btn-primary"}`}
+                        style={{fontSize:11,padding:"4px 10px"}}>
+                        {isDone?"↩ Undo":"✓ Done"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {!studyPlan && !showPlanForm && (
+        <div style={{textAlign:"center",padding:"32px 24px",background:"var(--bg2)",borderRadius:"var(--r2)",border:"1.5px dashed var(--border-light)",marginBottom:16}}>
+          <div style={{fontSize:36,marginBottom:10}}>📅</div>
+          <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:6}}>No study plan yet</div>
+          <div style={{fontSize:13,color:"var(--muted)",marginBottom:16}}>Generate a personalised day-by-day plan with YouTube video links for each topic</div>
+          <button className="btn btn-primary btn-sm" onClick={()=>setShowPlanForm(true)}>✨ Generate My Study Plan</button>
+        </div>
+      )}
+
+      {/* Add event form */}
+      {showAddEvent && (
+        <div className="card" style={{marginBottom:16}}>
+          <div className="card-head"><div className="card-title">📅 Add Assessment or Event</div><button className="btn btn-ghost btn-sm" onClick={()=>setShowAddEvent(false)}>✕</button></div>
+          <div className="card-body">
+            <div className="g2" style={{gap:10,marginBottom:10}}>
+              <input className="input" placeholder="Title (e.g. Calculus SAC, Practice Exam...)"
+                value={newEvent.title} onChange={e=>setNewEvent(v=>({...v,title:e.target.value}))}/>
+              <input type="date" className="input" value={newEvent.date} onChange={e=>setNewEvent(v=>({...v,date:e.target.value}))}/>
+            </div>
+            <div className="g2" style={{gap:10,marginBottom:12}}>
+              <select className="input" value={newEvent.subject} onChange={e=>setNewEvent(v=>({...v,subject:e.target.value}))}>
+                {subjs.map(s=><option key={s} value={s}>{s}</option>)}
+              </select>
+              <select className="input" value={newEvent.type} onChange={e=>setNewEvent(v=>({...v,type:e.target.value}))}>
+                {["SAC","EXAM","Assignment","Test","Revision","Other"].map(t=><option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <button className="btn btn-primary" onClick={handleAddEvent}>Add to Calendar ✓</button>
+          </div>
         </div>
       )}
 
@@ -4372,8 +4547,6 @@ function AnalyticsScreen({ profile, gs }) {
   const { state, predictATAR } = gs;
   const isIB = profile.yearLevel === "ib";
   const predicted = predictATAR();
-  const [genPlan, setGenPlan] = useState(false);
-  const [aiPlan, setAiPlan] = useState("");
   const [targetATAR, setTargetATAR] = useState(() => {
     const saved = localStorage.getItem("ss_targetATAR");
     if (saved) return parseFloat(saved);
@@ -4548,42 +4721,6 @@ function AnalyticsScreen({ profile, gs }) {
                   <div className="mb" style={{height:6}}><div className="mf" style={{width:`${s.mastery}%`,background:"var(--danger)"}}/></div>
                 </div>
               ))}
-              <button className="btn btn-primary btn-sm btn-full" style={{marginTop:4}}
-                disabled={genPlan}
-                onClick={async()=>{
-                  const weak = subjMastery.sort((a,b)=>a.mastery-b.mastery).slice(0,3).map(s=>s.name);
-                  if(!weak.length){alert("Take some quizzes first to identify your weak areas!");return;}
-                  setGenPlan(true); setAiPlan("");
-                  try {
-                    const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label||"Year 9";
-                    const prompt = `Create a targeted 1-week study plan for a ${curriculum} student who needs to improve in: ${weak.join(", ")}.
-
-For each weak subject provide:
-1. The 2-3 most important concepts to review
-2. Specific study strategies
-3. Daily action steps
-
-Keep it practical and specific to ${curriculum}.`;
-                    const res = await callGemini(prompt, 2000);
-                    if (res && res.trim()) {
-                      setAiPlan(res);
-                    } else {
-                      setAiPlan("The AI didn't return a response — try again in a moment.");
-                    }
-                  } catch(e) { setAiPlan("Couldn't generate plan: " + (e.message || "try again")); }
-                  setGenPlan(false);
-                }}>
-                {genPlan ? "✨ Generating..." : "✨ AI Study Plan for Weak Areas"}
-              </button>
-              {aiPlan && (
-                <div style={{marginTop:14,padding:14,background:"var(--bg3)",borderRadius:"var(--r)",border:"1.5px solid var(--border-light)"}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                    <div style={{fontSize:12,fontWeight:800,color:"var(--text)"}}>✨ Your Study Plan</div>
-                    <button className="btn btn-ghost btn-sm" onClick={()=>setAiPlan("")}>✕</button>
-                  </div>
-                  <RenderMD text={aiPlan}/>
-                </div>
-              )}
             </div>
           </div>
 
