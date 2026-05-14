@@ -4372,6 +4372,8 @@ function AnalyticsScreen({ profile, gs }) {
   const { state, predictATAR } = gs;
   const isIB = profile.yearLevel === "ib";
   const predicted = predictATAR();
+  const [genPlan, setGenPlan] = useState(false);
+  const [aiPlan, setAiPlan] = useState("");
   const [targetATAR, setTargetATAR] = useState(() => {
     const saved = localStorage.getItem("ss_targetATAR");
     if (saved) return parseFloat(saved);
