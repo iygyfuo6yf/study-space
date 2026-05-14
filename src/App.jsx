@@ -904,7 +904,7 @@ function Onboarding({ user, onComplete }) {
         <div className="ob-sub">Pick the subjects you're studying this year. You can update these later.</div>
         {Object.entries(groups).map(([group, subjs])=>(
           <div key={group} className="ob-card">
-            <div style={{fontSize:12,fontWeight:800,color:"#7070a8",marginBottom:10}}>{group}</div>
+            <div style={{fontSize:12,fontWeight:800,color:"var(--muted)",marginBottom:10}}>{group}</div>
             <div className="ob-subj-grid">
               {subjs.map(s=>(
                 <button key={s} className={`ob-subj-btn${data.selectedSubjects.includes(s)?" sel":""}`}
@@ -1014,7 +1014,7 @@ function Onboarding({ user, onComplete }) {
         <div className="ob-sub" style={{textAlign:"center"}}>Here's what we've built for you based on your answers:</div>
       </div>
       <div className="ob-card" style={{marginBottom:10}}>
-        <div style={{fontSize:12,fontWeight:800,color:"#7070a8",marginBottom:10}}>YOUR PROFILE</div>
+        <div style={{fontSize:12,fontWeight:800,color:"var(--muted)",marginBottom:10}}>YOUR PROFILE</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           {[
             {label:"Year Level",val:ALL_SUBJECTS[data.yearLevel]?.label||data.yearLevel},
@@ -1023,14 +1023,14 @@ function Onboarding({ user, onComplete }) {
             {label:"Study Intensity",val:({light:"Light (5–8 hrs)",moderate:"Moderate (9–14 hrs)",intensive:"Intensive (15–20 hrs)",extreme:"Exam Mode (21+)"})[data.hoursPerWeek]||"—"},
           ].map(r=>(
             <div key={r.label} style={{background:"var(--bg3)",borderRadius:8,padding:"10px 12px"}}>
-              <div style={{fontSize:10,color:"#50508a",fontWeight:700,marginBottom:3}}>{r.label}</div>
+              <div style={{fontSize:10,color:"var(--muted)",fontWeight:700,marginBottom:3}}>{r.label}</div>
               <div style={{fontSize:13,fontWeight:700}}>{r.val}</div>
             </div>
           ))}
         </div>
       </div>
       <div className="ob-card" style={{marginBottom:20}}>
-        <div style={{fontSize:12,fontWeight:800,color:"#7070a8",marginBottom:10}}>YOUR SUBJECTS</div>
+        <div style={{fontSize:12,fontWeight:800,color:"var(--muted)",marginBottom:10}}>YOUR SUBJECTS</div>
         <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
           {data.selectedSubjects.map(s=>(
             <span key={s} style={{background:`${getColor(s)}22`,color:getColor(s),border:`1px solid ${getColor(s)}44`,borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:700}}>{s}</span>
@@ -1213,7 +1213,7 @@ function Dashboard({ profile, setScreen, gs }) {
     <div className="content fade-up">
       <div style={{marginBottom:20}}>
         <div style={{fontWeight:900,fontSize:22}}>{greeting()}, {profile.userName?.split(" ")[0]} 👋</div>
-        <div style={{color:"#6060a0",fontSize:13,marginTop:3}}>
+        <div style={{color:"var(--muted)",fontSize:13,marginTop:3}}>
           {isIB?"IB Diploma":ALL_SUBJECTS[profile.yearLevel]?.label} · {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length} subjects · {today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric"})}
         </div>
       </div>
@@ -1231,7 +1231,7 @@ function Dashboard({ profile, setScreen, gs }) {
             <div style={{height:4,background:"var(--bg3)",borderRadius:2,overflow:"hidden"}}>
               <div style={{height:"100%",background:"linear-gradient(90deg,#7C6AF7,#5CE0C6)",width:`${xpPct}%`,borderRadius:2}}/>
             </div>
-            <div style={{fontSize:9,color:"#50508a",marginTop:3}}>{xpToNext} XP to Level {state.level+1}</div>
+            <div style={{fontSize:9,color:"var(--muted)",marginTop:3}}>{xpToNext} XP to Level {state.level+1}</div>
           </div>
         </div>
         <div className="stat">
@@ -1273,7 +1273,7 @@ function Dashboard({ profile, setScreen, gs }) {
             <div className="ch"><div className="ct">📅 Upcoming Assessments</div><span className="cl" onClick={()=>setScreen("planner")}>+ Add →</span></div>
             <div style={{padding:"0 16px"}}>
               {upcoming.length === 0 ? (
-                <div style={{padding:"16px 0",color:"#50508a",fontSize:13,textAlign:"center"}}>
+                <div style={{padding:"16px 0",color:"var(--muted)",fontSize:13,textAlign:"center"}}>
                   No upcoming events — <span style={{color:"var(--accent)",cursor:"pointer"}} onClick={()=>setScreen("planner")}>add one in Planner</span>
                 </div>
               ) : upcoming.map((u,i)=>{
@@ -1285,8 +1285,8 @@ function Dashboard({ profile, setScreen, gs }) {
                       <div className="up-name">{u.title}</div>
                       <div className="up-sub"><span className={`tag ${u.type==="SAC"?"tag-a":"tag-r"}`}>{u.type||"EVENT"}</span> {u.subject}</div>
                     </div>
-                    <div className="up-days" style={{color:daysLeft<=5?"var(--a3)":daysLeft<=12?"var(--gold)":"var(--a2)"}}>{daysLeft}d
-                      <div style={{fontSize:10,color:"#50508a",fontWeight:400}}>{new Date(u.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
+                    <div className="up-days" style={{color:daysLeft<=5?"var(--danger)":daysLeft<=12?"var(--gold)":"var(--success)"}}>{daysLeft}d
+                      <div style={{fontSize:10,color:"var(--muted)",fontWeight:400}}>{new Date(u.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
                     </div>
                   </div>
                 );
@@ -1309,7 +1309,7 @@ function Dashboard({ profile, setScreen, gs }) {
           <div className="ct">📊 Study Activity — Last 17 Weeks</div>
           <div style={{display:"flex",gap:5,alignItems:"center"}}>
             {[0,1,2,3,4].map(v=><div key={v} className={`hc h${v}`} style={{width:13,height:13,borderRadius:3}}/>)}
-            <span style={{fontSize:10,color:"#50508a"}}>Less → More</span>
+            <span style={{fontSize:10,color:"var(--muted)"}}>Less → More</span>
           </div>
         </div>
         <div className="cb"><div className="heat">{heatCells.map((v,i)=><div key={i} className={`hc h${v}`}/>)}</div></div>
@@ -1339,13 +1339,13 @@ function Dashboard({ profile, setScreen, gs }) {
           <div className="ch"><div className="ct">📈 Recent Quiz Results</div><span className="cl" onClick={()=>setScreen("analytics")}>Analytics →</span></div>
           <div className="cb">
             {state.quizHistory?.length === 0 || !state.quizHistory ? (
-              <div style={{color:"#50508a",fontSize:13,textAlign:"center",padding:"12px 0"}}>No quizzes yet — <span style={{color:"var(--accent)",cursor:"pointer"}} onClick={()=>setScreen("quiz")}>start one!</span></div>
+              <div style={{color:"var(--muted)",fontSize:13,textAlign:"center",padding:"12px 0"}}>No quizzes yet — <span style={{color:"var(--accent)",cursor:"pointer"}} onClick={()=>setScreen("quiz")}>start one!</span></div>
             ) : state.quizHistory.slice(0,5).map((q,i)=>(
               <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<4?"1px solid var(--border)":"none"}}>
-                <div style={{width:36,height:36,borderRadius:8,background:q.pct>=75?"rgba(92,224,198,.15)":q.pct>=50?"rgba(255,215,0,.15)":"rgba(255,107,107,.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:q.pct>=75?"var(--a2)":q.pct>=50?"var(--gold)":"var(--a3)",flexShrink:0}}>{q.pct}%</div>
+                <div style={{width:36,height:36,borderRadius:8,background:q.pct>=75?"var(--success-bg)":q.pct>=50?"var(--gold-light)":"var(--danger-bg)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:q.pct>=75?"var(--success)":q.pct>=50?"var(--gold)":"var(--danger)",flexShrink:0}}>{q.pct}%</div>
                 <div style={{flex:1}}>
                   <div style={{fontSize:13,fontWeight:600}}>{q.subject}</div>
-                  <div style={{fontSize:10,color:"#50508a"}}>{q.score}/{q.total} correct · {new Date(q.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
+                  <div style={{fontSize:10,color:"var(--muted)"}}>{q.score}/{q.total} correct · {new Date(q.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
                 </div>
               </div>
             ))}
@@ -2845,10 +2845,10 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
   };
 
   if (loadingAI) return (
-    <div style={{textAlign:"center",padding:"32px",color:"#6060a0"}}>
+    <div style={{textAlign:"center",padding:"32px",color:"var(--muted)"}}>
       <div style={{fontSize:24,marginBottom:8}}>✨</div>
       <div style={{fontSize:14,fontWeight:600}}>Generating subtopics from VCAA curriculum...</div>
-      <div style={{fontSize:11,marginTop:4,color:"#40406a"}}>Saved after first load — instant next time</div>
+      <div style={{fontSize:11,marginTop:4,color:"var(--muted2)"}}>Saved after first load — instant next time</div>
       <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:12}}>{[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
     </div>
   );
@@ -2857,7 +2857,7 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
 
   return (
     <div>
-      <div style={{fontWeight:800,fontSize:13,color:"#50508a",textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>
+      <div style={{fontWeight:800,fontSize:13,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>
         {staticSubtopics ? "📚 Key Subtopics" : "✨ Subtopics (AI-generated from curriculum)"}
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:10}}>
@@ -2874,9 +2874,9 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
                 </div>
                 <div style={{flex:1}}>
                   <div style={{fontWeight:700,fontSize:14,color:"var(--text)"}}>{sub.title}</div>
-                  <div style={{fontSize:12,color:"#6060a0",marginTop:2,lineHeight:1.4}}>{sub.summary}</div>
+                  <div style={{fontSize:12,color:"var(--muted)",marginTop:2,lineHeight:1.4}}>{sub.summary}</div>
                 </div>
-                <div style={{color:"#50508a",fontSize:12,transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▼</div>
+                <div style={{color:"var(--muted)",fontSize:12,transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▼</div>
               </div>
 
               {/* Expanded content */}
@@ -2892,11 +2892,11 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
 
                   {/* Key facts */}
                   <div style={{padding:"14px 18px"}}>
-                    <div style={{fontSize:11,fontWeight:700,color:"#50508a",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Key Facts</div>
+                    <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Key Facts</div>
                     {sub.keyFacts.map((fact,j)=>(
                       <div key={j} style={{display:"flex",gap:8,marginBottom:7,alignItems:"flex-start"}}>
                         <span style={{color:color,fontSize:13,flexShrink:0,marginTop:1}}>•</span>
-                        <span style={{fontSize:13,color:"#c0c0d8",lineHeight:1.6}}>{cleanMath(fact)}</span>
+                        <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.6}}>{cleanMath(fact)}</span>
                       </div>
                     ))}
                   </div>
@@ -2905,26 +2905,26 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
                   {qs?.showQuiz && (
                     <div style={{margin:"0 18px 18px",background:"var(--bg3)",borderRadius:10,padding:"14px"}}>
                       {qs.loading ? (
-                        <div style={{textAlign:"center",color:"#6060a0",fontSize:13,padding:"12px 0"}}>Generating questions... ✨</div>
+                        <div style={{textAlign:"center",color:"var(--muted)",fontSize:13,padding:"12px 0"}}>Generating questions... ✨</div>
                       ) : qs.done ? (
                         <div style={{textAlign:"center",padding:"12px 0"}}>
-                          <div style={{fontSize:36,fontWeight:900,color:qs.score===3?"var(--a2)":qs.score>=2?"var(--gold)":"var(--a3)"}}>{qs.score}/{qs.questions?.length}</div>
-                          <div style={{fontSize:12,color:"#7070a8",marginBottom:8}}>+{qs.score*30} XP</div>
+                          <div style={{fontSize:36,fontWeight:900,color:qs.score===3?"var(--success)":qs.score>=2?"var(--gold)":"var(--danger)"}}>{qs.score}/{qs.questions?.length}</div>
+                          <div style={{fontSize:12,color:"var(--muted)",marginBottom:8}}>+{qs.score*30} XP</div>
                           <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:10}}>
-                            {qs.results.map((r,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:r.ok?"var(--a2)":"var(--a3)"}}/>)}
+                            {qs.results.map((r,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:r.ok?"var(--success)":"var(--danger)"}}/>)}
                           </div>
                           <button className="btn btn-g btn-sm" onClick={()=>setQuizStates(s=>({...s,[sub.id]:{...s[sub.id],done:false,qi:0,sel:null,answered:false,score:0,results:[]}}))} >Try Again</button>
                         </div>
                       ) : qs.questions ? (
                         <div>
-                          <div style={{fontSize:11,color:"#50508a",marginBottom:8,fontWeight:700}}>Q{qs.qi+1} of {qs.questions.length}</div>
+                          <div style={{fontSize:11,color:"var(--muted)",marginBottom:8,fontWeight:700}}>Q{qs.qi+1} of {qs.questions.length}</div>
                           <div style={{fontWeight:700,fontSize:14,lineHeight:1.5,marginBottom:12,color:"var(--text)"}}>{cleanMath(qs.questions[qs.qi]?.question)}</div>
                           {qs.questions[qs.qi]?.options?.map((opt,j)=>{
                             const isCorrect = j===qs.questions[qs.qi].correct;
                             const isSel = j===qs.sel;
                             let bg="var(--bg2)",border="1px solid var(--border)",clr="var(--text)";
-                            if(qs.answered&&isCorrect){bg="rgba(92,224,198,.15)";border="1px solid var(--a2)";clr="var(--a2)";}
-                            else if(qs.answered&&isSel){bg="rgba(255,107,107,.15)";border="1px solid var(--a3)";clr="var(--a3)";}
+                            if(qs.answered&&isCorrect){bg="var(--success-bg)";border="1px solid var(--success)";clr="var(--success)";}
+                            else if(qs.answered&&isSel){bg="var(--danger-bg)";border="1px solid var(--danger)";clr="var(--danger)";}
                             return(
                               <div key={j} onClick={()=>quizChoose(sub.id,j)}
                                 style={{padding:"9px 12px",borderRadius:8,marginBottom:6,cursor:qs.answered?"default":"pointer",background:bg,border,color:clr,fontSize:13,transition:"all .15s"}}>
@@ -2936,7 +2936,7 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
                           })}
                           {qs.answered&&(
                             <>
-                              <div style={{background:"rgba(92,224,198,.08)",border:"1px solid rgba(92,224,198,.15)",borderRadius:8,padding:"9px 12px",marginTop:8,fontSize:12,color:"#9090c0"}}>
+                              <div style={{background:"rgba(92,224,198,.08)",border:"1px solid var(--success-bg)",borderRadius:8,padding:"9px 12px",marginTop:8,fontSize:12,color:"#9090c0"}}>
                                 💡 {cleanMath(qs.questions[qs.qi]?.explanation)}
                               </div>
                               <button className="btn btn-p btn-sm" style={{marginTop:10}} onClick={()=>quizNext(sub.id)}>
@@ -2953,7 +2953,7 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
                   {deepNotes[sub.id]?.visible && (
                     <div style={{margin:"0 18px 14px",background:"var(--bg3)",borderRadius:10,padding:"16px"}}>
                       {deepNotes[sub.id]?.loading ? (
-                        <div style={{textAlign:"center",padding:"20px 0",color:"#6060a0"}}>
+                        <div style={{textAlign:"center",padding:"20px 0",color:"var(--muted)"}}>
                           <div style={{fontSize:20,marginBottom:6}}>✨</div>
                           <div style={{fontSize:13}}>Generating deep notes for {sub.title}...</div>
                           <div style={{display:"flex",gap:6,justifyContent:"center",marginTop:8}}>{[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
@@ -2962,7 +2962,7 @@ Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use #
                         <div>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
                             <div style={{fontSize:12,fontWeight:700,color:color,textTransform:"uppercase",letterSpacing:".06em"}}>📖 Deep Study Notes — {sub.title}</div>
-                            <button onClick={()=>setDeepNotes(d=>({...d,[sub.id]:{...d[sub.id],visible:false}}))} style={{background:"none",border:"none",color:"#50508a",cursor:"pointer",fontSize:14}}>✕</button>
+                            <button onClick={()=>setDeepNotes(d=>({...d,[sub.id]:{...d[sub.id],visible:false}}))} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:14}}>✕</button>
                           </div>
                           <MarkdownRenderer content={deepNotes[sub.id]?.content||""}/>
                         </div>
@@ -3180,7 +3180,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
           <div style={{width:3,height:24,background:color,borderRadius:2}}/>
           <div>
             <div style={{fontWeight:900,fontSize:18}}>{selTopic}</div>
-            <div style={{fontSize:12,color:"#6060a0"}}>{sel} · {curriculum}</div>
+            <div style={{fontSize:12,color:"var(--muted)"}}>{sel} · {curriculum}</div>
           </div>
         </div>
 
@@ -3205,7 +3205,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
             {id:"notes",label:"📋 Quick Summary"},
           ].map(t=>(
             <button key={t.id} className="btn btn-sm"
-              style={{background:activeTab===t.id?color:"var(--bg3)",color:activeTab===t.id?"#fff":"#7070a8",border:`1px solid ${activeTab===t.id?color:"var(--border)"}`}}
+              style={{background:activeTab===t.id?color:"var(--bg3)",color:activeTab===t.id?"#fff":"var(--muted)",border:`1px solid ${activeTab===t.id?color:"var(--border)"}`}}
               onClick={()=>generateContent(t.id)}>
               {t.label}
             </button>
@@ -3217,7 +3217,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
           <div className="card" style={{textAlign:"center",padding:"40px",marginBottom:20}}>
             <div style={{fontSize:28,marginBottom:10}}>✨</div>
             <div style={{fontWeight:700,marginBottom:6}}>Generating {activeTab} for {selTopic}...</div>
-            <div style={{color:"#6060a0",fontSize:13,marginBottom:16}}>Using official {curriculum} curriculum</div>
+            <div style={{color:"var(--muted)",fontSize:13,marginBottom:16}}>Using official {curriculum} curriculum</div>
             <div style={{display:"flex",gap:8,justifyContent:"center"}}>{[0,.2,.4].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
           </div>
         ) : content ? (
@@ -3259,7 +3259,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
           <div style={{width:4,height:32,background:color,borderRadius:2}}/>
           <div style={{flex:1}}>
             <div style={{fontWeight:900,fontSize:20}}>{sel}</div>
-            <div style={{color:"#6060a0",fontSize:12}}>{curriculum} · {subjData?.assessmentType||"Assessment"}</div>
+            <div style={{color:"var(--muted)",fontSize:12}}>{curriculum} · {subjData?.assessmentType||"Assessment"}</div>
           </div>
           <Ring val={gs?.state?.masteryMap?.[sel]||50} size={56} stroke={5} color={color}/>
         </div>
@@ -3287,10 +3287,10 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:color}}/>
                 <span style={{fontSize:14,fontWeight:600}}>{myTopic}</span>
-                <span style={{fontSize:12,color:"#50508a"}}>— all quizzes and flashcards will focus on this</span>
+                <span style={{fontSize:12,color:"var(--muted)"}}>— all quizzes and flashcards will focus on this</span>
               </div>
             ) : (
-              <div style={{color:"#50508a",fontSize:13}}>
+              <div style={{color:"var(--muted)",fontSize:13}}>
                 Tell us your current topic and every quiz, flashcard, and study note will be generated specifically for what you're learning right now.
               </div>
             )}
@@ -3313,16 +3313,16 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
               <div style={{display:"flex",gap:8,marginTop:10}}>
                 <button className="btn btn-p btn-sm" onClick={()=>saveUserNotes(sel,notesInput)}>Save Notes</button>
                 <button className="btn btn-g btn-sm" onClick={()=>setEditingNotes(false)}>Cancel</button>
-                {myNotes && <button className="btn btn-g btn-sm" style={{color:"var(--a3)"}} onClick={()=>saveUserNotes(sel,"")}>Clear</button>}
+                {myNotes && <button className="btn btn-g btn-sm" style={{color:"var(--danger)"}} onClick={()=>saveUserNotes(sel,"")}>Clear</button>}
               </div>
             </div>
           ) : myNotes ? (
             <div className="cb">
-              <div style={{fontSize:13,color:"#9090b8",lineHeight:1.6,whiteSpace:"pre-wrap",maxHeight:80,overflow:"hidden",maskImage:"linear-gradient(180deg,black 60%,transparent)"}}>{myNotes}</div>
-              <div style={{fontSize:11,color:"#50508a",marginTop:4}}>✅ {myNotes.length} characters · Gemini will use your notes as primary source</div>
+              <div style={{fontSize:13,color:"var(--muted)",lineHeight:1.6,whiteSpace:"pre-wrap",maxHeight:80,overflow:"hidden",maskImage:"linear-gradient(180deg,black 60%,transparent)"}}>{myNotes}</div>
+              <div style={{fontSize:11,color:"var(--muted)",marginTop:4}}>✅ {myNotes.length} characters · Gemini will use your notes as primary source</div>
             </div>
           ) : (
-            <div className="cb" style={{color:"#50508a",fontSize:13}}>
+            <div className="cb" style={{color:"var(--muted)",fontSize:13}}>
               Optionally paste your textbook or teacher notes — Gemini will generate questions directly from YOUR content rather than general curriculum.
             </div>
           )}
@@ -3335,7 +3335,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
           </div>
         ) : (
           <>
-            <div style={{fontWeight:800,fontSize:14,marginBottom:12,color:"#7070a8",textTransform:"uppercase",letterSpacing:".06em"}}>
+            <div style={{fontWeight:800,fontSize:14,marginBottom:12,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".06em"}}>
               {subjData?"📋 Official VCAA Study Areas":"📚 Topic Areas"}
             </div>
             <div className="g2" style={{marginBottom:18}}>
@@ -3346,20 +3346,20 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
                     onClick={()=>{setSelTopic(topic);setContent("");setActiveTab("overview");}}>
                     <div style={{fontWeight:700,fontSize:15,marginBottom:6}}>{topic}</div>
                     {area && (
-                      <div style={{fontSize:12,color:"#6060a0",lineHeight:1.5}}>
+                      <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>
                         {area.dotPoints.slice(0,2).map((dp,j)=>(
                           <div key={j} style={{display:"flex",gap:6,marginBottom:3}}>
                             <span style={{color:color,flexShrink:0}}>•</span>{dp}
                           </div>
                         ))}
-                        {area.dotPoints.length > 2 && <div style={{color:"#50508a",marginTop:3}}>+{area.dotPoints.length-2} more dot points →</div>}
+                        {area.dotPoints.length > 2 && <div style={{color:"var(--muted)",marginTop:3}}>+{area.dotPoints.length-2} more dot points →</div>}
                       </div>
                     )}
                     <div style={{display:"flex",gap:6,marginTop:10,flexWrap:"wrap"}}>
                       <span className="tag tag-a">📖 Notes</span>
                       <span className="tag tag-g">🎯 Quiz</span>
                       <span className="tag tag-r">🃏 Flashcards</span>
-                      <span style={{fontSize:10,color:"#50508a",padding:"2px 8px"}}>Click to study →</span>
+                      <span style={{fontSize:10,color:"var(--muted)",padding:"2px 8px"}}>Click to study →</span>
                     </div>
                   </div>
                 );
@@ -3371,7 +3371,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
               <div className="card" style={{borderColor:`${color}44`}}>
                 <div className="ch"><div className="ct">⚡ Quick Study — {myTopic}</div><span className="tag tag-g">Current Topic</span></div>
                 <div className="cb">
-                  <div style={{fontSize:13,color:"#7070a8",marginBottom:14}}>Generate study materials specifically for what you're doing right now in class</div>
+                  <div style={{fontSize:13,color:"var(--muted)",marginBottom:14}}>Generate study materials specifically for what you're doing right now in class</div>
                   <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
                     {[
                       {type:"study",label:"📖 Study Notes"},
@@ -3409,12 +3409,12 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <div>
           <div style={{fontWeight:900,fontSize:22}}>My Subjects</div>
-          <div style={{color:"#6060a0",fontSize:13,marginTop:3}}>{subjs.length} subjects · {ALL_SUBJECTS[profile.yearLevel]?.label} · Click a subject to start studying</div>
+          <div style={{color:"var(--muted)",fontSize:13,marginTop:3}}>{subjs.length} subjects · {ALL_SUBJECTS[profile.yearLevel]?.label} · Click a subject to start studying</div>
         </div>
       </div>
       {Object.entries(grouped).map(([group,ss])=>(
         <div key={group} style={{marginBottom:24}}>
-          <div style={{fontSize:11,fontWeight:800,color:"#50508a",textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{group}</div>
+          <div style={{fontSize:11,fontWeight:800,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{group}</div>
           <div className="g3">
             {ss.map(s=>{
               const mastery = gs?.state?.masteryMap?.[s]||50;
@@ -3470,10 +3470,10 @@ function InlineQuiz({ questions, subject, gs }) {
     const pct = Math.round((score/questions.length)*100);
     return (
       <div className="card" style={{textAlign:"center",padding:"36px 24px"}}>
-        <div style={{fontSize:52,fontWeight:900,color:pct>=75?"var(--a2)":pct>=50?"var(--gold)":"var(--a3)",fontFamily:"var(--ff)"}}>{pct}%</div>
-        <div style={{color:"#7070a8",marginTop:6}}>{score}/{questions.length} correct · +{score*60} XP</div>
+        <div style={{fontSize:52,fontWeight:900,color:pct>=75?"var(--success)":pct>=50?"var(--gold)":"var(--danger)",fontFamily:"var(--ff)"}}>{pct}%</div>
+        <div style={{color:"var(--muted)",marginTop:6}}>{score}/{questions.length} correct · +{score*60} XP</div>
         <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:12}}>
-          {results.map((r,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:r.ok?"var(--a2)":"var(--a3)"}}/>)}
+          {results.map((r,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:r.ok?"var(--success)":"var(--danger)"}}/>)}
         </div>
         <button className="btn btn-p" style={{marginTop:16}} onClick={()=>{setQi(0);setSel(null);setAnswered(false);setScore(0);setDone(false);setResults([]);}}>Try Again</button>
       </div>
@@ -3484,7 +3484,7 @@ function InlineQuiz({ questions, subject, gs }) {
     <div className="card">
       <div className="ch">
         <div className="ct">Question {qi+1}/{questions.length} {q.marks&&<span className="tag tag-gold">{q.marks} marks</span>}</div>
-        <span style={{fontSize:12,color:"#6060a0"}}>{subject}</span>
+        <span style={{fontSize:12,color:"var(--muted)"}}>{subject}</span>
       </div>
       <div className="cb">
         <div style={{fontWeight:700,fontSize:15,lineHeight:1.5,marginBottom:20}}>{cleanMath(q.question)}</div>
@@ -3493,14 +3493,14 @@ function InlineQuiz({ questions, subject, gs }) {
           if(answered){cls+=" qdis";if(i===q.correct)cls+=" qcor";else if(i===sel)cls+=" qwrg";}
           return (
             <div key={i} className={cls} onClick={()=>choose(i)}>
-              <div className="ql" style={answered&&i===q.correct?{background:"rgba(92,224,198,.2)",color:"var(--a2)"}:answered&&i===sel?{background:"rgba(255,107,107,.2)",color:"var(--a3)"}:{}}>{String.fromCharCode(65+i)}</div>
+              <div className="ql" style={answered&&i===q.correct?{background:"rgba(92,224,198,.2)",color:"var(--success)"}:answered&&i===sel?{background:"var(--danger-bg)",color:"var(--danger)"}:{}}>{String.fromCharCode(65+i)}</div>
               {cleanMath(opt)}
-              {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--a2)"}}>✓</span>}
-              {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--a3)"}}>✗</span>}
+              {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--success)"}}>✓</span>}
+              {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--danger)"}}>✗</span>}
             </div>
           );
         })}
-        {answered&&<div className="qexp fade-up"><strong style={{color:"var(--a2)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
+        {answered&&<div className="qexp fade-up"><strong style={{color:"var(--success)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
         {answered&&<button className="btn btn-p" style={{marginTop:14}} onClick={next}>{qi<questions.length-1?"Next →":"Finish"}</button>}
       </div>
     </div>
@@ -3526,8 +3526,8 @@ function InlineFlashcards({ cards, subject }) {
   if(done) return (
     <div className="card" style={{textAlign:"center",padding:"36px"}}>
       <div style={{fontSize:48}}>🃏</div>
-      <div style={{fontWeight:900,fontSize:42,color:"var(--a2)",margin:"10px 0"}}>{known.length}/{cards.length}</div>
-      <div style={{color:"#7070a8",fontSize:14}}>Cards mastered — {subject}</div>
+      <div style={{fontWeight:900,fontSize:42,color:"var(--success)",margin:"10px 0"}}>{known.length}/{cards.length}</div>
+      <div style={{color:"var(--muted)",fontSize:14}}>Cards mastered — {subject}</div>
       <button className="btn btn-p" style={{marginTop:16}} onClick={()=>{setIdx(0);setFlipped(false);setKnown([]);setDone(false);}}>Restart</button>
     </div>
   );
@@ -3535,7 +3535,7 @@ function InlineFlashcards({ cards, subject }) {
   return (
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-        <span style={{fontWeight:700,fontSize:13,color:"#7070a8"}}>{idx+1}/{cards.length} · {subject}</span>
+        <span style={{fontWeight:700,fontSize:13,color:"var(--muted)"}}>{idx+1}/{cards.length} · {subject}</span>
         <div style={{height:4,width:160,background:"var(--bg3)",borderRadius:2,overflow:"hidden"}}>
           <div style={{height:"100%",background:"linear-gradient(90deg,#7C6AF7,#5CE0C6)",width:`${(idx/cards.length)*100}%`}}/>
         </div>
@@ -3548,15 +3548,15 @@ function InlineFlashcards({ cards, subject }) {
             <div className="fc-hint">Tap to reveal</div>
           </div>
           <div className="fc-face fc-back">
-            <div className="fc-sub" style={{color:"var(--a2)"}}>Answer</div>
+            <div className="fc-sub" style={{color:"var(--success)"}}>Answer</div>
             <div className="fc-a">{cleanMath(card.a)}</div>
           </div>
         </div>
       </div>
       {flipped && (
         <div style={{display:"flex",gap:12,marginTop:16}} className="fade-up">
-          <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(255,107,107,.4)",color:"var(--a3)",background:"rgba(255,107,107,.05)"}} onClick={()=>verdict("rev")}>✗ Still Learning</button>
-          <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(92,224,198,.4)",color:"var(--a2)",background:"rgba(92,224,198,.05)"}} onClick={()=>verdict("know")}>✓ Got It!</button>
+          <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(255,107,107,.4)",color:"var(--danger)",background:"rgba(255,107,107,.05)"}} onClick={()=>verdict("rev")}>✗ Still Learning</button>
+          <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(92,224,198,.4)",color:"var(--success)",background:"rgba(92,224,198,.05)"}} onClick={()=>verdict("know")}>✓ Got It!</button>
         </div>
       )}
     </div>
@@ -3655,7 +3655,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
       {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).map(s=>(
         <button key={s} onClick={()=>setSelSubj(s)}
           className="btn btn-sm"
-          style={{background:selSubj===s?getColor(s):"var(--bg3)",color:selSubj===s?"#fff":"#7070a8",border:`1px solid ${selSubj===s?getColor(s):"var(--border)"}`}}>
+          style={{background:selSubj===s?getColor(s):"var(--bg3)",color:selSubj===s?"#fff":"var(--muted)",border:`1px solid ${selSubj===s?getColor(s):"var(--border)"}`}}>
           {s}
         </button>
       ))}
@@ -3668,7 +3668,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
       <div className="card" style={{textAlign:"center",padding:"60px 24px"}}>
         <div style={{fontSize:36,marginBottom:16}}>✨</div>
         <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>Generating your {selSubj} quiz...</div>
-        <div style={{color:"#6060a0",fontSize:13}}>Gemini is creating personalised {profile.yearLevel?.toUpperCase()} questions for you</div>
+        <div style={{color:"var(--muted)",fontSize:13}}>Gemini is creating personalised {profile.yearLevel?.toUpperCase()} questions for you</div>
         <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:20}}>
           {[0,.2,.4].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`,width:10,height:10}}/>)}
         </div>
@@ -3694,14 +3694,14 @@ Respond ONLY with valid JSON, no markdown, no backticks:
         <SubjectPicker/>
         <div className="card">
           <div style={{textAlign:"center",padding:"48px 24px"}}>
-            <div style={{fontSize:64,fontWeight:900,color:pct>=75?"var(--a2)":pct>=50?"var(--gold)":"var(--a3)",fontFamily:"var(--ff)"}}>{pct}%</div>
-            <div style={{fontSize:16,color:"#7070a8",marginTop:6}}>{score}/{questions.length} correct · +{score*60} XP earned</div>
-            <div style={{marginTop:8,fontSize:13,color:"#9090b8"}}>{selSubj} · {profile.yearLevel?.toUpperCase()}</div>
-            <div style={{marginTop:14,fontSize:14,color:"#9090b8"}}>
+            <div style={{fontSize:64,fontWeight:900,color:pct>=75?"var(--success)":pct>=50?"var(--gold)":"var(--danger)",fontFamily:"var(--ff)"}}>{pct}%</div>
+            <div style={{fontSize:16,color:"var(--muted)",marginTop:6}}>{score}/{questions.length} correct · +{score*60} XP earned</div>
+            <div style={{marginTop:8,fontSize:13,color:"var(--muted)"}}>{selSubj} · {profile.yearLevel?.toUpperCase()}</div>
+            <div style={{marginTop:14,fontSize:14,color:"var(--muted)"}}>
               {pct>=75?"🎉 Excellent! You're on track.":pct>=50?"👍 Good effort — review the missed topics.":"📚 Let's revisit these with the AI Tutor."}
             </div>
             <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:16}}>
-              {results.map((r,i)=><div key={i} style={{width:11,height:11,borderRadius:"50%",background:r.ok?"var(--a2)":"var(--a3)"}}/>)}
+              {results.map((r,i)=><div key={i} style={{width:11,height:11,borderRadius:"50%",background:r.ok?"var(--success)":"var(--danger)"}}/>)}
             </div>
             <div style={{display:"flex",gap:10,justifyContent:"center",marginTop:24}}>
               <button className="btn btn-p" onClick={restart}>New Quiz 🎲</button>
@@ -3724,7 +3724,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
           <span className="tag tag-a">{q.subject || selSubj}</span>
         </div>
         <div style={{display:"flex",gap:10,alignItems:"center"}}>
-          <span style={{fontWeight:700,color:"#6060a0"}}>Q {qi+1} / {questions.length}</span>
+          <span style={{fontWeight:700,color:"var(--muted)"}}>Q {qi+1} / {questions.length}</span>
           <button className="btn btn-g btn-sm" onClick={restart}>New Quiz 🎲</button>
         </div>
       </div>
@@ -3739,14 +3739,14 @@ Respond ONLY with valid JSON, no markdown, no backticks:
             if(answered){cls+=" qdis";if(i===q.correct)cls+=" qcor";else if(i===sel)cls+=" qwrg";}
             return (
               <div key={i} className={cls} onClick={()=>choose(i)}>
-                <div className="ql" style={answered&&i===q.correct?{background:"rgba(92,224,198,.2)",color:"var(--a2)"}:answered&&i===sel?{background:"rgba(255,107,107,.2)",color:"var(--a3)"}:{}}>{String.fromCharCode(65+i)}</div>
+                <div className="ql" style={answered&&i===q.correct?{background:"rgba(92,224,198,.2)",color:"var(--success)"}:answered&&i===sel?{background:"var(--danger-bg)",color:"var(--danger)"}:{}}>{String.fromCharCode(65+i)}</div>
                 {cleanMath(opt)}
-                {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--a2)"}}>✓</span>}
-                {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--a3)"}}>✗</span>}
+                {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--success)"}}>✓</span>}
+                {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--danger)"}}>✗</span>}
               </div>
             );
           })}
-          {answered&&<div className="qexp fade-up"><strong style={{color:"var(--a2)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
+          {answered&&<div className="qexp fade-up"><strong style={{color:"var(--success)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
         </div>
       </div>
       {answered&&(
@@ -3819,7 +3819,7 @@ Return ONLY valid JSON, no markdown:
     <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
       {(Array.isArray(profile?.selectedSubjects)?profile.selectedSubjects:[]).map(s=>(
         <button key={s} onClick={()=>setSelSubj(s)} className="btn btn-sm"
-          style={{background:selSubj===s?getColor(s):"var(--bg3)",color:selSubj===s?"#fff":"#7070a8",border:`1px solid ${selSubj===s?getColor(s):"var(--border)"}`}}>
+          style={{background:selSubj===s?getColor(s):"var(--bg3)",color:selSubj===s?"#fff":"var(--muted)",border:`1px solid ${selSubj===s?getColor(s):"var(--border)"}`}}>
           {s}
         </button>
       ))}
@@ -3832,7 +3832,7 @@ Return ONLY valid JSON, no markdown:
       <div className="card" style={{textAlign:"center",padding:"60px 24px"}}>
         <div style={{fontSize:36,marginBottom:16}}>🃏</div>
         <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>Creating your {selSubj} flashcards...</div>
-        <div style={{color:"#6060a0",fontSize:13}}>Gemini is generating personalised cards from the {profile.yearLevel?.toUpperCase()} curriculum</div>
+        <div style={{color:"var(--muted)",fontSize:13}}>Gemini is generating personalised cards from the {profile.yearLevel?.toUpperCase()} curriculum</div>
         <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:20}}>
           {[0,.2,.4].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`,width:10,height:10}}/>)}
         </div>
@@ -3858,11 +3858,11 @@ Return ONLY valid JSON, no markdown:
       <SubjectPicker/>
       <div className="card" style={{textAlign:"center",padding:"48px 24px"}}>
         <div style={{fontSize:48}}>🃏</div>
-        <div style={{fontWeight:900,fontSize:52,color:"var(--a2)",margin:"12px 0"}}>{known.length}/{cards.length}</div>
-        <div style={{color:"#7070a8",fontSize:14}}>Cards mastered — {selSubj}</div>
+        <div style={{fontWeight:900,fontSize:52,color:"var(--success)",margin:"12px 0"}}>{known.length}/{cards.length}</div>
+        <div style={{color:"var(--muted)",fontSize:14}}>Cards mastered — {selSubj}</div>
         <div style={{display:"flex",gap:24,justifyContent:"center",margin:"20px 0"}}>
-          <div style={{textAlign:"center"}}><div style={{fontSize:24,fontWeight:900,color:"var(--a2)"}}>{known.length}</div><div style={{fontSize:11,color:"#6060a0"}}>Know it ✓</div></div>
-          <div style={{textAlign:"center"}}><div style={{fontSize:24,fontWeight:900,color:"var(--a3)"}}>{rev.length}</div><div style={{fontSize:11,color:"#6060a0"}}>Review again</div></div>
+          <div style={{textAlign:"center"}}><div style={{fontSize:24,fontWeight:900,color:"var(--success)"}}>{known.length}</div><div style={{fontSize:11,color:"var(--muted)"}}>Know it ✓</div></div>
+          <div style={{textAlign:"center"}}><div style={{fontSize:24,fontWeight:900,color:"var(--danger)"}}>{rev.length}</div><div style={{fontSize:11,color:"var(--muted)"}}>Review again</div></div>
         </div>
         <div style={{display:"flex",gap:10,justifyContent:"center"}}>
           <button className="btn btn-p" onClick={()=>generateCards(selSubj)}>New Deck 🎲</button>
@@ -3878,9 +3878,9 @@ Return ONLY valid JSON, no markdown:
     <div className="content fade-up">
       <SubjectPicker/>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-        <div><div style={{fontWeight:900,fontSize:20}}>Flashcards</div><div style={{color:"#6060a0",fontSize:12,marginTop:3}}>Spaced Repetition · Tap to flip</div></div>
+        <div><div style={{fontWeight:900,fontSize:20}}>Flashcards</div><div style={{color:"var(--muted)",fontSize:12,marginTop:3}}>Spaced Repetition · Tap to flip</div></div>
         <div style={{display:"flex",gap:10,alignItems:"center"}}>
-          <span style={{fontWeight:700,color:"#6060a0"}}>{idx+1}/{cards.length}</span>
+          <span style={{fontWeight:700,color:"var(--muted)"}}>{idx+1}/{cards.length}</span>
           <button className="btn btn-g btn-sm" onClick={()=>generateCards(selSubj)}>New Deck 🎲</button>
         </div>
       </div>
@@ -3896,15 +3896,15 @@ Return ONLY valid JSON, no markdown:
               <div className="fc-hint">Tap to reveal</div>
             </div>
             <div className="fc-face fc-back">
-              <div className="fc-sub" style={{color:"var(--a2)"}}>Answer</div>
+              <div className="fc-sub" style={{color:"var(--success)"}}>Answer</div>
               <div className="fc-a">{cleanMath(card.a)}</div>
             </div>
           </div>
         </div>
         {flipped&&(
           <div style={{display:"flex",gap:12,marginTop:18}} className="fade-up">
-            <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(255,107,107,.4)",color:"var(--a3)",background:"rgba(255,107,107,.05)"}} onClick={()=>verdict("rev")}>✗ Still Learning</button>
-            <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(92,224,198,.4)",color:"var(--a2)",background:"rgba(92,224,198,.05)"}} onClick={()=>verdict("know")}>✓ Got It!</button>
+            <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(255,107,107,.4)",color:"var(--danger)",background:"rgba(255,107,107,.05)"}} onClick={()=>verdict("rev")}>✗ Still Learning</button>
+            <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(92,224,198,.4)",color:"var(--success)",background:"rgba(92,224,198,.05)"}} onClick={()=>verdict("know")}>✓ Got It!</button>
           </div>
         )}
       </div>
@@ -4223,7 +4223,7 @@ Write a practical 7-day plan with specific daily tasks. Keep it concise, motivat
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <div>
           <div style={{fontWeight:900,fontSize:22}}>Study Planner</div>
-          <div style={{color:"#6060a0",fontSize:13,marginTop:3}}>{today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric",year:"numeric"})}</div>
+          <div style={{color:"var(--muted)",fontSize:13,marginTop:3}}>{today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric",year:"numeric"})}</div>
         </div>
         <div style={{display:"flex",gap:8}}>
           <button className="btn btn-s btn-sm" onClick={()=>setShowAddEvent(v=>!v)}>+ Add Event</button>
@@ -4282,17 +4282,17 @@ Write a practical 7-day plan with specific daily tasks. Keep it concise, motivat
               </div>
             ))}
           </div>
-          <div style={{fontSize:10,color:"#40406a",marginTop:8,textAlign:"right"}}>Click an event on the calendar to remove it</div>
+          <div style={{fontSize:10,color:"var(--muted2)",marginTop:8,textAlign:"right"}}>Click an event on the calendar to remove it</div>
         </div>
       </div>
 
       <div className="g2">
         {/* Upcoming events */}
         <div className="card">
-          <div className="ch"><div className="ct">📋 Upcoming Events</div><span style={{fontSize:11,color:"#50508a"}}>{upcoming.length} events</span></div>
+          <div className="ch"><div className="ct">📋 Upcoming Events</div><span style={{fontSize:11,color:"var(--muted)"}}>{upcoming.length} events</span></div>
           <div style={{padding:"0 16px"}}>
             {upcoming.length===0 ? (
-              <div style={{padding:"16px 0",color:"#50508a",fontSize:13,textAlign:"center"}}>No upcoming events — add one above!</div>
+              <div style={{padding:"16px 0",color:"var(--muted)",fontSize:13,textAlign:"center"}}>No upcoming events — add one above!</div>
             ) : upcoming.slice(0,6).map((u,i)=>{
               const daysLeft = Math.ceil((new Date(u.date)-new Date())/(1000*60*60*24));
               return (
@@ -4300,13 +4300,13 @@ Write a practical 7-day plan with specific daily tasks. Keep it concise, motivat
                   <div style={{width:8,height:8,borderRadius:"50%",background:u.color||getColor(u.subject),flexShrink:0}}/>
                   <div style={{flex:1}}>
                     <div style={{fontSize:13,fontWeight:700}}>{u.title}</div>
-                    <div style={{fontSize:11,color:"#6060a0"}}><span className={`tag ${u.type==="SAC"?"tag-a":u.type==="EXAM"?"tag-r":"tag-gold"}`}>{u.type}</span> {u.subject}</div>
+                    <div style={{fontSize:11,color:"var(--muted)"}}><span className={`tag ${u.type==="SAC"?"tag-a":u.type==="EXAM"?"tag-r":"tag-gold"}`}>{u.type}</span> {u.subject}</div>
                   </div>
                   <div style={{textAlign:"right"}}>
-                    <div style={{fontSize:13,fontWeight:800,color:daysLeft<=5?"var(--a3)":daysLeft<=12?"var(--gold)":"var(--a2)"}}>{daysLeft}d</div>
-                    <div style={{fontSize:10,color:"#50508a"}}>{new Date(u.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
+                    <div style={{fontSize:13,fontWeight:800,color:daysLeft<=5?"var(--danger)":daysLeft<=12?"var(--gold)":"var(--success)"}}>{daysLeft}d</div>
+                    <div style={{fontSize:10,color:"var(--muted)"}}>{new Date(u.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
                   </div>
-                  <button onClick={()=>removeEvent(u.id)} style={{background:"none",border:"none",color:"#40406a",cursor:"pointer",fontSize:14,padding:"2px"}}>✕</button>
+                  <button onClick={()=>removeEvent(u.id)} style={{background:"none",border:"none",color:"var(--muted2)",cursor:"pointer",fontSize:14,padding:"2px"}}>✕</button>
                 </div>
               );
             })}
@@ -4321,12 +4321,12 @@ Write a practical 7-day plan with specific daily tasks. Keep it concise, motivat
                 style={{flex:1,background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"8px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}/>
               <button className="btn btn-p btn-sm" onClick={addGoal}>Add</button>
             </div>
-            {goals.length===0&&<div style={{color:"#50508a",fontSize:13,textAlign:"center",padding:"8px 0"}}>No goals yet!</div>}
+            {goals.length===0&&<div style={{color:"var(--muted)",fontSize:13,textAlign:"center",padding:"8px 0"}}>No goals yet!</div>}
             {goals.map((g,i)=>(
               <div key={i} style={{display:"flex",gap:10,alignItems:"center",padding:"7px 0",borderBottom:i<goals.length-1?"1px solid var(--border)":"none"}}>
                 <input type="checkbox" checked={g.done} onChange={()=>toggleGoal(i)} style={{accentColor:"var(--accent)",width:15,height:15,cursor:"pointer"}}/>
-                <span style={{fontSize:13,flex:1,textDecoration:g.done?"line-through":"none",color:g.done?"#50508a":"var(--text)"}}>{g.text}</span>
-                <button onClick={()=>saveGoals(goals.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:"#40406a",cursor:"pointer",fontSize:12}}>✕</button>
+                <span style={{fontSize:13,flex:1,textDecoration:g.done?"line-through":"none",color:g.done?"var(--muted)":"var(--text)"}}>{g.text}</span>
+                <button onClick={()=>saveGoals(goals.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:"var(--muted2)",cursor:"pointer",fontSize:12}}>✕</button>
               </div>
             ))}
           </div>
@@ -4337,8 +4337,8 @@ Write a practical 7-day plan with specific daily tasks. Keep it concise, motivat
           <div className="card">
             <div className="ch"><div className="ct">⏱️ Pomodoro Timer</div></div>
             <div className="cb" style={{textAlign:"center"}}>
-              <div style={{fontWeight:900,fontSize:52,color:running?"var(--a2)":"var(--accent)",letterSpacing:-2,fontFamily:"var(--ff)",transition:"color .3s"}}>{mm}:{ss2}</div>
-              <div style={{color:"#6060a0",fontSize:12,marginBottom:14}}>{running?"Focus — you've got this! 🔥":"25 min session · earns XP on complete"}</div>
+              <div style={{fontWeight:900,fontSize:52,color:running?"var(--success)":"var(--accent)",letterSpacing:-2,fontFamily:"var(--ff)",transition:"color .3s"}}>{mm}:{ss2}</div>
+              <div style={{color:"var(--muted)",fontSize:12,marginBottom:14}}>{running?"Focus — you've got this! 🔥":"25 min session · earns XP on complete"}</div>
               <div style={{display:"flex",gap:8,justifyContent:"center"}}>
                 <button className="btn btn-p btn-sm" onClick={()=>setRunning(r=>!r)}>{running?"⏸ Pause":"▶ Start"}</button>
                 <button className="btn btn-g btn-sm" onClick={()=>{setTimer(25*60);setRunning(false);}}>↺ Reset</button>
@@ -4456,23 +4456,23 @@ function AnalyticsScreen({ profile, gs }) {
             <div style={{display:"flex",alignItems:"center",gap:20,marginBottom:14}}>
               <div style={{textAlign:"center"}}>
                 <div style={{fontSize:36,fontWeight:900,color:"#7C6AF7"}}>{predicted}</div>
-                <div style={{fontSize:11,color:"#50508a"}}>Current Prediction</div>
+                <div style={{fontSize:11,color:"var(--muted)"}}>Current Prediction</div>
               </div>
               <div style={{flex:1}}>
-                <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#50508a",marginBottom:4}}>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--muted)",marginBottom:4}}>
                   <span>0</span><span>Target: {targetATAR}</span><span>99.95</span>
                 </div>
                 <div style={{height:10,background:"var(--bg3)",borderRadius:5,overflow:"hidden",position:"relative"}}>
                   <div style={{position:"absolute",left:0,top:0,height:"100%",width:`${(currentNum/99.95)*100}%`,background:"linear-gradient(90deg,#7C6AF7,#5CE0C6)",borderRadius:5,transition:"width 1s ease"}}/>
                   <div style={{position:"absolute",top:0,height:"100%",left:`${(targetATAR/99.95)*100}%`,width:2,background:"var(--gold)"}}/>
                 </div>
-                <div style={{fontSize:11,color:"#50508a",marginTop:4}}>
+                <div style={{fontSize:11,color:"var(--muted)",marginTop:4}}>
                   {gap>0?`📈 ${gap} ATAR points to reach your ${profile.futurePath} goal`:"🎉 You're on track for your goal!"}
                 </div>
               </div>
               <div style={{textAlign:"center"}}>
                 <div style={{fontSize:36,fontWeight:900,color:"var(--gold)"}}>{targetATAR}</div>
-                <div style={{fontSize:11,color:"#50508a"}}>Goal</div>
+                <div style={{fontSize:11,color:"var(--muted)"}}>Goal</div>
               </div>
             </div>
             <div style={{fontSize:12,color:"var(--muted)",background:"var(--bg3)",borderRadius:8,padding:"10px 14px",marginBottom:12}}>
@@ -4501,13 +4501,13 @@ function AnalyticsScreen({ profile, gs }) {
           <div style={{display:"flex",alignItems:"flex-end",gap:6,height:120}}>
             {weeks.map((w,i)=>(
               <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
-                <div style={{fontSize:9,color:"#50508a"}}>{w.val||""}</div>
+                <div style={{fontSize:9,color:"var(--muted)"}}>{w.val||""}</div>
                 <div style={{width:"100%",background:w.val>0?"linear-gradient(180deg,#7C6AF7,#5CE0C6)":"var(--bg3)",borderRadius:"3px 3px 0 0",height:`${Math.max(4,(w.val/maxW)*100)}px`,transition:"height 1s ease"}}/>
-                <div style={{fontSize:8,color:"#40406a",textAlign:"center",lineHeight:1.2}}>{w.label}</div>
+                <div style={{fontSize:8,color:"var(--muted2)",textAlign:"center",lineHeight:1.2}}>{w.label}</div>
               </div>
             ))}
           </div>
-          {weeks.every(w=>w.val===0)&&<div style={{textAlign:"center",color:"#50508a",fontSize:12,marginTop:8}}>Complete quizzes and flashcards to see your activity here!</div>}
+          {weeks.every(w=>w.val===0)&&<div style={{textAlign:"center",color:"var(--muted)",fontSize:12,marginTop:8}}>Complete quizzes and flashcards to see your activity here!</div>}
         </div>
       </div>
 
@@ -4516,7 +4516,7 @@ function AnalyticsScreen({ profile, gs }) {
           <div className="ch"><div className="ct">📚 Subject Mastery</div></div>
           <div className="cb">
             {subjMastery.length===0 ? (
-              <div style={{color:"#50508a",fontSize:13}}>Take quizzes to build your mastery scores!</div>
+              <div style={{color:"var(--muted)",fontSize:13}}>Take quizzes to build your mastery scores!</div>
             ) : subjMastery.sort((a,b)=>b.mastery-a.mastery).map((s,i)=>(
               <div key={s.name} style={{marginBottom:14}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,fontSize:12,fontWeight:600}}>
@@ -4576,13 +4576,13 @@ Keep it practical and specific to ${curriculum}.`;
             <div className="ch"><div className="ct">📋 Quiz History</div></div>
             <div style={{padding:"0 16px"}}>
               {(state.quizHistory||[]).length===0 ? (
-                <div style={{padding:"14px 0",color:"#50508a",fontSize:13,textAlign:"center"}}>No quizzes yet!</div>
+                <div style={{padding:"14px 0",color:"var(--muted)",fontSize:13,textAlign:"center"}}>No quizzes yet!</div>
               ) : (state.quizHistory||[]).slice(0,6).map((q,i)=>(
                 <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 0",borderBottom:i<5?"1px solid var(--border)":"none"}}>
-                  <div style={{width:34,height:34,borderRadius:7,background:q.pct>=75?"rgba(92,224,198,.12)":q.pct>=50?"rgba(255,215,0,.12)":"rgba(255,107,107,.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:q.pct>=75?"var(--a2)":q.pct>=50?"var(--gold)":"var(--a3)",flexShrink:0}}>{q.pct}%</div>
+                  <div style={{width:34,height:34,borderRadius:7,background:q.pct>=75?"var(--success-bg)":q.pct>=50?"var(--gold-light)":"var(--danger-bg)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:q.pct>=75?"var(--success)":q.pct>=50?"var(--gold)":"var(--danger)",flexShrink:0}}>{q.pct}%</div>
                   <div style={{flex:1}}>
                     <div style={{fontSize:12,fontWeight:600}}>{q.subject}</div>
-                    <div style={{fontSize:10,color:"#50508a"}}>{q.score}/{q.total} · {new Date(q.date).toLocaleDateString("en-AU",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
+                    <div style={{fontSize:10,color:"var(--muted)"}}>{q.score}/{q.total} · {new Date(q.date).toLocaleDateString("en-AU",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
                   </div>
                 </div>
               ))}
@@ -4618,7 +4618,7 @@ function NotifToggles() {
         <div key={n.key} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:i<3?"1px solid var(--border)":"none"}}>
           <div>
             <div style={{fontSize:13,fontWeight:600}}>{n.label}</div>
-            <div style={{fontSize:11,color:"#50508a",marginTop:2}}>{n.desc}</div>
+            <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{n.desc}</div>
           </div>
           <button onClick={()=>toggle(n.key)}
             style={{width:44,height:24,borderRadius:12,background:vals[n.key]?"var(--accent)":"var(--bg3)",border:`1px solid ${vals[n.key]?"var(--accent)":"var(--border)"}`,cursor:"pointer",position:"relative",flexShrink:0,transition:"all .2s"}}>
@@ -4679,8 +4679,8 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                 </div>
                 <div>
                   <div style={{fontWeight:800,fontSize:18}}>{profile.userName}</div>
-                  <div style={{fontSize:13,color:"#6060a0"}}>{profile.email}</div>
-                  <div style={{fontSize:12,color:"#50508a",marginTop:4}}>{ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel} · {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length||0} subjects</div>
+                  <div style={{fontSize:13,color:"var(--muted)"}}>{profile.email}</div>
+                  <div style={{fontSize:12,color:"var(--muted)",marginTop:4}}>{ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel} · {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length||0} subjects</div>
                 </div>
               </div>
               {!editing?(
@@ -4692,7 +4692,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                     {label:"Subjects",value:`${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length||0} selected`},
                   ].map((item,i)=>(
                     <div key={i} style={{background:"var(--bg3)",borderRadius:10,padding:"12px 14px"}}>
-                      <div style={{fontSize:11,color:"#50508a",marginBottom:4,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em"}}>{item.label}</div>
+                      <div style={{fontSize:11,color:"var(--muted)",marginBottom:4,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em"}}>{item.label}</div>
                       <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{item.value}</div>
                     </div>
                   ))}
@@ -4700,19 +4700,19 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
               ):(
                 <div style={{display:"flex",flexDirection:"column",gap:16}}>
                   <div>
-                    <div style={{fontSize:12,fontWeight:700,color:"#7070a8",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Year Level</div>
+                    <div style={{fontSize:12,fontWeight:700,color:"var(--muted)",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Year Level</div>
                     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                       {YEAR_LEVELS.map(y=><button key={y.id} onClick={()=>{setYearLevel(y.id);setSelectedSubjects([]);}} className={`btn btn-sm ${yearLevel===y.id?"btn-p":"btn-g"}`}>{y.label}</button>)}
                     </div>
                   </div>
                   <div>
-                    <div style={{fontSize:12,fontWeight:700,color:"#7070a8",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Career Goal</div>
+                    <div style={{fontSize:12,fontWeight:700,color:"var(--muted)",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Career Goal</div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                       {FUTURE_PATHS.map(f=><button key={f.id} onClick={()=>setFuturePath(f.id)} className={`btn btn-sm ${futurePath===f.id?"btn-p":"btn-g"}`} style={{justifyContent:"flex-start"}}>{f.label}</button>)}
                     </div>
                   </div>
                   <div>
-                    <div style={{fontSize:12,fontWeight:700,color:"#7070a8",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Study Intensity</div>
+                    <div style={{fontSize:12,fontWeight:700,color:"var(--muted)",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Study Intensity</div>
                     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                       {HOURS.map(h=><button key={h.id} onClick={()=>setHoursPerWeek(h.id)} className={`btn btn-sm ${hoursPerWeek===h.id?"btn-p":"btn-g"}`}>{h.label}</button>)}
                     </div>
@@ -4733,12 +4733,12 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
 
       {tab==="subjects"&&(
         <div className="card">
-          <div className="ch"><div className="ct">📚 My Subjects</div><span style={{fontSize:12,color:"#50508a"}}>{selectedSubjects.length}/12</span></div>
+          <div className="ch"><div className="ct">📚 My Subjects</div><span style={{fontSize:12,color:"var(--muted)"}}>{selectedSubjects.length}/12</span></div>
           <div className="cb">
-            <div style={{fontSize:13,color:"#7070a8",marginBottom:14}}>Tap to add or remove. Changes save immediately.</div>
+            <div style={{fontSize:13,color:"var(--muted)",marginBottom:14}}>Tap to add or remove. Changes save immediately.</div>
             {Object.entries(subjectGroups).map(([group,subjects])=>(
               <div key={group} style={{marginBottom:18}}>
-                <div style={{fontSize:11,fontWeight:800,color:"#50508a",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{group}</div>
+                <div style={{fontSize:11,fontWeight:800,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{group}</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
                   {subjects.map(s=>{
                     const sel = selectedSubjects.includes(s);
@@ -4748,7 +4748,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                         setSelectedSubjects(updated);
                         onUpdateProfile({...profile,selectedSubjects:updated});
                       }}
-                        style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",background:sel?getColor(s):"var(--bg3)",color:sel?"#fff":"#7070a8",border:`1px solid ${sel?getColor(s):"var(--border)"}`,transition:"all .15s"}}>
+                        style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",background:sel?getColor(s):"var(--bg3)",color:sel?"#fff":"var(--muted)",border:`1px solid ${sel?getColor(s):"var(--border)"}`,transition:"all .15s"}}>
                         {sel&&"✓ "}{s}
                       </button>
                     );
@@ -4775,8 +4775,8 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
             <div className="cb" style={{textAlign:"center",padding:"24px"}}>
               <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Ace" style={{width:80,height:80,borderRadius:18,marginBottom:12}}/>
               <div style={{fontWeight:900,fontSize:22,marginBottom:4}}>Study Ace</div>
-              <div style={{color:"#6060a0",fontSize:13,marginBottom:4}}>Victorian Education Platform · Years 9–12</div>
-              <div style={{fontSize:12,color:"#50508a"}}>Version 1.0.0</div>
+              <div style={{color:"var(--muted)",fontSize:13,marginBottom:4}}>Victorian Education Platform · Years 9–12</div>
+              <div style={{fontSize:12,color:"var(--muted)"}}>Version 1.0.0</div>
             </div>
           </div>
           <div className="card">
@@ -4790,7 +4790,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                 {label:"Hosting",value:"Vercel"},
               ].map((item,i)=>(
                 <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:i<4?"1px solid var(--border)":"none",fontSize:13}}>
-                  <span style={{color:"#7070a8"}}>{item.label}</span>
+                  <span style={{color:"var(--muted)"}}>{item.label}</span>
                   <span style={{fontWeight:600,color:"var(--text)"}}>{item.value}</span>
                 </div>
               ))}
@@ -4857,15 +4857,15 @@ function SearchScreen({ profile, setScreen }) {
     <div className="content fade-up">
       <div style={{fontWeight:900,fontSize:22,marginBottom:20}}>Search</div>
       <div style={{position:"relative",marginBottom:20}}>
-        <div style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:16,color:"#50508a"}}>🔍</div>
+        <div style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:16,color:"var(--muted)"}}>🔍</div>
         <input autoFocus value={query} onChange={e=>setQuery(e.target.value)}
           placeholder="Search subjects, topics, curriculum points..."
           style={{width:"100%",background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 14px 14px 44px",color:"var(--text)",fontSize:15,outline:"none",fontFamily:"var(--ff)",boxSizing:"border-box"}}/>
-        {query&&<button onClick={()=>setQuery("")} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:"#50508a",cursor:"pointer",fontSize:18}}>✕</button>}
+        {query&&<button onClick={()=>setQuery("")} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:18}}>✕</button>}
       </div>
       {!query&&(
         <div>
-          <div style={{fontWeight:700,fontSize:13,color:"#50508a",marginBottom:12,textTransform:"uppercase",letterSpacing:".08em"}}>Quick Links</div>
+          <div style={{fontWeight:700,fontSize:13,color:"var(--muted)",marginBottom:12,textTransform:"uppercase",letterSpacing:".08em"}}>Quick Links</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             {QUICK.map((q,i)=>(
               <button key={i} onClick={()=>setScreen(q.screen)} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"16px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:10}}>
@@ -4877,14 +4877,14 @@ function SearchScreen({ profile, setScreen }) {
         </div>
       )}
       {query&&results.length===0&&(
-        <div style={{textAlign:"center",padding:"40px",color:"#50508a"}}>
+        <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>
           <div style={{fontSize:32,marginBottom:8}}>🔍</div>
           <div>No results for "{query}"</div>
         </div>
       )}
       {results.length>0&&(
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
-          <div style={{fontSize:12,color:"#50508a",marginBottom:4}}>{results.length} result{results.length!==1?"s":""}</div>
+          <div style={{fontSize:12,color:"var(--muted)",marginBottom:4}}>{results.length} result{results.length!==1?"s":""}</div>
           {results.map((r,i)=>(
             <button key={i} onClick={()=>setScreen(r.action)} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:12,width:"100%"}}>
               <div style={{width:36,height:36,borderRadius:8,background:`${r.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>
@@ -4892,7 +4892,7 @@ function SearchScreen({ profile, setScreen }) {
               </div>
               <div style={{flex:1}}>
                 <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{r.title}</div>
-                <div style={{fontSize:11,color:"#50508a",marginTop:2}}>{r.subtitle}</div>
+                <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{r.subtitle}</div>
               </div>
               <div style={{fontSize:12,color:r.color,fontWeight:700}}>→</div>
             </button>
@@ -5710,19 +5710,19 @@ function NotificationsPanel({ profile, gs, onClose }) {
   const notifications=[];
   (state.calendarEvents||[]).filter(e=>new Date(e.date)>=new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3).forEach(e=>{
     const days=Math.ceil((new Date(e.date)-new Date())/(1000*60*60*24));
-    notifications.push({icon:"📅",title:`${e.title} in ${days} day${days!==1?"s":""}`,subtitle:`${e.subject} · ${new Date(e.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}`,color:days<=3?"var(--a3)":days<=7?"var(--gold)":"var(--a2)",time:"Upcoming"});
+    notifications.push({icon:"📅",title:`${e.title} in ${days} day${days!==1?"s":""}`,subtitle:`${e.subject} · ${new Date(e.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}`,color:days<=3?"var(--danger)":days<=7?"var(--gold)":"var(--success)",time:"Upcoming"});
   });
   if(state.streak>0) notifications.push({icon:"🔥",title:`${state.streak} day streak! Keep it up!`,subtitle:"Study today to maintain your streak",color:"#FF6B6B",time:"Today"});
   if(state.xp>=100) notifications.push({icon:"⚡",title:`Level ${state.level} — ${500-(state.xp%500)} XP to next level`,subtitle:"Keep studying to level up",color:"var(--accent)",time:"Progress"});
   const weakSubjects=(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).filter(s=>(state.masteryMap?.[s]||50)<60);
   if(weakSubjects?.length>0) notifications.push({icon:"⚠️",title:`${weakSubjects[0]} needs attention`,subtitle:`Mastery at ${state.masteryMap?.[weakSubjects[0]]||50}% — take a quiz`,color:"var(--gold)",time:"Study tip"});
-  if(notifications.length===0) notifications.push({icon:"✅",title:"You're all caught up!",subtitle:"No new notifications",color:"var(--a2)",time:"Now"});
+  if(notifications.length===0) notifications.push({icon:"✅",title:"You're all caught up!",subtitle:"No new notifications",color:"var(--success)",time:"Now"});
 
   return(
     <div style={{position:"absolute",top:65,right:16,width:320,background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:16,boxShadow:"0 8px 32px rgba(0,0,0,.4)",zIndex:1000,overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
       <div style={{padding:"14px 16px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{fontWeight:800,fontSize:15}}>🔔 Notifications</div>
-        <button onClick={onClose} style={{background:"none",border:"none",color:"#50508a",cursor:"pointer",fontSize:16}}>✕</button>
+        <button onClick={onClose} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:16}}>✕</button>
       </div>
       <div style={{maxHeight:380,overflowY:"auto"}}>
         {notifications.map((n,i)=>(
@@ -5730,7 +5730,7 @@ function NotificationsPanel({ profile, gs, onClose }) {
             <div style={{fontSize:20,flexShrink:0}}>{n.icon}</div>
             <div style={{flex:1}}>
               <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{n.title}</div>
-              <div style={{fontSize:11,color:"#50508a",marginTop:2}}>{n.subtitle}</div>
+              <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{n.subtitle}</div>
             </div>
             <div style={{fontSize:10,color:n.color,fontWeight:700,flexShrink:0}}>{n.time}</div>
           </div>
