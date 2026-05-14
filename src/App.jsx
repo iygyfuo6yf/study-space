@@ -4139,156 +4139,307 @@ Rules: Australian English. Warm and direct. Plain text maths (², √, ×). Bold
   );
 }
 
+// ─────────────────────────────────────────────
+// STUDY PLANNER — interactive plan with sessions
+// ─────────────────────────────────────────────
 function PlannerScreen({ profile, gs }) {
-  const { state, addEvent, removeEvent, addMinutes } = gs;
-  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const { state, addEvent, addMinutes } = gs;
+  const subjs = Array.isArray(profile.selectedSubjects) ? profile.selectedSubjects : [];
   const today = new Date();
-  const dayOfWeek = today.getDay();
-  const mondayOffset = dayOfWeek===0 ? -6 : 1-dayOfWeek;
-  const dates = Array.from({length:7},(_,i)=>{
-    const d = new Date(today); d.setDate(today.getDate()+mondayOffset+i); return d;
-  });
-  const todayIdx = dayOfWeek===0?6:dayOfWeek-1;
 
-  const subjs = (Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]);
-  const [goals, setGoals] = useState(()=>{ try{return JSON.parse(localStorage.getItem("ss_goals")||"[]");}catch{return [];} });
-  const [newGoal, setNewGoal] = useState("");
-  const [timer, setTimer] = useState(25*60);
-  const [running, setRunning] = useState(false);
-  const [genPlan, setGenPlan] = useState(false);
-  const [showPlanForm, setShowPlanForm] = useState(false);
-  const [planFocus, setPlanFocus] = useState("");
+  // Plan state
+  const [step, setStep] = useState("home"); // home | setup | plan | session
   const [planStart, setPlanStart] = useState(() => new Date().toISOString().split("T")[0]);
   const [planEnd, setPlanEnd] = useState(() => { const d=new Date(); d.setDate(d.getDate()+7); return d.toISOString().split("T")[0]; });
   const [planSubjects, setPlanSubjects] = useState(subjs.slice(0,4));
+  const [subjectFocus, setSubjectFocus] = useState({}); // {subject: "what to cover"}
   const [planHours, setPlanHours] = useState(2);
   const [studyPlan, setStudyPlan] = useState(() => { try { return JSON.parse(localStorage.getItem("ss_study_plan")||"null"); } catch { return null; } });
-  const [doneDays, setDoneDays] = useState(() => { try { return JSON.parse(localStorage.getItem("ss_plan_done")||"[]"); } catch { return []; } });
+  const [doneTasks, setDoneTasks] = useState(() => { try { return JSON.parse(localStorage.getItem("ss_done_tasks")||"{}"); } catch { return {}; } });
+  const [expanded, setExpanded] = useState(null);
+  const [generating, setGenerating] = useState(false);
+
+  // Session state
+  const [sessionDay, setSessionDay] = useState(null);
+  const [sessionTaskIdx, setSessionTaskIdx] = useState(0);
+  const [timer, setTimer] = useState(25*60);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [timerMode, setTimerMode] = useState("work"); // work | break
+
+  // Calendar
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [newEvent, setNewEvent] = useState({title:"",subject:subjs[0]||"",date:"",type:"SAC"});
 
-  useEffect(()=>{
-    if(!running) return;
-    const t = setInterval(()=>{
-      setTimer(s=>{ if(s<=1){ setRunning(false); addMinutes(25); return 25*60; } return s-1; });
-    },1000);
-    return ()=>clearInterval(t);
-  },[running]);
+  useEffect(() => {
+    if (!timerRunning) return;
+    const t = setInterval(() => {
+      setTimer(s => {
+        if (s <= 1) {
+          setTimerRunning(false);
+          if (timerMode === "work") { addMinutes(25); setTimerMode("break"); return 5*60; }
+          else { setTimerMode("work"); return 25*60; }
+        }
+        return s-1;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [timerRunning]);
 
-  const saveGoals = (g)=>{ setGoals(g); localStorage.setItem("ss_goals",JSON.stringify(g)); };
-  const addGoal = ()=>{ if(!newGoal.trim()) return; saveGoals([...goals,{text:newGoal,done:false}]); setNewGoal(""); };
-  const toggleGoal = (i)=>{ const g=[...goals]; g[i].done=!g[i].done; saveGoals(g); };
   const toggleSubjPlan = (s) => setPlanSubjects(p => p.includes(s)?p.filter(x=>x!==s):[...p,s]);
-  const toggleDone = (idx) => {
-    const next = doneDays.includes(idx)?doneDays.filter(i=>i!==idx):[...doneDays,idx];
-    setDoneDays(next); localStorage.setItem("ss_plan_done",JSON.stringify(next));
+
+  const markTask = (dayIdx, taskIdx) => {
+    const key = `${dayIdx}-${taskIdx}`;
+    const next = {...doneTasks, [key]: !doneTasks[key]};
+    if (!doneTasks[key] === false) delete next[key];
+    setDoneTasks(next);
+    localStorage.setItem("ss_done_tasks", JSON.stringify(next));
   };
 
-  const handleAddEvent = ()=>{
-    if(!newEvent.title||!newEvent.date) return;
-    addEvent({...newEvent, color:getColor(newEvent.subject)});
-    setNewEvent({title:"",subject:subjs[0]||"",date:"",type:"SAC"});
-    setShowAddEvent(false);
+  const isDayDone = (dayIdx, day) => {
+    if (!day.tasks) return false;
+    return day.tasks.every((_, ti) => doneTasks[`${dayIdx}-${ti}`]);
   };
 
   const generatePlan = async () => {
     if (!planStart||!planEnd||planSubjects.length===0) return;
-    setGenPlan(true);
+    setGenerating(true);
     try {
       const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label||"Year 9";
       const start = new Date(planStart);
       const end = new Date(planEnd);
       const dayCount = Math.min(30, Math.ceil((end-start)/(1000*60*60*24))+1);
+      const subjectDetails = planSubjects.map(s => `${s}: ${subjectFocus[s]||"general revision"}`).join("\n");
       const upcomingEvents = (state.calendarEvents||[])
         .filter(e=>new Date(e.date)>=start&&new Date(e.date)<=end)
-        .map(e=>`${e.title} (${e.subject}) on ${new Date(e.date).toLocaleDateString("en-AU",{weekday:"short",month:"short",day:"numeric"})}`);
-      const prompt = `Create a ${dayCount}-day study plan for a ${curriculum} student.
-Start: ${new Date(planStart).toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
-End: ${new Date(planEnd).toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
-Subjects: ${planSubjects.join(", ")}
-Hours per day: ${planHours}
-${planFocus?`Special focus: ${planFocus}`:""}
-${upcomingEvents.length?`Upcoming assessments:\n${upcomingEvents.join("\n")}`:""}
+        .map(e=>`${e.title} (${e.subject}) on ${new Date(e.date).toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"})}`);
 
-Return ONLY a valid JSON array — no markdown, no backticks:
-[{"date":"YYYY-MM-DD","day":"Monday","subject":"Biology","topic":"Cell Division","activity":"Study Notes","duration":60,"focus":"Mitosis vs meiosis phases"},...]
+      const prompt = `Create a detailed ${dayCount}-day study plan for a ${curriculum} student.
 
-Rules: dates must be between ${planStart} and ${planEnd}, activity is one of: Study Notes, Quiz Practice, Flashcards, Past Paper, Revision, Rest, duration in minutes, generate exactly ${dayCount} entries one per day.`;
-      const raw = await callGemini(prompt, 4000);
+Dates: ${planStart} to ${planEnd}
+Hours per day: ${planHours}h
+${upcomingEvents.length?`Upcoming assessments:\n${upcomingEvents.join("\n")}`:``}
+
+Subject focus areas:
+${subjectDetails}
+
+Return ONLY valid JSON array, no markdown, no backticks:
+[{
+  "date":"YYYY-MM-DD",
+  "day":"Monday",
+  "subject":"Biology",
+  "topic":"Cell Division — Mitosis",
+  "duration":60,
+  "summary":"Today you'll master the stages of mitosis and be able to draw and label each phase for exam questions.",
+  "tasks":["Read your textbook notes on the 4 stages of mitosis (PMAT)","Draw and label a diagram of each phase from memory","Complete 10 practice questions on mitosis vs meiosis","Make 5 flashcards: one for each stage with key characteristics"],
+  "activity":"Study Notes"
+}]
+
+Rules:
+- date must be between ${planStart} and ${planEnd}
+- each day has exactly 4 tasks specific to that topic
+- tasks are concrete actionable steps, not vague
+- Rest days: {date, day, subject:"Rest", topic:"Rest Day", duration:0, summary:"Take a break and recharge.", tasks:[], activity:"Rest"}
+- skip weekends as rest unless date range <= 5 days
+- vary activities and subjects
+- generate exactly ${dayCount} entries`;
+
+      const raw = await callGemini(prompt, 6000);
       const clean = raw.replace(/```json\n?|```\n?/g,"").trim();
-      const s = clean.indexOf("["); const e = clean.lastIndexOf("]");
+      const s = clean.indexOf("["); const e2 = clean.lastIndexOf("]");
       if (s===-1) throw new Error("No JSON");
-      const parsed = JSON.parse(clean.slice(s,e+1));
+      const parsed = JSON.parse(clean.slice(s,e2+1));
       if (!Array.isArray(parsed)||parsed.length===0) throw new Error("Empty");
-      setStudyPlan(parsed); setDoneDays([]);
-      localStorage.setItem("ss_study_plan",JSON.stringify(parsed));
-      localStorage.setItem("ss_plan_done","[]");
-      // Auto-add SACs/exams from plan focus text to calendar
-      if (planFocus) {
-        const examWords = ["sac","exam","test","assessment","assignment","due"];
-        const hasExam = examWords.some(w => planFocus.toLowerCase().includes(w));
-        if (hasExam && planEnd) {
-          const subjectMatch = planSubjects.find(s => planFocus.toLowerCase().includes(s.toLowerCase()));
-          addEvent({
-            title: planFocus,
-            subject: subjectMatch || planSubjects[0] || "General",
-            date: planEnd,
-            type: planFocus.toLowerCase().includes("sac") ? "SAC" : planFocus.toLowerCase().includes("exam") ? "EXAM" : "Test",
-            color: getColor(subjectMatch || planSubjects[0] || "")
-          });
+
+      // Auto-add assessments to calendar
+      parsed.forEach(day => {
+        if (["SAC","EXAM","Test","Past Paper"].includes(day.activity) && day.subject !== "Rest") {
+          const existingEvents = state.calendarEvents||[];
+          const alreadyExists = existingEvents.some(e => e.date===day.date && e.subject===day.subject);
+          if (!alreadyExists && subjectFocus[day.subject]?.toLowerCase().match(/sac|exam|test|assessment/)) {
+            addEvent({ title:`${day.subject} ${day.activity}`, subject:day.subject, date:day.date, type:day.activity==="Past Paper"?"Test":"SAC", color:getColor(day.subject) });
+          }
+        }
+      });
+
+      // Also add end date event if focus mentions exam/SAC
+      const focusText = Object.values(subjectFocus).join(" ").toLowerCase();
+      if (focusText.match(/sac|exam|test|assessment/)) {
+        const matchedSubj = planSubjects.find(s => subjectFocus[s]?.toLowerCase().match(/sac|exam|test/));
+        if (matchedSubj) {
+          addEvent({ title:`${matchedSubj} — ${subjectFocus[matchedSubj]}`, subject:matchedSubj, date:planEnd, type:focusText.includes("sac")?"SAC":"EXAM", color:getColor(matchedSubj) });
         }
       }
-      setShowPlanForm(false);
+
+      setStudyPlan(parsed); setDoneTasks({});
+      localStorage.setItem("ss_study_plan",JSON.stringify(parsed));
+      localStorage.setItem("ss_done_tasks","{}");
+      setStep("plan");
     } catch(e) { alert("Couldn't generate: "+(e.message||"try again")); }
-    setGenPlan(false);
+    setGenerating(false);
   };
 
-  const mm = String(Math.floor(timer/60)).padStart(2,"0");
-  const ss2 = String(timer%60).padStart(2,"0");
-
-  // Map events to calendar days
-  const evMap = {};
-  (state.calendarEvents||[]).forEach(ev=>{
-    const evDate = new Date(ev.date);
-    dates.forEach((d,i)=>{
-      if(evDate.toDateString()===d.toDateString()) {
-        if(!evMap[i]) evMap[i]=[];
-        evMap[i].push(ev);
-      }
-    });
-  });
-
-  // All upcoming events sorted
-  const upcoming = (state.calendarEvents||[])
-    .filter(e=>new Date(e.date)>=new Date())
-    .sort((a,b)=>new Date(a.date)-new Date(b.date));
-
-  return (
-    <div className="content fade-up">
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-        <div>
-          <div style={{fontWeight:900,fontSize:22,color:"var(--text)"}}>Study Planner</div>
-          <div style={{color:"var(--muted)",fontSize:13,marginTop:3}}>{today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric",year:"numeric"})}</div>
+  // Session view
+  if (step==="session" && sessionDay) {
+    const day = studyPlan?.[sessionDay];
+    if (!day) { setStep("plan"); return null; }
+    const tasks = day.tasks||[];
+    const currentTask = tasks[sessionTaskIdx];
+    const mm = String(Math.floor(timer/60)).padStart(2,"0");
+    const ss2 = String(timer%60).padStart(2,"0");
+    const color = getColor(day.subject);
+    const ytQuery = encodeURIComponent(`${day.subject} ${day.topic} ${profile.yearLevel?.toUpperCase()||""} tutorial`);
+    return (
+      <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 56px)",background:"var(--bg)"}}>
+        {/* Header */}
+        <div style={{padding:"14px 24px",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",display:"flex",alignItems:"center",gap:12}}>
+          <button className="btn btn-ghost btn-sm" onClick={()=>{setStep("plan");setTimerRunning(false);}}>← Back</button>
+          <div style={{width:34,height:34,borderRadius:"var(--r)",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>📚</div>
+          <div style={{flex:1}}>
+            <div style={{fontWeight:800,fontSize:14,color:"var(--text)"}}>{day.topic}</div>
+            <div style={{fontSize:11,color:"var(--muted)"}}>{day.subject} · {day.day} {new Date(day.date+"T12:00:00").toLocaleDateString("en-AU",{day:"numeric",month:"short"})}</div>
+          </div>
+          <a href={`https://www.youtube.com/results?search_query=${ytQuery}`} target="_blank" rel="noreferrer"
+            className="btn btn-secondary btn-sm">🎬 Find Video</a>
         </div>
-        <div style={{display:"flex",gap:8}}>
-          <button className="btn btn-secondary btn-sm" onClick={()=>setShowAddEvent(v=>!v)}>+ Add Event</button>
-          <button className="btn btn-primary btn-sm" onClick={()=>setShowPlanForm(v=>!v)}>✨ Generate Plan</button>
+
+        <div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>
+          {/* Summary */}
+          <div style={{background:"var(--gold-light)",border:"1.5px solid var(--gold)",borderRadius:"var(--r2)",padding:"14px 16px",marginBottom:20}}>
+            <div style={{fontSize:11,fontWeight:800,color:"var(--gold)",textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>Today's Goal</div>
+            <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.6}}>{day.summary}</div>
+          </div>
+
+          {/* Pomodoro timer */}
+          <div style={{textAlign:"center",marginBottom:24}}>
+            <div style={{fontSize:56,fontWeight:900,letterSpacing:"-.04em",color:"var(--text)",fontVariantNumeric:"tabular-nums"}}>{mm}:{ss2}</div>
+            <div style={{fontSize:12,color:"var(--muted)",marginBottom:12,textTransform:"uppercase",fontWeight:700,letterSpacing:".06em"}}>{timerMode==="work"?"Focus Time":"Break Time"}</div>
+            <div style={{display:"flex",gap:10,justifyContent:"center"}}>
+              <button className="btn btn-primary" onClick={()=>setTimerRunning(r=>!r)} style={{minWidth:100}}>
+                {timerRunning?"⏸ Pause":"▶ Start"}
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={()=>{setTimerRunning(false);setTimer(timerMode==="work"?25*60:5*60);}}>↺ Reset</button>
+              <button className="btn btn-ghost btn-sm" onClick={()=>{setTimerMode(m=>m==="work"?"break":"work");setTimerRunning(false);setTimer(timerMode==="work"?5*60:25*60);}}>
+                {timerMode==="work"?"→ Break":"→ Focus"}
+              </button>
+            </div>
+          </div>
+
+          {/* Tasks */}
+          <div className="card">
+            <div className="card-head"><div className="card-title">📋 Today's Tasks</div><span style={{fontSize:12,color:"var(--muted)"}}>{tasks.filter((_,i)=>doneTasks[`${sessionDay}-${i}`]).length}/{tasks.length} done</span></div>
+            <div className="card-body" style={{display:"flex",flexDirection:"column",gap:10}}>
+              {tasks.map((task,i)=>{
+                const done = doneTasks[`${sessionDay}-${i}`];
+                const isCurrent = i===sessionTaskIdx && !done;
+                return (
+                  <div key={i} onClick={()=>markTask(sessionDay,i)} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"12px 14px",borderRadius:"var(--r)",border:`1.5px solid ${isCurrent?"var(--text)":done?"var(--success)":"var(--border-light)"}`,background:done?"var(--success-bg)":isCurrent?"var(--bg3)":"var(--bg2)",cursor:"pointer",transition:"all .15s"}}>
+                    <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${done?"var(--success)":isCurrent?"var(--text)":"var(--border)"}`,background:done?"var(--success)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
+                      {done&&<span style={{color:"#fff",fontSize:12,fontWeight:800}}>✓</span>}
+                    </div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:13,fontWeight:isCurrent?700:500,color:done?"var(--muted)":"var(--text)",textDecoration:done?"line-through":"none",lineHeight:1.5}}>{task}</div>
+                      {isCurrent&&<div style={{fontSize:11,color:"var(--muted)",marginTop:3}}>← Current task</div>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Next task / complete */}
+          <div style={{display:"flex",gap:10,marginTop:16}}>
+            {sessionTaskIdx < tasks.length-1 && (
+              <button className="btn btn-secondary btn-full" onClick={()=>{markTask(sessionDay,sessionTaskIdx);setSessionTaskIdx(i=>i+1);}}>
+                Next Task →
+              </button>
+            )}
+            <button className="btn btn-primary btn-full" onClick={()=>{tasks.forEach((_,i)=>markTask(sessionDay,i));setStep("plan");}}>
+              ✅ Complete Session
+            </button>
+          </div>
         </div>
       </div>
+    );
+  }
 
-      {/* Plan generation form */}
-      {showPlanForm && (
-        <div className="card" style={{marginBottom:16}}>
-          <div className="card-head">
-            <div className="card-title">✨ Generate AI Study Plan</div>
-            <button className="btn btn-ghost btn-sm" onClick={()=>setShowPlanForm(false)}>✕</button>
+  // Home view
+  if (step==="home" || !studyPlan) {
+    const upcoming = (state.calendarEvents||[]).filter(e=>new Date(e.date)>=today).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    return (
+      <div className="content fade-up">
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <div>
+            <div style={{fontWeight:900,fontSize:22,color:"var(--text)"}}>Study Planner</div>
+            <div style={{fontSize:13,color:"var(--muted)",marginTop:3}}>{today.toLocaleDateString("en-AU",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
           </div>
-          <div className="card-body" style={{display:"flex",flexDirection:"column",gap:14}}>
-            <div>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>What do you want to focus on? (optional)</div>
-              <input className="input" value={planFocus} onChange={e=>setPlanFocus(e.target.value)}
-                placeholder="e.g. Chemistry SAC prep, Maths Methods calculus, English essay"/>
+          <div style={{display:"flex",gap:8}}>
+            <button className="btn btn-secondary btn-sm" onClick={()=>setShowAddEvent(v=>!v)}>+ Event</button>
+            <button className="btn btn-primary btn-sm" onClick={()=>setStep("setup")}>✨ Create Study Plan</button>
+          </div>
+        </div>
+
+        {showAddEvent && (
+          <div className="card" style={{marginBottom:16}}>
+            <div className="card-head"><div className="card-title">Add Event</div><button className="btn btn-ghost btn-sm" onClick={()=>setShowAddEvent(false)}>✕</button></div>
+            <div className="card-body" style={{display:"flex",flexDirection:"column",gap:10}}>
+              <input className="input" placeholder="Title e.g. Chemistry SAC" value={newEvent.title} onChange={e=>setNewEvent(v=>({...v,title:e.target.value}))}/>
+              <div className="g2" style={{gap:10}}>
+                <input type="date" className="input" value={newEvent.date} onChange={e=>setNewEvent(v=>({...v,date:e.target.value}))}/>
+                <select className="input" value={newEvent.type} onChange={e=>setNewEvent(v=>({...v,type:e.target.value}))}>
+                  {["SAC","EXAM","Assignment","Test","Revision","Other"].map(t=><option key={t}>{t}</option>)}
+                </select>
+              </div>
+              <select className="input" value={newEvent.subject} onChange={e=>setNewEvent(v=>({...v,subject:e.target.value}))}>
+                {subjs.map(s=><option key={s}>{s}</option>)}
+              </select>
+              <button className="btn btn-primary" onClick={()=>{if(!newEvent.title||!newEvent.date)return;addEvent({...newEvent,color:getColor(newEvent.subject)});setNewEvent({title:"",subject:subjs[0]||"",date:"",type:"SAC"});setShowAddEvent(false);}}>Add to Calendar</button>
             </div>
+          </div>
+        )}
+
+        <div style={{textAlign:"center",padding:"48px 24px",background:"var(--bg2)",borderRadius:"var(--r2)",border:"1.5px dashed var(--border-light)",marginBottom:20}}>
+          <div style={{fontSize:48,marginBottom:12}}>📅</div>
+          <div style={{fontWeight:800,fontSize:18,color:"var(--text)",marginBottom:8}}>No study plan yet</div>
+          <div style={{fontSize:13,color:"var(--muted)",marginBottom:20,maxWidth:360,margin:"0 auto 20px"}}>Create a personalised day-by-day plan with specific tasks, topics, and YouTube video links for each session</div>
+          <button className="btn btn-primary" onClick={()=>setStep("setup")}>✨ Create My Study Plan</button>
+        </div>
+
+        {upcoming.length > 0 && (
+          <div className="card">
+            <div className="card-head"><div className="card-title">📅 Upcoming</div></div>
+            <div className="card-body">
+              {upcoming.slice(0,5).map((ev,i)=>{
+                const days = Math.ceil((new Date(ev.date)-today)/(1000*60*60*24));
+                return (
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:i<Math.min(upcoming.length,5)-1?"1px solid var(--border-light)":"none"}}>
+                    <div style={{width:8,height:8,borderRadius:"50%",background:ev.color||getColor(ev.subject),flexShrink:0}}/>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:700,fontSize:13,color:"var(--text)"}}>{ev.title}</div>
+                      <div style={{fontSize:11,color:"var(--muted)",marginTop:1}}>{ev.subject} · {new Date(ev.date).toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"})}</div>
+                    </div>
+                    <div style={{fontWeight:900,fontSize:14,color:days<=3?"var(--danger)":days<=7?"var(--gold)":"var(--muted)"}}>{days===0?"Today":days===1?"Tomorrow":`${days}d`}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Setup view
+  if (step==="setup") {
+    return (
+      <div className="content fade-up">
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setStep("home")}>← Back</button>
+          <div style={{fontWeight:900,fontSize:20,color:"var(--text)"}}>Create Study Plan</div>
+        </div>
+
+        <div className="card" style={{marginBottom:14}}>
+          <div className="card-head"><div className="card-title">📅 Date Range</div></div>
+          <div className="card-body">
             <div className="g2" style={{gap:12}}>
               <div>
                 <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Start Date</div>
@@ -4299,250 +4450,170 @@ Rules: dates must be between ${planStart} and ${planEnd}, activity is one of: St
                 <input type="date" className="input" value={planEnd} onChange={e=>setPlanEnd(e.target.value)}/>
               </div>
             </div>
-            <div>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Subjects to Include</div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-                {subjs.map(s=>(
-                  <button key={s} onClick={()=>toggleSubjPlan(s)}
-                    style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",border:"1.5px solid",transition:"all .15s",
-                      background:planSubjects.includes(s)?getColor(s):"var(--bg3)",
-                      color:planSubjects.includes(s)?"#fff":"var(--muted)",
-                      borderColor:planSubjects.includes(s)?getColor(s):"var(--border-light)"}}>
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
+            <div style={{marginTop:14}}>
               <div style={{display:"flex",justifyContent:"space-between",fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>
-                <span>Hours Per Day</span><span style={{color:"var(--text)",fontWeight:900}}>{planHours}h</span>
+                <span>Hours per day</span><span style={{color:"var(--text)",fontWeight:900}}>{planHours}h</span>
               </div>
-              <input type="range" min={1} max={8} step={0.5} value={planHours} onChange={e=>setPlanHours(Number(e.target.value))}
-                style={{width:"100%",accentColor:"var(--gold)",cursor:"pointer"}}/>
-              <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"var(--muted2)",marginTop:2}}>
-                <span>1h</span><span>4h</span><span>8h</span>
-              </div>
-            </div>
-            <button className="btn btn-primary" onClick={generatePlan} disabled={genPlan||!planStart||!planEnd||planSubjects.length===0}>
-              {genPlan?"Generating your plan...":"✨ Generate Plan"}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Interactive study plan cards */}
-      {studyPlan && studyPlan.length > 0 && (
-        <div className="card" style={{marginBottom:16}}>
-          <div className="card-head">
-            <div className="card-title">📅 Your Study Plan — {doneDays.length}/{studyPlan.filter(d=>d.activity!=="Rest").length} days done</div>
-            <div style={{display:"flex",gap:8}}>
-              <div style={{height:6,width:120,background:"var(--bg4)",borderRadius:4,alignSelf:"center",overflow:"hidden"}}>
-                <div style={{height:"100%",background:"var(--success)",borderRadius:4,width:`${(doneDays.length/Math.max(1,studyPlan.filter(d=>d.activity!=="Rest").length))*100}%`,transition:"width .4s"}}/>
-              </div>
-              <button className="btn btn-ghost btn-sm" onClick={()=>{setStudyPlan(null);setDoneDays([]);localStorage.removeItem("ss_study_plan");localStorage.removeItem("ss_plan_done");}}>Clear</button>
-              <button className="btn btn-secondary btn-sm" onClick={()=>setShowPlanForm(true)}>Regenerate</button>
+              <input type="range" min={1} max={8} step={0.5} value={planHours} onChange={e=>setPlanHours(Number(e.target.value))} style={{width:"100%",accentColor:"var(--gold)",cursor:"pointer"}}/>
             </div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:0}}>
-            {studyPlan.map((day, idx) => {
-              const isRest = day.activity === "Rest";
-              const isDone = doneDays.includes(idx);
-              const isToday = day.date === new Date().toISOString().split("T")[0];
-              const color = isRest ? "var(--muted2)" : getColor(day.subject);
-              const actIcon = {
-                "Study Notes":"📖","Quiz Practice":"🎯","Flashcards":"🃏",
-                "Past Paper":"📄","Revision":"🔄","Rest":"😴"
-              }[day.activity] || "📚";
-              const ytQuery = encodeURIComponent(`${day.subject} ${day.topic} ${profile.yearLevel?.toUpperCase()||""} tutorial`);
-              return (
-                <div key={idx} style={{
-                  display:"flex",alignItems:"center",gap:14,padding:"12px 20px",
-                  borderBottom:idx<studyPlan.length-1?"1px solid var(--border-light)":"none",
-                  background:isToday?"var(--gold-light)":isDone?"var(--success-bg)":"transparent",
-                  opacity:isDone&&!isToday?0.6:1,
-                  transition:"all .2s"
-                }}>
-                  {/* Date */}
-                  <div style={{flexShrink:0,textAlign:"center",width:44}}>
-                    <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",textTransform:"uppercase"}}>{day.day?.slice(0,3)}</div>
-                    <div style={{fontSize:18,fontWeight:900,color:isToday?"var(--gold)":"var(--text)",lineHeight:1.2}}>
-                      {new Date(day.date+"T12:00:00").getDate()}
-                    </div>
-                  </div>
-                  {/* Color bar */}
-                  <div style={{width:3,height:44,borderRadius:2,background:color,flexShrink:0}}/>
-                  {/* Content */}
-                  <div style={{flex:1,minWidth:0}}>
-                    {isRest ? (
-                      <div style={{fontSize:14,fontWeight:700,color:"var(--muted)"}}>😴 Rest Day</div>
-                    ) : (
-                      <>
-                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2}}>
-                          <span style={{fontSize:10,fontWeight:800,color,textTransform:"uppercase",letterSpacing:".06em"}}>{day.subject}</span>
-                          <span style={{fontSize:10,color:"var(--muted)"}}>· {day.duration}min</span>
-                        </div>
-                        <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:2}}>{actIcon} {day.topic}</div>
-                        {day.focus && <div style={{fontSize:11,color:"var(--muted)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{day.focus}</div>}
-                      </>
-                    )}
-                  </div>
-                  {/* Actions */}
-                  <div style={{display:"flex",gap:6,flexShrink:0}}>
-                    {!isRest && (
-                      <a href={`https://www.youtube.com/results?search_query=${ytQuery}`} target="_blank" rel="noreferrer"
-                        className="btn btn-secondary btn-sm" style={{fontSize:11,padding:"4px 10px",textDecoration:"none"}}>
-                        🎬 Video
-                      </a>
-                    )}
-                    {!isRest && (
-                      <button onClick={()=>toggleDone(idx)} className={`btn btn-sm ${isDone?"btn-secondary":"btn-primary"}`}
-                        style={{fontSize:11,padding:"4px 10px"}}>
-                        {isDone?"↩ Undo":"✓ Done"}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         </div>
-      )}
 
-      {!studyPlan && !showPlanForm && (
-        <div style={{textAlign:"center",padding:"32px 24px",background:"var(--bg2)",borderRadius:"var(--r2)",border:"1.5px dashed var(--border-light)",marginBottom:16}}>
-          <div style={{fontSize:36,marginBottom:10}}>📅</div>
-          <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:6}}>No study plan yet</div>
-          <div style={{fontSize:13,color:"var(--muted)",marginBottom:16}}>Generate a personalised day-by-day plan with YouTube video links for each topic</div>
-          <button className="btn btn-primary btn-sm" onClick={()=>setShowPlanForm(true)}>✨ Generate My Study Plan</button>
-        </div>
-      )}
-
-      {/* Add event form */}
-      {showAddEvent && (
-        <div className="card" style={{marginBottom:16}}>
-          <div className="card-head"><div className="card-title">📅 Add Assessment or Event</div><button className="btn btn-ghost btn-sm" onClick={()=>setShowAddEvent(false)}>✕</button></div>
+        <div className="card" style={{marginBottom:14}}>
+          <div className="card-head"><div className="card-title">📚 Select Subjects</div></div>
           <div className="card-body">
-            <div className="g2" style={{gap:10,marginBottom:10}}>
-              <input className="input" placeholder="Title (e.g. Calculus SAC, Practice Exam...)"
-                value={newEvent.title} onChange={e=>setNewEvent(v=>({...v,title:e.target.value}))}/>
-              <input type="date" className="input" value={newEvent.date} onChange={e=>setNewEvent(v=>({...v,date:e.target.value}))}/>
-            </div>
-            <div className="g2" style={{gap:10,marginBottom:12}}>
-              <select className="input" value={newEvent.subject} onChange={e=>setNewEvent(v=>({...v,subject:e.target.value}))}>
-                {subjs.map(s=><option key={s} value={s}>{s}</option>)}
-              </select>
-              <select className="input" value={newEvent.type} onChange={e=>setNewEvent(v=>({...v,type:e.target.value}))}>
-                {["SAC","EXAM","Assignment","Test","Revision","Other"].map(t=><option key={t}>{t}</option>)}
-              </select>
-            </div>
-            <button className="btn btn-primary" onClick={handleAddEvent}>Add to Calendar ✓</button>
-          </div>
-        </div>
-      )}
-
-      {/* Weekly calendar */}
-      <div className="card" style={{marginBottom:18}}>
-        <div className="cb">
-          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:8}}>
-            {days.map((d,i)=>(
-              <div key={i} className={`plan-day${i===todayIdx?" today":""}`}>
-                <div className="plan-dl">{d}</div>
-                <div className="plan-dn">{dates[i].getDate()}</div>
-                {(evMap[i]||[]).map((e,j)=>(
-                  <div key={j} className="plan-ev" style={{background:`${e.color||"#7C6AF7"}22`,color:e.color||"#7C6AF7",cursor:"pointer"}}
-                    onClick={()=>removeEvent(e.id)} title="Click to remove">
-                    {e.title?.slice(0,8)}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div style={{fontSize:10,color:"var(--muted2)",marginTop:8,textAlign:"right"}}>Click an event on the calendar to remove it</div>
-        </div>
-      </div>
-
-      <div className="g2">
-        {/* Upcoming events */}
-        <div className="card">
-          <div className="ch"><div className="ct">📋 Upcoming Events</div><span style={{fontSize:11,color:"var(--muted)"}}>{upcoming.length} events</span></div>
-          <div style={{padding:"0 16px"}}>
-            {upcoming.length===0 ? (
-              <div style={{padding:"16px 0",color:"var(--muted)",fontSize:13,textAlign:"center"}}>No upcoming events — add one above!</div>
-            ) : upcoming.slice(0,6).map((u,i)=>{
-              const daysLeft = Math.ceil((new Date(u.date)-new Date())/(1000*60*60*24));
-              return (
-                <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 0",borderBottom:i<upcoming.length-1?"1px solid var(--border)":"none"}}>
-                  <div style={{width:8,height:8,borderRadius:"50%",background:u.color||getColor(u.subject),flexShrink:0}}/>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:13,fontWeight:700}}>{u.title}</div>
-                    <div style={{fontSize:11,color:"var(--muted)"}}><span className={`tag ${u.type==="SAC"?"tag-a":u.type==="EXAM"?"tag-r":"tag-gold"}`}>{u.type}</span> {u.subject}</div>
-                  </div>
-                  <div style={{textAlign:"right"}}>
-                    <div style={{fontSize:13,fontWeight:800,color:daysLeft<=5?"var(--danger)":daysLeft<=12?"var(--gold)":"var(--success)"}}>{daysLeft}d</div>
-                    <div style={{fontSize:10,color:"var(--muted)"}}>{new Date(u.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
-                  </div>
-                  <button onClick={()=>removeEvent(u.id)} style={{background:"none",border:"none",color:"var(--muted2)",cursor:"pointer",fontSize:14,padding:"2px"}}>✕</button>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Goals */}
-          <div className="ch" style={{marginTop:4}}><div className="ct">✅ Today's Goals</div><button className="btn btn-g btn-sm" onClick={()=>saveGoals([])}>Clear</button></div>
-          <div className="cb">
-            <div style={{display:"flex",gap:8,marginBottom:12}}>
-              <input value={newGoal} onChange={e=>setNewGoal(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addGoal()}
-                placeholder="Add a study goal..."
-                style={{flex:1,background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"8px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}/>
-              <button className="btn btn-p btn-sm" onClick={addGoal}>Add</button>
-            </div>
-            {goals.length===0&&<div style={{color:"var(--muted)",fontSize:13,textAlign:"center",padding:"8px 0"}}>No goals yet!</div>}
-            {goals.map((g,i)=>(
-              <div key={i} style={{display:"flex",gap:10,alignItems:"center",padding:"7px 0",borderBottom:i<goals.length-1?"1px solid var(--border)":"none"}}>
-                <input type="checkbox" checked={g.done} onChange={()=>toggleGoal(i)} style={{accentColor:"var(--accent)",width:15,height:15,cursor:"pointer"}}/>
-                <span style={{fontSize:13,flex:1,textDecoration:g.done?"line-through":"none",color:g.done?"var(--muted)":"var(--text)"}}>{g.text}</span>
-                <button onClick={()=>saveGoals(goals.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:"var(--muted2)",cursor:"pointer",fontSize:12}}>✕</button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{display:"flex",flexDirection:"column",gap:14}}>
-          {/* Pomodoro */}
-          <div className="card">
-            <div className="ch"><div className="ct">⏱️ Pomodoro Timer</div></div>
-            <div className="cb" style={{textAlign:"center"}}>
-              <div style={{fontWeight:900,fontSize:52,color:running?"var(--success)":"var(--accent)",letterSpacing:-2,fontFamily:"var(--ff)",transition:"color .3s"}}>{mm}:{ss2}</div>
-              <div style={{color:"var(--muted)",fontSize:12,marginBottom:14}}>{running?"Focus — you've got this! 🔥":"25 min session · earns XP on complete"}</div>
-              <div style={{display:"flex",gap:8,justifyContent:"center"}}>
-                <button className="btn btn-p btn-sm" onClick={()=>setRunning(r=>!r)}>{running?"⏸ Pause":"▶ Start"}</button>
-                <button className="btn btn-g btn-sm" onClick={()=>{setTimer(25*60);setRunning(false);}}>↺ Reset</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Subjects */}
-          <div className="card">
-            <div className="ch"><div className="ct">📚 My Subjects</div></div>
-            <div style={{padding:"8px 16px"}}>
-              {subjs.slice(0,6).map((s,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<Math.min(subjs.length,6)-1?"1px solid var(--border)":"none"}}>
-                  <div style={{width:8,height:8,borderRadius:"50%",background:getColor(s),flexShrink:0}}/>
-                  <span style={{fontSize:13,fontWeight:600,flex:1}}>{s}</span>
-                  <span style={{fontSize:10,color:getColor(s),fontWeight:700}}>{gs.state.masteryMap?.[s]||50}%</span>
-                </div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+              {subjs.map(s=>(
+                <button key={s} onClick={()=>toggleSubjPlan(s)} style={{padding:"7px 14px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",border:"1.5px solid",transition:"all .15s",background:planSubjects.includes(s)?getColor(s):"var(--bg3)",color:planSubjects.includes(s)?"#fff":"var(--muted)",borderColor:planSubjects.includes(s)?getColor(s):"var(--border-light)"}}>
+                  {planSubjects.includes(s)?"✓ ":""}{s}
+                </button>
               ))}
             </div>
           </div>
         </div>
+
+        {planSubjects.length > 0 && (
+          <div className="card" style={{marginBottom:14}}>
+            <div className="card-head"><div className="card-title">🎯 What to Cover</div></div>
+            <div className="card-body" style={{display:"flex",flexDirection:"column",gap:12}}>
+              <div style={{fontSize:13,color:"var(--muted)",marginBottom:4}}>Tell us specifically what you need to study for each subject — topics, upcoming SACs, weak areas, etc.</div>
+              {planSubjects.map(s=>(
+                <div key={s}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                    <div style={{width:10,height:10,borderRadius:"50%",background:getColor(s),flexShrink:0}}/>
+                    <div style={{fontSize:12,fontWeight:700,color:"var(--text)"}}>{s}</div>
+                  </div>
+                  <input className="input" value={subjectFocus[s]||""} onChange={e=>setSubjectFocus(f=>({...f,[s]:e.target.value}))}
+                    placeholder={`e.g. Integration and differentiation, upcoming SAC on Unit 3`}/>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <button className="btn btn-primary btn-full" style={{padding:"14px"}} onClick={generatePlan}
+          disabled={generating||!planStart||!planEnd||planSubjects.length===0}>
+          {generating?"✨ Generating your plan...":"✨ Generate My Study Plan"}
+        </button>
+      </div>
+    );
+  }
+
+  // Plan view
+  const todayStr = today.toISOString().split("T")[0];
+  const completedCount = studyPlan.filter((d,i)=>isDayDone(i,d)).length;
+  const studyDays = studyPlan.filter(d=>d.subject!=="Rest").length;
+
+  return (
+    <div className="content fade-up">
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+        <div>
+          <div style={{fontWeight:900,fontSize:22,color:"var(--text)"}}>Study Plan</div>
+          <div style={{fontSize:13,color:"var(--muted)",marginTop:3}}>{completedCount}/{studyDays} sessions complete</div>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <button className="btn btn-secondary btn-sm" onClick={()=>setStep("setup")}>Regenerate</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>{setStudyPlan(null);setStep("home");localStorage.removeItem("ss_study_plan");}}>Clear</button>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{height:6,background:"var(--bg4)",borderRadius:4,overflow:"hidden",marginBottom:20,border:"1px solid var(--border-light)"}}>
+        <div style={{height:"100%",background:"var(--success)",borderRadius:4,width:`${(completedCount/Math.max(1,studyDays))*100}%`,transition:"width .4s"}}/>
+      </div>
+
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        {studyPlan.map((day, idx) => {
+          const isRest = day.subject==="Rest"||day.activity==="Rest";
+          const isToday = day.date===todayStr;
+          const done = isDayDone(idx, day);
+          const color = isRest?"var(--muted2)":getColor(day.subject);
+          const isExpanded = expanded===idx;
+          const tasksDone = (day.tasks||[]).filter((_,ti)=>doneTasks[`${idx}-${ti}`]).length;
+          const actIcon = {"Study Notes":"📖","Quiz Practice":"🎯","Flashcards":"🃏","Past Paper":"📄","Revision":"🔄","Rest":"😴"}[day.activity]||"📚";
+          const ytQuery = encodeURIComponent(`${day.subject} ${day.topic} ${profile.yearLevel?.toUpperCase()||""} tutorial`);
+          const dateObj = new Date(day.date+"T12:00:00");
+
+          return (
+            <div key={idx} className="card" style={{border:`1.5px solid ${isToday?"var(--gold)":done?"var(--success)":isRest?"var(--border-light)":"var(--border)"}`,opacity:done&&!isToday?0.7:1,overflow:"visible"}}>
+              {/* Day header — always visible, click to expand */}
+              <div onClick={()=>!isRest&&setExpanded(expanded===idx?null:idx)}
+                style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",cursor:isRest?"default":"pointer",userSelect:"none"}}>
+                {/* Date block */}
+                <div style={{flexShrink:0,textAlign:"center",width:42,background:isToday?"var(--gold)":done?"var(--success)":isRest?"var(--bg4)":"var(--bg3)",borderRadius:"var(--r)",padding:"6px 0"}}>
+                  <div style={{fontSize:9,fontWeight:800,color:isToday||done?"#fff":"var(--muted)",textTransform:"uppercase",letterSpacing:".04em"}}>{day.day?.slice(0,3)}</div>
+                  <div style={{fontSize:18,fontWeight:900,color:isToday||done?"#fff":"var(--text)",lineHeight:1}}>{dateObj.getDate()}</div>
+                  <div style={{fontSize:9,color:isToday||done?"rgba(255,255,255,.7)":"var(--muted2)"}}>{dateObj.toLocaleDateString("en-AU",{month:"short"})}</div>
+                </div>
+                {/* Content */}
+                {isRest ? (
+                  <div style={{flex:1,fontSize:14,fontWeight:600,color:"var(--muted)"}}>😴 Rest Day</div>
+                ) : (
+                  <>
+                    <div style={{width:3,height:40,borderRadius:2,background:color,flexShrink:0}}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+                        <span style={{fontSize:10,fontWeight:800,color,textTransform:"uppercase",letterSpacing:".05em"}}>{day.subject}</span>
+                        <span style={{fontSize:10,color:"var(--muted)"}}>· {day.duration}min</span>
+                        {day.tasks?.length>0&&<span style={{fontSize:10,color:done?"var(--success)":"var(--muted)"}}>· {tasksDone}/{day.tasks.length} tasks</span>}
+                      </div>
+                      <div style={{fontSize:13,fontWeight:700,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{actIcon} {day.topic}</div>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexShrink:0,alignItems:"center"}}>
+                      {done&&<span style={{fontSize:11,color:"var(--success)",fontWeight:800}}>✓</span>}
+                      <span style={{fontSize:12,color:"var(--muted)",transform:isExpanded?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s"}}>▾</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Expanded content */}
+              {isExpanded && !isRest && (
+                <div style={{borderTop:"1px solid var(--border-light)",padding:"14px 16px"}}>
+                  {/* Summary */}
+                  {day.summary && (
+                    <div style={{background:"var(--bg3)",borderRadius:"var(--r)",padding:"10px 12px",marginBottom:12,fontSize:13,color:"var(--text2)",lineHeight:1.6}}>
+                      {day.summary}
+                    </div>
+                  )}
+                  {/* Tasks */}
+                  {day.tasks?.length>0&&(
+                    <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:14}}>
+                      {day.tasks.map((task,ti)=>{
+                        const taskDone = doneTasks[`${idx}-${ti}`];
+                        return (
+                          <div key={ti} onClick={()=>markTask(idx,ti)} style={{display:"flex",gap:10,alignItems:"flex-start",cursor:"pointer",padding:"8px 10px",borderRadius:"var(--r)",background:taskDone?"var(--success-bg)":"var(--bg2)",border:`1px solid ${taskDone?"var(--success)":"var(--border-light)"}`,transition:"all .15s"}}>
+                            <div style={{width:18,height:18,borderRadius:"50%",border:`2px solid ${taskDone?"var(--success)":"var(--border)"}`,background:taskDone?"var(--success)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
+                              {taskDone&&<span style={{color:"#fff",fontSize:10,fontWeight:800}}>✓</span>}
+                            </div>
+                            <div style={{fontSize:13,color:taskDone?"var(--muted)":"var(--text)",textDecoration:taskDone?"line-through":"none",lineHeight:1.5}}>{task}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {/* Actions */}
+                  <div style={{display:"flex",gap:8}}>
+                    {isToday&&(
+                      <button className="btn btn-primary btn-sm" style={{flex:1}} onClick={()=>{setSessionDay(idx);setSessionTaskIdx(0);setTimer(25*60);setTimerRunning(false);setStep("session");}}>
+                        ▶ Start Today's Session
+                      </button>
+                    )}
+                    <a href={`https://www.youtube.com/results?search_query=${ytQuery}`} target="_blank" rel="noreferrer"
+                      className="btn btn-secondary btn-sm" style={{textDecoration:"none",flex:isToday?0:1,justifyContent:"center",display:"inline-flex",alignItems:"center"}}>
+                      🎬 Find Video
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────
-// ANALYTICS
-// ─────────────────────────────────────────────
 function AnalyticsScreen({ profile, gs }) {
   const { state, predictATAR } = gs;
   const isIB = profile.yearLevel === "ib";
