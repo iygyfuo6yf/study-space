@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const SUBJ_ALIASES = {"History":"History (Year 9-10)","Geography":"Geography (Year 9-10)","Arts":"Visual Arts (Year 9-10)","Visual Arts":"Visual Arts (Year 9-10)","Drama":"Drama (Year 9-10)","Music":"Music (Year 9-10)","Food Technology":"Food Technology (Year 9-10)","Digital Technologies":"Digital Technologies (Year 9-10)","Physical Education":"Health & PE (Year 9-10)","Media Studies":"Media Studies (Year 9-10)","Japanese":"Japanese (Year 9-10)","French":"French (Year 9-10)","Design & Technology":"Design & Technology (Year 9-10)"};
 const getCurriculum = (s) => VCAA_CURRICULUM[s] || VCAA_CURRICULUM[SUBJ_ALIASES[s]];
 
-// Renders AI markdown text cleanly ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no # symbols, proper bold, headers as styled text
+// Renders AI markdown text cleanly — no # symbols, proper bold, headers as styled text
 function RenderMD({ text, style={} }) {
   if (!text) return null;
   const lines = text.split('\n');
@@ -10,7 +10,7 @@ function RenderMD({ text, style={} }) {
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
-    // H1/H2/H3 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ render as bold section header
+    // H1/H2/H3 — render as bold section header
     if (line.startsWith('### ')) {
       elements.push(<div key={i} style={{fontWeight:800,fontSize:14,color:'var(--text)',marginTop:16,marginBottom:4}}>{line.slice(4)}</div>);
     } else if (line.startsWith('## ')) {
@@ -18,9 +18,9 @@ function RenderMD({ text, style={} }) {
     } else if (line.startsWith('# ')) {
       elements.push(<div key={i} style={{fontWeight:900,fontSize:17,color:'var(--text)',marginTop:20,marginBottom:8}}>{line.slice(2)}</div>);
     // Bullet points
-    } else if (line.startsWith('- ') || line.startsWith('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ ')) {
+    } else if (line.startsWith('- ') || line.startsWith('• ')) {
       const content = renderInline(line.slice(2));
-      elements.push(<div key={i} style={{display:'flex',gap:8,marginBottom:3,fontSize:13,lineHeight:1.6}}><span style={{color:'var(--gold)',flexShrink:0,marginTop:1}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢</span><span>{content}</span></div>);
+      elements.push(<div key={i} style={{display:'flex',gap:8,marginBottom:3,fontSize:13,lineHeight:1.6}}><span style={{color:'var(--gold)',flexShrink:0,marginTop:1}}>•</span><span>{content}</span></div>);
     } else if (line.match(/^\d+\. /)) {
       const num = line.match(/^(\d+)\. /)[1];
       const content = renderInline(line.replace(/^\d+\. /, ''));
@@ -58,9 +58,9 @@ function renderInline(text) {
 }
 
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// COMPLETE SUBJECT DATABASE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Years 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ12 VCE + IB
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
+// COMPLETE SUBJECT DATABASE — Years 9–12 VCE + IB
+// ─────────────────────────────────────────────
 const ALL_SUBJECTS = {
   year9: {
     label: "Year 9",
@@ -80,7 +80,7 @@ const ALL_SUBJECTS = {
       "Sciences": ["Biology","Chemistry","Physics","Psychology","Environmental Science","Health & Human Development"],
       "Humanities & Social Sciences": ["History: Revolutions","History: Modern","Australian History","Legal Studies","Politics","Sociology","Philosophy","Religion & Society"],
       "Business & Economics": ["Accounting","Business Management","Economics"],
-      "Arts & Design": ["Visual Communication Design","Studio Arts","Art ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Making & Exhibiting","Media","Music","Drama","Dance","Theatre Studies"],
+      "Arts & Design": ["Visual Communication Design","Studio Arts","Art — Making & Exhibiting","Media","Music","Drama","Dance","Theatre Studies"],
       "Technology & Computing": ["Applied Computing","Software Development","Systems Engineering","Food Studies"],
       "Physical Education": ["Physical Education","Outdoor & Environmental Studies"],
       "Vocational": ["VET Hospitality","VET Construction","VET Business","VET Nursing","VET IT"]
@@ -89,12 +89,12 @@ const ALL_SUBJECTS = {
   ib: {
     label: "IB Diploma",
     groups: {
-      "Group 1 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Studies in Language": ["English A: Literature HL","English A: Language & Literature HL","English A: Literature SL","Self-Taught Language A"],
-      "Group 2 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Language Acquisition": ["English B HL","French B HL","Japanese B SL","Spanish B SL","Chinese B SL","French ab initio","Spanish ab initio"],
-      "Group 3 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Individuals & Societies": ["History HL","History SL","Economics HL","Economics SL","Geography HL","Geography SL","Psychology HL","Psychology SL","Global Politics HL","Business Management HL","Philosophy HL"],
-      "Group 4 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Sciences": ["Biology HL","Biology SL","Chemistry HL","Chemistry SL","Physics HL","Physics SL","Environmental Systems SL","Computer Science HL","Sports Science SL"],
-      "Group 5 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Mathematics": ["Maths: Analysis & Approaches HL","Maths: Analysis & Approaches SL","Maths: Applications & Interpretation HL","Maths: Applications & Interpretation SL"],
-      "Group 6 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Arts": ["Visual Arts HL","Visual Arts SL","Music HL","Music SL","Theatre HL","Theatre SL","Film SL"],
+      "Group 1 — Studies in Language": ["English A: Literature HL","English A: Language & Literature HL","English A: Literature SL","Self-Taught Language A"],
+      "Group 2 — Language Acquisition": ["English B HL","French B HL","Japanese B SL","Spanish B SL","Chinese B SL","French ab initio","Spanish ab initio"],
+      "Group 3 — Individuals & Societies": ["History HL","History SL","Economics HL","Economics SL","Geography HL","Geography SL","Psychology HL","Psychology SL","Global Politics HL","Business Management HL","Philosophy HL"],
+      "Group 4 — Sciences": ["Biology HL","Biology SL","Chemistry HL","Chemistry SL","Physics HL","Physics SL","Environmental Systems SL","Computer Science HL","Sports Science SL"],
+      "Group 5 — Mathematics": ["Maths: Analysis & Approaches HL","Maths: Analysis & Approaches SL","Maths: Applications & Interpretation HL","Maths: Applications & Interpretation SL"],
+      "Group 6 — Arts": ["Visual Arts HL","Visual Arts SL","Music HL","Music SL","Theatre HL","Theatre SL","Film SL"],
       "Core Requirements": ["Theory of Knowledge (TOK)","Extended Essay (EE)","CAS (Creativity, Activity, Service)"]
     }
   }
@@ -117,22 +117,22 @@ const SUBJECT_COLORS = {
 const getColor = (subj) => SUBJECT_COLORS[subj] || SUBJECT_COLORS["default"];
 
 const FUTURE_PATHS = [
-  { id: "medicine", label: "Medicine / Health Sciences", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥", atar: "99+" },
-  { id: "law", label: "Law", icon: "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ", atar: "95+" },
-  { id: "engineering", label: "Engineering", icon: "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ", atar: "90+" },
-  { id: "cs", label: "Computer Science / IT", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ»", atar: "85+" },
-  { id: "business", label: "Business / Commerce", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ", atar: "80+" },
-  { id: "arts_hum", label: "Arts / Humanities", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨", atar: "70+" },
-  { id: "science", label: "Science / Research", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬", atar: "85+" },
-  { id: "education", label: "Education / Teaching", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ", atar: "65+" },
-  { id: "creative", label: "Creative Industries", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬", atar: "60+" },
-  { id: "trade", label: "Trades / Vocational", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ§", atar: "N/A" },
-  { id: "undecided", label: "Not Sure Yet", icon: "ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ", atar: "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ" },
+  { id: "medicine", label: "Medicine / Health Sciences", icon: "🏥", atar: "99+" },
+  { id: "law", label: "Law", icon: "⚖️", atar: "95+" },
+  { id: "engineering", label: "Engineering", icon: "⚙️", atar: "90+" },
+  { id: "cs", label: "Computer Science / IT", icon: "💻", atar: "85+" },
+  { id: "business", label: "Business / Commerce", icon: "📊", atar: "80+" },
+  { id: "arts_hum", label: "Arts / Humanities", icon: "🎨", atar: "70+" },
+  { id: "science", label: "Science / Research", icon: "🔬", atar: "85+" },
+  { id: "education", label: "Education / Teaching", icon: "📚", atar: "65+" },
+  { id: "creative", label: "Creative Industries", icon: "🎬", atar: "60+" },
+  { id: "trade", label: "Trades / Vocational", icon: "🔧", atar: "N/A" },
+  { id: "undecided", label: "Not Sure Yet", icon: "🤔", atar: "—" },
 ];
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // CSS
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 const LIGHT_CSS = `
   --bg:#F2EDE4;--bg2:#FBF7F2;--bg3:#EDE6DA;--bg4:#E3D9CC;
   --border:#1A1A1A;--border-light:#E0DBD3;
@@ -389,7 +389,7 @@ select.input{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appeara
 .ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
 .ob-subj-grid{display:flex;flex-wrap:wrap;gap:8px;}
 
-/* Onboarding option ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ button element for reliable mobile touch */
+/* Onboarding option — button element for reliable mobile touch */
 .ob-opt{
   background:var(--bg3);border:1.5px solid var(--border-light);
   border-radius:var(--r2);padding:13px 12px;cursor:pointer;
@@ -504,9 +504,9 @@ select.input{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appeara
 `;
 
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // SMALL COMPONENTS
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function Ring({ val, size = 72, stroke = 6, color = "#7C6AF7" }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
@@ -526,7 +526,7 @@ function Ring({ val, size = 72, stroke = 6, color = "#7C6AF7" }) {
 function TypingIndicator() {
   return (
     <div className="msg ai">
-      <div className="m-av m-ai-av">ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ</div>
+      <div className="m-av m-ai-av">🤖</div>
       <div className="m-bub" style={{ display:"flex", gap:5, alignItems:"center", padding:"14px 18px" }}>
         {[0,.25,.5].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}
       </div>
@@ -534,15 +534,15 @@ function TypingIndicator() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // SUPABASE CLIENT
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ  PASTE YOUR SUPABASE CREDENTIALS HERE
-// Get them from: supabase.com ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ your project ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Settings ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ API
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "https://ybxfjndeckyynhgsgqma.supabase.co");
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlieGZqbmRlY2t5eW5oZ3NncW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTcxNTYsImV4cCI6MjA5Mzg5MzE1Nn0.CaPL1ydby2DsPMbM_IsDovZiGWxz7PF0j_cTuLVw4dk";
+// ─────────────────────────────────────────────
+// ⚠️  PASTE YOUR SUPABASE CREDENTIALS HERE
+// Get them from: supabase.com → your project → Settings → API
+const SUPABASE_URL = "https://ybxfjndeckyynhgsgqma.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlieGZqbmRlY2t5eW5oZ3NncW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTcxNTYsImV4cCI6MjA5Mzg5MzE1Nn0.CaPL1ydby2DsPMbM_IsDovZiGWxz7PF0j_cTuLVw4dk";
 
-// Tiny Supabase client ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no npm needed, works in any browser/artifact
+// Tiny Supabase client — no npm needed, works in any browser/artifact
 const supabase = (() => {
   const headers = {
     "Content-Type": "application/json",
@@ -585,7 +585,7 @@ const supabase = (() => {
         return d;
       },
 
-      // Google OAuth ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ redirects browser to Google
+      // Google OAuth — redirects browser to Google
       signInWithGoogle: () => {
         const redirectTo = window.location.origin + window.location.pathname;
         window.location.href =
@@ -653,7 +653,7 @@ const supabase = (() => {
       return Array.isArray(d) ? d[0] : null;
     },
 
-    // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ TUTOR MARKETPLACE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+    // ── TUTOR MARKETPLACE ──
     getTutors: async (token) => {
       const r = await fetch(`${base}/rest/v1/tutor_profiles?order=rating.desc&select=*`, {
         headers: { ...headers, Authorization: `Bearer ${token}` }
@@ -714,9 +714,9 @@ const supabase = (() => {
   };
 })();
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // AUTH SCREEN
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function AuthScreen({ onAuth }) {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
@@ -728,17 +728,17 @@ function AuthScreen({ onAuth }) {
   const [showMagic, setShowMagic] = useState(false);
 
   // Check if credentials are configured
-  const configured = !!SUPABASE_URL && !!SUPABASE_ANON_KEY;
+  const configured = SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
 
   const handleGoogle = () => {
-    if (!configured) { setError("ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Add your Supabase credentials first ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ see the setup guide."); return; }
+    if (!configured) { setError("⚠️ Add your Supabase credentials first — see the setup guide."); return; }
     supabase.auth.signInWithGoogle();
   };
 
   const handleEmail = async () => {
     if (!email || !pass) { setError("Please enter your email and password."); return; }
     if (!configured) {
-      // Demo mode ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ skip real auth
+      // Demo mode — skip real auth
       onAuth({ name: name || email.split("@")[0], email, provider: "email" });
       return;
     }
@@ -754,8 +754,8 @@ function AuthScreen({ onAuth }) {
         const userName = res.user?.user_metadata?.full_name || name || email.split("@")[0];
         onAuth({ name: userName, email, provider: "email", session: res, userId: res.user?.id });
       } else if (res.id) {
-        // Sign-up returned user without token ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ email confirmation needed
-        setError("ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Check your email to confirm your account, then log in.");
+        // Sign-up returned user without token — email confirmation needed
+        setError("✅ Check your email to confirm your account, then log in.");
       }
     } catch (e) {
       setError("Connection error. Check your Supabase URL.");
@@ -786,16 +786,16 @@ function AuthScreen({ onAuth }) {
         </div>
         <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",textAlign:"center",color:"var(--text)",marginBottom:4}}>Study Ace</div>
         <div style={{fontSize:13,color:"var(--muted)",textAlign:"center",marginBottom:24,lineHeight:1.5}}>
-          {mode === "login" ? "Welcome back ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ready to study?" : "Join Victorian students getting better grades"}
+          {mode === "login" ? "Welcome back — ready to study?" : "Join Victorian students getting better grades"}
         </div>
 
         {!configured && (
           <div style={{background:"var(--gold-light)",border:"1.5px solid var(--gold)",borderRadius:"var(--r)",padding:"10px 14px",marginBottom:16,fontSize:12,color:"var(--gold)",lineHeight:1.6}}>
-            Demo mode ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Supabase not connected yet.
+            Demo mode — Supabase not connected yet.
           </div>
         )}
 
-        {/* Google Sign In ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ proper button */}
+        {/* Google Sign In — proper button */}
         <button onClick={handleGoogle} disabled={loading}
           style={{width:"100%",padding:"13px 16px",borderRadius:30,border:"1.5px solid var(--border)",background:"var(--bg2)",color:"var(--text)",fontSize:13,fontWeight:700,fontFamily:"var(--ff)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,transition:"all .15s",marginBottom:12,boxShadow:"0 1px 4px rgba(26,26,26,.08)"}}>
           <svg width="18" height="18" viewBox="0 0 18 18">
@@ -815,7 +815,7 @@ function AuthScreen({ onAuth }) {
         <input className="auth-input" type="email" placeholder="Email address" value={email} onChange={e=>{setEmail(e.target.value);setError("");}} style={{marginBottom:10}}/>
         <input className="auth-input" type="password" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleEmail()} style={{marginBottom:error?10:14}}/>
 
-        {error && <div style={{fontSize:12,color:error.startsWith("ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ")?"var(--success)":"var(--danger)",marginBottom:12,padding:"8px 12px",background:error.startsWith("ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ")?"var(--success-bg)":"var(--danger-bg)",borderRadius:"var(--r)",border:`1px solid ${error.startsWith("ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ")?"var(--success)":"var(--danger)"}`}}>{error}</div>}
+        {error && <div style={{fontSize:12,color:error.startsWith("✅")?"var(--success)":"var(--danger)",marginBottom:12,padding:"8px 12px",background:error.startsWith("✅")?"var(--success-bg)":"var(--danger-bg)",borderRadius:"var(--r)",border:`1px solid ${error.startsWith("✅")?"var(--success)":"var(--danger)"}`}}>{error}</div>}
 
         <button className="btn btn-primary btn-full" style={{padding:"13px",marginBottom:10}} onClick={handleEmail} disabled={loading}>
           {loading ? "Please wait..." : mode === "login" ? "Sign In" : "Create Account"}
@@ -835,9 +835,9 @@ function AuthScreen({ onAuth }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // ONBOARDING FLOW
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function Onboarding({ user, onComplete }) {
   const [step, setStep] = useState(0);
   const [data, setData] = useState({
@@ -862,7 +862,7 @@ function Onboarding({ user, onComplete }) {
   const next = () => setStep(s => Math.min(s+1, totalSteps));
   const back = () => setStep(s => Math.max(s-1, 0));
 
-  // STEP 0 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Year level
+  // STEP 0 — Year level
   const step0 = (
     <>
       <div className="ob-step">Step 1 of {totalSteps}</div>
@@ -870,10 +870,10 @@ function Onboarding({ user, onComplete }) {
       <div className="ob-sub">We'll customise everything to your curriculum and upcoming milestones.</div>
       <div className="ob-grid">
         {[
-          {id:"year9",label:"Year 9",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",sub:"Junior Secondary"},
-          {id:"year10",label:"Year 10",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",sub:"Pre-senior year"},
-          {id:"vce",label:"Year 11ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ12 VCE",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",sub:"Victorian Certificate of Education"},
-          {id:"ib",label:"Year 11ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ12 IB",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",sub:"International Baccalaureate"},
+          {id:"year9",label:"Year 9",icon:"📗",sub:"Junior Secondary"},
+          {id:"year10",label:"Year 10",icon:"📘",sub:"Pre-senior year"},
+          {id:"vce",label:"Year 11–12 VCE",icon:"🎓",sub:"Victorian Certificate of Education"},
+          {id:"ib",label:"Year 11–12 IB",icon:"🌍",sub:"International Baccalaureate"},
         ].map(o=>(
           <button key={o.id} type="button" className={`ob-opt${data.yearLevel===o.id?" sel":""}`} onClick={()=>setData(d=>({...d,yearLevel:o.id}))}>
             <div className="ob-opt-top"><span className="ob-opt-icon">{o.icon}</span><span className="ob-opt-label">{o.label}</span></div>
@@ -881,11 +881,11 @@ function Onboarding({ user, onComplete }) {
           </button>
         ))}
       </div>
-      <button className="btn btn-p btn-full" style={{padding:13}} disabled={!data.yearLevel} onClick={next}>Continue ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+      <button className="btn btn-p btn-full" style={{padding:13}} disabled={!data.yearLevel} onClick={next}>Continue →</button>
     </>
   );
 
-  // STEP 1 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Subjects
+  // STEP 1 — Subjects
   const yearKey = data.yearLevel;
   const subjectStep = (() => {
     let groups = {};
@@ -909,70 +909,70 @@ function Onboarding({ user, onComplete }) {
               {subjs.map(s=>(
                 <button key={s} className={`ob-subj-btn${data.selectedSubjects.includes(s)?" sel":""}`}
                   onClick={()=>toggle("selectedSubjects",s)}>
-                  {data.selectedSubjects.includes(s)?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ":""}{s}
+                  {data.selectedSubjects.includes(s)?"✓ ":""}{s}
                 </button>
               ))}
             </div>
           </div>
         ))}
         <div style={{display:"flex",gap:10,marginTop:8}}>
-          <button className="btn btn-g btn-sm" onClick={back}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
+          <button className="btn btn-g btn-sm" onClick={back}>← Back</button>
           <button className="btn btn-p" style={{flex:1,justifyContent:"center",padding:12}} disabled={data.selectedSubjects.length===0} onClick={next}>
-            Continue with {data.selectedSubjects.length} subject{data.selectedSubjects.length!==1?"s":""} ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+            Continue with {data.selectedSubjects.length} subject{data.selectedSubjects.length!==1?"s":""} →
           </button>
         </div>
       </>
     );
   })();
 
-  // STEP 2 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Future path
+  // STEP 2 — Future path
   const step2 = (
     <>
       <div className="ob-step">Step 3 of {totalSteps}</div>
-      <div className="ob-title">What's your goal? ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯</div>
+      <div className="ob-title">What's your goal? 🎯</div>
       <div className="ob-sub">Tell us what you're working towards. We'll personalise your study plan and subject advice.</div>
       <div className="ob-grid">
         {FUTURE_PATHS.map(p=>(
           <button key={p.id} type="button" className={`ob-opt${data.futurePath===p.id?" sel":""}`} onClick={()=>setData(d=>({...d,futurePath:p.id}))}>
             <div className="ob-opt-top"><span className="ob-opt-icon">{p.icon}</span><span className="ob-opt-label">{p.label}</span></div>
-            <div className="ob-opt-sub">{p.atar !== "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ" ? `Typical ATAR: ${p.atar}` : "Portfolio / skills-based"}</div>
+            <div className="ob-opt-sub">{p.atar !== "—" ? `Typical ATAR: ${p.atar}` : "Portfolio / skills-based"}</div>
           </button>
         ))}
       </div>
       <div style={{display:"flex",gap:10}}>
-        <button className="btn btn-g btn-sm" onClick={back}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
-        <button className="btn btn-p" style={{flex:1,justifyContent:"center",padding:12}} disabled={!data.futurePath} onClick={next}>Continue ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+        <button className="btn btn-g btn-sm" onClick={back}>← Back</button>
+        <button className="btn btn-p" style={{flex:1,justifyContent:"center",padding:12}} disabled={!data.futurePath} onClick={next}>Continue →</button>
       </div>
     </>
   );
 
-  // STEP 3 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Study hours
+  // STEP 3 — Study hours
   const step3 = (
     <>
       <div className="ob-step">Step 4 of {totalSteps}</div>
       <div className="ob-title">How much can you study?</div>
-      <div className="ob-sub">Be honest ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ we'll build a realistic schedule that avoids burnout.</div>
+      <div className="ob-sub">Be honest — we'll build a realistic schedule that avoids burnout.</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
         {[
-          {id:"light",label:"Light",hours:"5ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ8 hrs/week",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",desc:"Relaxed pace"},
-          {id:"moderate",label:"Moderate",hours:"9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ14 hrs/week",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",desc:"Balanced approach"},
-          {id:"intensive",label:"Intensive",hours:"15ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ20 hrs/week",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",desc:"High performance mode"},
-          {id:"extreme",label:"Exam Mode",hours:"21+ hrs/week",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",desc:"Full focus crunch"},
+          {id:"light",label:"Light",hours:"5–8 hrs/week",icon:"😊",desc:"Relaxed pace"},
+          {id:"moderate",label:"Moderate",hours:"9–14 hrs/week",icon:"📖",desc:"Balanced approach"},
+          {id:"intensive",label:"Intensive",hours:"15–20 hrs/week",icon:"🔥",desc:"High performance mode"},
+          {id:"extreme",label:"Exam Mode",hours:"21+ hrs/week",icon:"⚡",desc:"Full focus crunch"},
         ].map(o=>(
           <button key={o.id} type="button" className={`ob-opt${data.hoursPerWeek===o.id?" sel":""}`} onClick={()=>setData(d=>({...d,hoursPerWeek:o.id}))}>
             <div className="ob-opt-top"><span className="ob-opt-icon">{o.icon}</span><span className="ob-opt-label">{o.label}</span></div>
-            <div className="ob-opt-sub">{o.hours} ÃÂÃÂÃÂÃÂ· {o.desc}</div>
+            <div className="ob-opt-sub">{o.hours} · {o.desc}</div>
           </button>
         ))}
       </div>
       <div style={{display:"flex",gap:10}}>
-        <button className="btn btn-g btn-sm" onClick={back}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
-        <button className="btn btn-p" style={{flex:1,justifyContent:"center",padding:12}} disabled={!data.hoursPerWeek} onClick={next}>Continue ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+        <button className="btn btn-g btn-sm" onClick={back}>← Back</button>
+        <button className="btn btn-p" style={{flex:1,justifyContent:"center",padding:12}} disabled={!data.hoursPerWeek} onClick={next}>Continue →</button>
       </div>
     </>
   );
 
-  // STEP 4 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Study goal
+  // STEP 4 — Study goal
   const step4 = (
     <>
       <div className="ob-step">Step 5 of {totalSteps}</div>
@@ -980,12 +980,12 @@ function Onboarding({ user, onComplete }) {
       <div className="ob-sub">We'll prioritise your dashboard and AI tutor recommendations accordingly.</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr",gap:9,marginBottom:24}}>
         {[
-          {id:"sac",label:"Preparing for upcoming SACs / IAs",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"},
-          {id:"exam",label:"Exam preparation & past papers",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"},
-          {id:"concepts",label:"Understanding difficult concepts",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ÃÂÃÂ "},
-          {id:"routine",label:"Building a consistent study routine",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"},
-          {id:"atar",label:"Maximising my ATAR / IB score",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"},
-          {id:"wellbeing",label:"Balancing study and wellbeing",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ±"},
+          {id:"sac",label:"Preparing for upcoming SACs / IAs",icon:"📋"},
+          {id:"exam",label:"Exam preparation & past papers",icon:"📝"},
+          {id:"concepts",label:"Understanding difficult concepts",icon:"🧠"},
+          {id:"routine",label:"Building a consistent study routine",icon:"📅"},
+          {id:"atar",label:"Maximising my ATAR / IB score",icon:"🏆"},
+          {id:"wellbeing",label:"Balancing study and wellbeing",icon:"🌱"},
         ].map(o=>(
           <button key={o.id} type="button" className={`ob-opt${data.studyGoal===o.id?" sel":""}`} onClick={()=>setData(d=>({...d,studyGoal:o.id}))}>
             <div className="ob-opt-top"><span className="ob-opt-icon">{o.icon}</span><span className="ob-opt-label">{o.label}</span></div>
@@ -993,23 +993,23 @@ function Onboarding({ user, onComplete }) {
         ))}
       </div>
       <div style={{display:"flex",gap:10}}>
-        <button className="btn btn-g btn-sm" onClick={back}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
-        <button className="btn btn-p" style={{flex:1,justifyContent:"center",padding:12}} disabled={!data.studyGoal} onClick={next}>Continue ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+        <button className="btn btn-g btn-sm" onClick={back}>← Back</button>
+        <button className="btn btn-p" style={{flex:1,justifyContent:"center",padding:12}} disabled={!data.studyGoal} onClick={next}>Continue →</button>
       </div>
     </>
   );
 
-  // STEP 5 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ All set
+  // STEP 5 — All set
   const goalText = {
-    medicine:"Medicine or Health Sciences ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",law:"Law ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",engineering:"Engineering ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",
-    cs:"Computer Science ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ»",business:"Business / Commerce ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",arts_hum:"Arts & Humanities ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨",
-    science:"Science & Research ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",education:"Education ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",creative:"Creative Industries ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",
-    trade:"Trades & Vocational ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ§",undecided:"figuring out the right path ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ"
+    medicine:"Medicine or Health Sciences 🏥",law:"Law ⚖️",engineering:"Engineering ⚙️",
+    cs:"Computer Science 💻",business:"Business / Commerce 📊",arts_hum:"Arts & Humanities 🎨",
+    science:"Science & Research 🔬",education:"Education 📚",creative:"Creative Industries 🎬",
+    trade:"Trades & Vocational 🔧",undecided:"figuring out the right path 🤔"
   };
   const step5 = (
     <>
       <div style={{textAlign:"center",marginBottom:24}}>
-        <div style={{fontSize:52,marginBottom:12}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+        <div style={{fontSize:52,marginBottom:12}}>🎉</div>
         <div className="ob-title" style={{textAlign:"center"}}>You're all set, {user.name.split(" ")[0]}!</div>
         <div className="ob-sub" style={{textAlign:"center"}}>Here's what we've built for you based on your answers:</div>
       </div>
@@ -1020,7 +1020,7 @@ function Onboarding({ user, onComplete }) {
             {label:"Year Level",val:ALL_SUBJECTS[data.yearLevel]?.label||data.yearLevel},
             {label:"Subjects",val:`${data.selectedSubjects.length} subjects selected`},
             {label:"Goal",val:goalText[data.futurePath]||"Not set"},
-            {label:"Study Intensity",val:({light:"Light (5ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ8 hrs)",moderate:"Moderate (9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ14 hrs)",intensive:"Intensive (15ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ20 hrs)",extreme:"Exam Mode (21+)"})[data.hoursPerWeek]||"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ"},
+            {label:"Study Intensity",val:({light:"Light (5–8 hrs)",moderate:"Moderate (9–14 hrs)",intensive:"Intensive (15–20 hrs)",extreme:"Exam Mode (21+)"})[data.hoursPerWeek]||"—"},
           ].map(r=>(
             <div key={r.label} style={{background:"var(--bg3)",borderRadius:8,padding:"10px 12px"}}>
               <div style={{fontSize:10,color:"var(--muted)",fontWeight:700,marginBottom:3}}>{r.label}</div>
@@ -1038,7 +1038,7 @@ function Onboarding({ user, onComplete }) {
         </div>
       </div>
       <button className="btn btn-p btn-full" style={{padding:14,fontSize:15}} onClick={()=>onComplete(data)}>
-        Enter Study Ace ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ
+        Enter Study Ace 🚀
       </button>
     </>
   );
@@ -1050,7 +1050,7 @@ function Onboarding({ user, onComplete }) {
       <div className="ob-inner">
         <div className="ob-logo"><img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Ace" style={{width:90,height:90,objectFit:"contain",borderRadius:20,marginBottom:4}}/></div>
         <div className="ob-tag" style={{fontWeight:700,fontSize:14,color:"var(--text)",marginBottom:2,WebkitTextFillColor:"var(--text)"}}>Study Ace</div>
-        <div className="ob-tag">Victorian Education Platform ÃÂÃÂÃÂÃÂ· Years 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ12</div>
+        <div className="ob-tag">Victorian Education Platform · Years 9–12</div>
         <div className="ob-prog"><div className="ob-fill" style={{width:`${pct}%`}}/></div>
         {steps[step]}
       </div>
@@ -1058,10 +1058,10 @@ function Onboarding({ user, onComplete }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// GAME STATE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ XP, streaks, mastery, quiz history
+// ─────────────────────────────────────────────
+// GAME STATE — XP, streaks, mastery, quiz history
 // Persists everything in localStorage
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function useGameState(profile) {
   const key = `ss_game_${profile?.email || "guest"}`;
 
@@ -1079,7 +1079,7 @@ function useGameState(profile) {
     try {
       const saved = JSON.parse(localStorage.getItem(key) || "{}");
       const merged = { ...defaultState, ...saved };
-      // Always ensure correct types ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ prevents K.map crashes
+      // Always ensure correct types — prevents K.map crashes
       if (!Array.isArray(merged.masteryMap) && typeof merged.masteryMap !== "object") merged.masteryMap = {};
       if (Array.isArray(merged.masteryMap)) merged.masteryMap = {};
       if (!Array.isArray(merged.quizHistory)) merged.quizHistory = [];
@@ -1151,7 +1151,7 @@ function useGameState(profile) {
     save({ ...s, totalMinutes: (s.totalMinutes || 0) + mins });
   };
 
-  // ATAR predictor ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ based on mastery scores weighted by subject count
+  // ATAR predictor — based on mastery scores weighted by subject count
   const predictATAR = () => {
     const s = load();
     const subjects = Array.isArray(profile?.selectedSubjects) ? profile.selectedSubjects : [];
@@ -1169,9 +1169,9 @@ function useGameState(profile) {
   return { state: load(), addXP, recordQuiz, addEvent, removeEvent, addMinutes, predictATAR };
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // DASHBOARD
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function Dashboard({ profile, setScreen, gs }) {
   const { state, predictATAR } = gs;
   const isIB = profile.yearLevel === "ib";
@@ -1212,9 +1212,9 @@ function Dashboard({ profile, setScreen, gs }) {
   return (
     <div className="content fade-up">
       <div style={{marginBottom:20}}>
-        <div style={{fontWeight:900,fontSize:22}}>{greeting()}, {profile.userName?.split(" ")[0]} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+        <div style={{fontWeight:900,fontSize:22}}>{greeting()}, {profile.userName?.split(" ")[0]} 👋</div>
         <div style={{color:"var(--muted)",fontSize:13,marginTop:3}}>
-          {isIB?"IB Diploma":ALL_SUBJECTS[profile.yearLevel]?.label} ÃÂÃÂÃÂÃÂ· {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length} subjects ÃÂÃÂÃÂÃÂ· {today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric"})}
+          {isIB?"IB Diploma":ALL_SUBJECTS[profile.yearLevel]?.label} · {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length} subjects · {today.toLocaleDateString("en-AU",{weekday:"long",month:"long",day:"numeric"})}
         </div>
       </div>
 
@@ -1226,7 +1226,7 @@ function Dashboard({ profile, setScreen, gs }) {
         </div>
         <div className="stat">
           <div className="sv" style={{color:"#5CE0C6"}}>{state.xp.toLocaleString()}</div>
-          <div className="sl">Total XP ÃÂÃÂÃÂÃÂ· Level {state.level}</div>
+          <div className="sl">Total XP · Level {state.level}</div>
           <div style={{marginTop:6}}>
             <div style={{height:4,background:"var(--bg3)",borderRadius:2,overflow:"hidden"}}>
               <div style={{height:"100%",background:"linear-gradient(90deg,#7C6AF7,#5CE0C6)",width:`${xpPct}%`,borderRadius:2}}/>
@@ -1235,12 +1235,12 @@ function Dashboard({ profile, setScreen, gs }) {
           </div>
         </div>
         <div className="stat">
-          <div className="sv" style={{color:"#FF6B6B"}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥ {state.streak}</div>
+          <div className="sv" style={{color:"#FF6B6B"}}>🔥 {state.streak}</div>
           <div className="sl">Day Streak</div>
           <div className="sc up">Best: {state.bestStreak} days</div>
         </div>
         <div className="stat">
-          <div className="sv" style={{color:"#FFD700"}}>{avgAccuracy!=null?`${avgAccuracy}%`:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ"}</div>
+          <div className="sv" style={{color:"#FFD700"}}>{avgAccuracy!=null?`${avgAccuracy}%`:"—"}</div>
           <div className="sl">Quiz Accuracy</div>
           <div className="sc up">{recentQuizzes.length} quizzes taken</div>
         </div>
@@ -1250,7 +1250,7 @@ function Dashboard({ profile, setScreen, gs }) {
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
             <div style={{fontWeight:800,fontSize:15}}>My Subjects</div>
-            <span className="cl" onClick={()=>setScreen("subjects")}>View all ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>
+            <span className="cl" onClick={()=>setScreen("subjects")}>View all →</span>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,4).map(s=>{
@@ -1270,11 +1270,11 @@ function Dashboard({ profile, setScreen, gs }) {
 
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div className="card">
-            <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Upcoming Assessments</div><span className="cl" onClick={()=>setScreen("planner")}>+ Add ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span></div>
+            <div className="ch"><div className="ct">📅 Upcoming Assessments</div><span className="cl" onClick={()=>setScreen("planner")}>+ Add →</span></div>
             <div style={{padding:"0 16px"}}>
               {upcoming.length === 0 ? (
                 <div style={{padding:"16px 0",color:"var(--muted)",fontSize:13,textAlign:"center"}}>
-                  No upcoming events ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ <span style={{color:"var(--accent)",cursor:"pointer"}} onClick={()=>setScreen("planner")}>add one in Planner</span>
+                  No upcoming events — <span style={{color:"var(--accent)",cursor:"pointer"}} onClick={()=>setScreen("planner")}>add one in Planner</span>
                 </div>
               ) : upcoming.map((u,i)=>{
                 const daysLeft = Math.ceil((new Date(u.date)-new Date())/(1000*60*60*24));
@@ -1294,11 +1294,11 @@ function Dashboard({ profile, setScreen, gs }) {
             </div>
           </div>
           <div className="card">
-            <div className="ch"><div className="ct">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡ Quick Actions</div></div>
+            <div className="ch"><div className="ct">⚡ Quick Actions</div></div>
             <div className="cb" style={{display:"flex",flexDirection:"column",gap:7}}>
-              <button className="btn btn-p btn-full" onClick={()=>setScreen("subjects")}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Study a Subject</button>
-              <button className="btn btn-s btn-full" onClick={()=>setScreen("ai")}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨ Ask AI Tutor</button>
-              <button className="btn btn-g btn-full" onClick={()=>setScreen("planner")}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Study Planner</button>
+              <button className="btn btn-p btn-full" onClick={()=>setScreen("subjects")}>📚 Study a Subject</button>
+              <button className="btn btn-s btn-full" onClick={()=>setScreen("ai")}>✨ Ask AI Tutor</button>
+              <button className="btn btn-g btn-full" onClick={()=>setScreen("planner")}>📅 Study Planner</button>
             </div>
           </div>
         </div>
@@ -1306,10 +1306,10 @@ function Dashboard({ profile, setScreen, gs }) {
 
       <div className="card" style={{marginBottom:18}}>
         <div className="ch">
-          <div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Study Activity ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Last 17 Weeks</div>
+          <div className="ct">📊 Study Activity — Last 17 Weeks</div>
           <div style={{display:"flex",gap:5,alignItems:"center"}}>
             {[0,1,2,3,4].map(v=><div key={v} className={`hc h${v}`} style={{width:13,height:13,borderRadius:3}}/>)}
-            <span style={{fontSize:10,color:"var(--muted)"}}>Less ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ More</span>
+            <span style={{fontSize:10,color:"var(--muted)"}}>Less → More</span>
           </div>
         </div>
         <div className="cb"><div className="heat">{heatCells.map((v,i)=><div key={i} className={`hc h${v}`}/>)}</div></div>
@@ -1317,35 +1317,35 @@ function Dashboard({ profile, setScreen, gs }) {
 
       <div className="g2">
         <div className="card">
-          <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Achievements</div></div>
+          <div className="ch"><div className="ct">🏅 Achievements</div></div>
           <div className="cb">
             {[
-              {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",name:"Streak Starter",desc:"Study 7 days in a row",e:state.streak>=7},
-              {icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",name:"Quiz Master",desc:"Take 10 quizzes",e:(state.quizHistory?.length||0)>=10},
-              {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",name:"Century",desc:"Earn 100 XP",e:state.xp>=100},
-              {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯",name:"Sharp Shooter",desc:"Score 100% on a quiz",e:state.quizHistory?.some(q=>q.pct===100)},
-              {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",name:"High Achiever",desc:"Reach 1000 XP",e:state.xp>=1000},
-              {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",name:"Dedicated",desc:"Study 30 days in a row",e:state.streak>=30},
+              {icon:"🔥",name:"Streak Starter",desc:"Study 7 days in a row",e:state.streak>=7},
+              {icon:"⚡",name:"Quiz Master",desc:"Take 10 quizzes",e:(state.quizHistory?.length||0)>=10},
+              {icon:"📚",name:"Century",desc:"Earn 100 XP",e:state.xp>=100},
+              {icon:"🎯",name:"Sharp Shooter",desc:"Score 100% on a quiz",e:state.quizHistory?.some(q=>q.pct===100)},
+              {icon:"🏆",name:"High Achiever",desc:"Reach 1000 XP",e:state.xp>=1000},
+              {icon:"🌟",name:"Dedicated",desc:"Study 30 days in a row",e:state.streak>=30},
             ].map((a,i)=>(
               <div key={i} className={`ach${a.e?" earned":""}`}>
                 <div className="ach-ic">{a.icon}</div>
                 <div><div className="ach-name">{a.name}</div><div className="ach-desc">{a.desc}</div></div>
-                <div style={{marginLeft:"auto",fontSize:16}}>{a.e?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"}</div>
+                <div style={{marginLeft:"auto",fontSize:16}}>{a.e?"✅":"🔒"}</div>
               </div>
             ))}
           </div>
         </div>
         <div className="card">
-          <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Recent Quiz Results</div><span className="cl" onClick={()=>setScreen("analytics")}>Analytics ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span></div>
+          <div className="ch"><div className="ct">📈 Recent Quiz Results</div><span className="cl" onClick={()=>setScreen("analytics")}>Analytics →</span></div>
           <div className="cb">
             {state.quizHistory?.length === 0 || !state.quizHistory ? (
-              <div style={{color:"var(--muted)",fontSize:13,textAlign:"center",padding:"12px 0"}}>No quizzes yet ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ <span style={{color:"var(--accent)",cursor:"pointer"}} onClick={()=>setScreen("quiz")}>start one!</span></div>
+              <div style={{color:"var(--muted)",fontSize:13,textAlign:"center",padding:"12px 0"}}>No quizzes yet — <span style={{color:"var(--accent)",cursor:"pointer"}} onClick={()=>setScreen("quiz")}>start one!</span></div>
             ) : state.quizHistory.slice(0,5).map((q,i)=>(
               <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<4?"1px solid var(--border)":"none"}}>
                 <div style={{width:36,height:36,borderRadius:8,background:q.pct>=75?"var(--success-bg)":q.pct>=50?"var(--gold-light)":"var(--danger-bg)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:q.pct>=75?"var(--success)":q.pct>=50?"var(--gold)":"var(--danger)",flexShrink:0}}>{q.pct}%</div>
                 <div style={{flex:1}}>
                   <div style={{fontSize:13,fontWeight:600}}>{q.subject}</div>
-                  <div style={{fontSize:10,color:"var(--muted)"}}>{q.score}/{q.total} correct ÃÂÃÂÃÂÃÂ· {new Date(q.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
+                  <div style={{fontSize:10,color:"var(--muted)"}}>{q.score}/{q.total} correct · {new Date(q.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}</div>
                 </div>
               </div>
             ))}
@@ -1356,10 +1356,10 @@ function Dashboard({ profile, setScreen, gs }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// GEMINI HELPER ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ calls YOUR Vercel backend
+// ─────────────────────────────────────────────
+// GEMINI HELPER — calls YOUR Vercel backend
 // API key is hidden server-side, users need nothing
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 async function callGemini(prompt, maxTokens = 4000) {
   const res = await fetch("/api/gemini", {
     method: "POST",
@@ -1376,7 +1376,7 @@ async function callGemini(prompt, maxTokens = 4000) {
 
 
 // Official dot points from vcaa.vic.edu.au study designs
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 const VCAA_CURRICULUM = {
   "English": {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam",
@@ -1391,8 +1391,8 @@ const VCAA_CURRICULUM = {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam (CAS allowed)",
     areas: [
       { name:"Functions & Graphs", dotPoints:["Polynomial, exponential, logarithmic and trigonometric functions","Transformations: dilation, reflection, translation","Inverse functions and their graphs","Modelling with functions","Domain and range"] },
-      { name:"Calculus ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Differentiation", dotPoints:["Limits and continuity","Differentiation by first principles","Power rule, product rule, quotient rule, chain rule","Derivatives of sin, cos, tan, e^x, log_e x","Applications: rates of change, gradient, stationary points","Optimisation problems"] },
-      { name:"Calculus ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Integration", dotPoints:["Antidifferentiation and indefinite integrals","Definite integrals and area under a curve","Fundamental theorem of calculus","Integration of polynomial, exponential, trigonometric functions","Applications: total change, area between curves"] },
+      { name:"Calculus — Differentiation", dotPoints:["Limits and continuity","Differentiation by first principles","Power rule, product rule, quotient rule, chain rule","Derivatives of sin, cos, tan, e^x, log_e x","Applications: rates of change, gradient, stationary points","Optimisation problems"] },
+      { name:"Calculus — Integration", dotPoints:["Antidifferentiation and indefinite integrals","Definite integrals and area under a curve","Fundamental theorem of calculus","Integration of polynomial, exponential, trigonometric functions","Applications: total change, area between curves"] },
       { name:"Probability & Statistics", dotPoints:["Discrete and continuous probability distributions","Binomial distribution","Normal distribution and standardisation","Statistical inference and confidence intervals","Sampling and sample proportions"] },
     ]
   },
@@ -1400,16 +1400,16 @@ const VCAA_CURRICULUM = {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam",
     areas: [
       { name:"Organic Chemistry", dotPoints:["Structural formulae of hydrocarbons, alcohols, aldehydes, ketones, carboxylic acids, esters, amines, amides","Functional group reactions: addition, substitution, condensation, hydrolysis","Reaction pathways and conversions","Polymer chemistry: addition and condensation polymers","Biochemistry: proteins, carbohydrates, fats"] },
-      { name:"Electrochemistry", dotPoints:["Oxidation and reduction ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ electron transfer","Galvanic cells: anode, cathode, salt bridge, cell potential","Standard electrode potentials and EMF calculations","Electrolytic cells and electrolysis","Fuel cells and rechargeable batteries","Faraday's laws of electrolysis"] },
-      { name:"Energetics & Thermodynamics", dotPoints:["Enthalpy changes in reactions (ÃÂÃÂÃÂÃÂH)","Hess's Law and enthalpy cycles","Calorimetry calculations","Bond energies","Entropy (ÃÂÃÂÃÂÃÂS) and Gibbs free energy (ÃÂÃÂÃÂÃÂG = ÃÂÃÂÃÂÃÂH ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ TÃÂÃÂÃÂÃÂS)","Spontaneity of reactions"] },
+      { name:"Electrochemistry", dotPoints:["Oxidation and reduction — electron transfer","Galvanic cells: anode, cathode, salt bridge, cell potential","Standard electrode potentials and EMF calculations","Electrolytic cells and electrolysis","Fuel cells and rechargeable batteries","Faraday's laws of electrolysis"] },
+      { name:"Energetics & Thermodynamics", dotPoints:["Enthalpy changes in reactions (ΔH)","Hess's Law and enthalpy cycles","Calorimetry calculations","Bond energies","Entropy (ΔS) and Gibbs free energy (ΔG = ΔH − TΔS)","Spontaneity of reactions"] },
       { name:"Equilibrium & Acids/Bases", dotPoints:["Dynamic equilibrium and Le Chatelier's Principle","Equilibrium constant expression (Keq, Ka, Kb, Kw)","pH calculations for strong and weak acids/bases","Buffer solutions","Acid-base indicators and titrations"] },
     ]
   },
   "Physics": {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam",
     areas: [
-      { name:"Motion & Forces", dotPoints:["Newton's laws of motion in 2D","Momentum and impulse (FÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂt = ÃÂÃÂÃÂÃÂp)","Work, energy, power","Conservation of energy and momentum","Circular motion: centripetal acceleration and force","Gravitational fields and orbital motion"] },
-      { name:"Electricity & Magnetism", dotPoints:["Electric fields and force between charges","Electric potential and potential difference","DC circuits: Ohm's Law, series/parallel, Kirchhoff's laws","Magnetic fields and forces on current-carrying conductors","Electromagnetic induction ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Faraday's and Lenz's Laws","Transformers and AC generators"] },
+      { name:"Motion & Forces", dotPoints:["Newton's laws of motion in 2D","Momentum and impulse (F·Δt = Δp)","Work, energy, power","Conservation of energy and momentum","Circular motion: centripetal acceleration and force","Gravitational fields and orbital motion"] },
+      { name:"Electricity & Magnetism", dotPoints:["Electric fields and force between charges","Electric potential and potential difference","DC circuits: Ohm's Law, series/parallel, Kirchhoff's laws","Magnetic fields and forces on current-carrying conductors","Electromagnetic induction — Faraday's and Lenz's Laws","Transformers and AC generators"] },
       { name:"Waves & Light", dotPoints:["Wave properties: frequency, wavelength, amplitude, speed","Interference, diffraction, polarisation","Young's double-slit experiment","Electromagnetic spectrum","Photoelectric effect and quantum model of light","Wave-particle duality"] },
       { name:"Modern Physics", dotPoints:["Special relativity: time dilation, length contraction, mass-energy equivalence","Nuclear physics: radioactive decay, half-life","Nuclear fission and fusion","Standard model of particle physics (overview)"] },
     ]
@@ -1417,7 +1417,7 @@ const VCAA_CURRICULUM = {
   "Biology": {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam",
     areas: [
-      { name:"Cell Biology & Regulation", dotPoints:["Cell structure and function ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ organelles","Plasma membrane structure and transport","DNA structure, replication and transcription","Translation and protein synthesis","Cellular respiration: glycolysis, Krebs cycle, ETC","Photosynthesis: light-dependent and light-independent reactions"] },
+      { name:"Cell Biology & Regulation", dotPoints:["Cell structure and function — organelles","Plasma membrane structure and transport","DNA structure, replication and transcription","Translation and protein synthesis","Cellular respiration: glycolysis, Krebs cycle, ETC","Photosynthesis: light-dependent and light-independent reactions"] },
       { name:"Genetics & Inheritance", dotPoints:["Mendelian genetics: dominant, recessive, codominant, sex-linked","Punnett squares and probability","Chromosomal basis of inheritance","DNA mutations and their effects","Gene expression and regulation","Biotechnology: PCR, gel electrophoresis, CRISPR"] },
       { name:"Evolution & Biodiversity", dotPoints:["Natural selection and evolution","Evidence for evolution: fossil record, comparative anatomy, molecular","Hardy-Weinberg equilibrium","Speciation mechanisms","Classification and phylogeny"] },
       { name:"Immunity & Disease", dotPoints:["Innate and adaptive immune responses","Antigens and antibodies","B cells, T cells, clonal selection","Vaccination and herd immunity","Pathogens: bacteria, viruses, fungi, prions","Autoimmune diseases and immunodeficiency"] },
@@ -1427,7 +1427,7 @@ const VCAA_CURRICULUM = {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam",
     areas: [
       { name:"Nervous System & Brain", dotPoints:["Central and peripheral nervous system structure and function","Neurons: structure, action potential, synaptic transmission","Brain structure and functions: cerebral cortex, limbic system, cerebellum","Neuroplasticity and brain changes across lifespan","The role of neurotransmitters"] },
-      { name:"States of Consciousness", dotPoints:["Normal waking consciousness and altered states","Sleep: NREM stages, REM, sleep cycles","Functions of sleep ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ restoration and memory consolidation","Sleep disorders: insomnia, sleep apnoea, narcolepsy","Effects of sleep deprivation","Melatonin and circadian rhythms"] },
+      { name:"States of Consciousness", dotPoints:["Normal waking consciousness and altered states","Sleep: NREM stages, REM, sleep cycles","Functions of sleep — restoration and memory consolidation","Sleep disorders: insomnia, sleep apnoea, narcolepsy","Effects of sleep deprivation","Melatonin and circadian rhythms"] },
       { name:"Learning & Memory", dotPoints:["Classical conditioning (Pavlov): US, UR, CS, CR, extinction","Operant conditioning (Skinner): reinforcement, punishment schedules","Observational learning (Bandura): attention, retention, reproduction","Memory models: Atkinson-Shiffrin multi-store model","Long-term potentiation","Alzheimer's disease and memory disorders"] },
       { name:"Research Methods", dotPoints:["Scientific method and hypothesis testing","Experimental design: IV, DV, controlled variables","Sampling methods and ethical principles","Data analysis: mean, median, mode, standard deviation","Evaluating research: validity, reliability, generalisability"] },
     ]
@@ -1438,7 +1438,7 @@ const VCAA_CURRICULUM = {
       { name:"The Victorian Court System", dotPoints:["Hierarchy of courts: Magistrates, County, Supreme, Court of Appeal, High Court","Jurisdiction: original, appellate, summary, indictable","Role of juries and judges","Court processes: committal hearings, pleas, sentencing","Appeals process and grounds for appeal"] },
       { name:"Criminal Law", dotPoints:["Elements of a crime: actus reus and mens rea","Classification of crimes: summary vs indictable","Defences: self-defence, duress, mental impairment","Burden and standard of proof","Sentencing purposes and factors","Corrections and rehabilitation"] },
       { name:"Civil Law", dotPoints:["Distinction between civil and criminal law","Tort law: negligence, trespass, defamation","Elements of negligence: duty, breach, damage","Remedies: damages, injunctions","Dispute resolution: mediation, conciliation, arbitration","VCAT jurisdiction and processes"] },
-      { name:"Law Reform & Justice", dotPoints:["Reasons for law reform ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ changing values, new technology","Role of parliament and courts in law reform","Institutions: Law Reform Commission, Royal Commissions","Evaluating the legal system: fairness, equality, access","Australian Constitution and division of powers"] },
+      { name:"Law Reform & Justice", dotPoints:["Reasons for law reform — changing values, new technology","Role of parliament and courts in law reform","Institutions: Law Reform Commission, Royal Commissions","Evaluating the legal system: fairness, equality, access","Australian Constitution and division of powers"] },
     ]
   },
   "History: Revolutions": {
@@ -1453,7 +1453,7 @@ const VCAA_CURRICULUM = {
   "Economics": {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam",
     areas: [
-      { name:"Aggregate Demand & Supply", dotPoints:["Components of GDP: C + I + G + (XÃÂÃÂ¢ÃÂÃÂÃÂÃÂM)","Aggregate demand shifts and multiplier effect","Aggregate supply: short-run and long-run","Equilibrium output and price level","Economic growth and business cycles"] },
+      { name:"Aggregate Demand & Supply", dotPoints:["Components of GDP: C + I + G + (X−M)","Aggregate demand shifts and multiplier effect","Aggregate supply: short-run and long-run","Equilibrium output and price level","Economic growth and business cycles"] },
       { name:"Government Policy", dotPoints:["Fiscal policy: budget stance, spending, taxation","Monetary policy: RBA, cash rate, transmission mechanism","Supply-side policies: microeconomic reform","Policy objectives: growth, employment, inflation, sustainability","Trade-offs between policy objectives"] },
       { name:"Labour Market", dotPoints:["Labour demand and supply","Types of unemployment: cyclical, structural, frictional","Unemployment rate and participation rate","Wage determination: minimum wage, enterprise bargaining","Phillips curve: inflation-unemployment trade-off"] },
       { name:"International Economics", dotPoints:["Trade: comparative advantage, terms of trade","Balance of payments: current account, capital account","Exchange rates: determination and effects","Protectionism: tariffs, quotas, subsidies","Globalisation and its impacts"] },
@@ -1496,15 +1496,15 @@ const VCAA_CURRICULUM = {
     ]
   },
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ HEALTH & PE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── HEALTH & PE ──
   "Health & PE": {
-    units:"Years 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10 + VCE Units 1ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ4", assessmentType:"Practical + written assessment",
+    units:"Years 9–10 + VCE Units 1–4", assessmentType:"Practical + written assessment",
     areas: [
-      { name:"Health & Wellbeing Concepts", dotPoints:["Dimensions of health: physical, social, emotional, mental, spiritual","Health as a dynamic concept ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ biopsychosocial model","Factors influencing health: biological, sociocultural, physical environment","Health status of Australians ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ key statistics and indicators","Burden of disease: DALY, YLL, YLD"] },
+      { name:"Health & Wellbeing Concepts", dotPoints:["Dimensions of health: physical, social, emotional, mental, spiritual","Health as a dynamic concept — biopsychosocial model","Factors influencing health: biological, sociocultural, physical environment","Health status of Australians — key statistics and indicators","Burden of disease: DALY, YLL, YLD"] },
       { name:"Physical Activity & Fitness", dotPoints:["Components of fitness: aerobic capacity, muscular strength, flexibility, body composition","Principles of training: overload, progression, specificity, reversibility","Energy systems: ATP-PC, lactic acid, aerobic","Types of training: interval, circuit, resistance, flexibility, cross-training","Warm-up, cool-down and injury prevention"] },
       { name:"Movement & Skill Development", dotPoints:["Fundamental movement skills and sport-specific skills","Stages of skill acquisition: cognitive, associative, autonomous","Types of practice: massed, distributed, random, blocked","Feedback types: intrinsic, extrinsic, concurrent, terminal","Movement concepts: body awareness, space, effort, relationships"] },
       { name:"Health Promotion & Interventions", dotPoints:["Ottawa Charter for Health Promotion (5 action areas)","Health promotion approaches: medical, behavioural, socioenvironmental","Role of government, community and individual in health promotion","Evaluating health promotion programs","Australia's health system: Medicare, private health insurance, PBS"] },
-      { name:"Sport Psychology & Performance", dotPoints:["Arousal, anxiety and performance ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ inverted U hypothesis","Goal setting: SMART goals","Motivation: intrinsic and extrinsic","Mental skills: imagery, self-talk, relaxation techniques","Team dynamics: cohesion, leadership, communication"] },
+      { name:"Sport Psychology & Performance", dotPoints:["Arousal, anxiety and performance — inverted U hypothesis","Goal setting: SMART goals","Motivation: intrinsic and extrinsic","Mental skills: imagery, self-talk, relaxation techniques","Team dynamics: cohesion, leadership, communication"] },
     ]
   },
 
@@ -1512,7 +1512,7 @@ const VCAA_CURRICULUM = {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam + practical",
     areas: [
       { name:"Biomechanics & Movement", dotPoints:["Newton's Laws applied to movement","Linear and angular motion","Projectile motion in sport","Balance, stability and centre of gravity","Force production and joint mechanics","Lever systems in the body"] },
-      { name:"Energy Systems", dotPoints:["ATP structure and resynthesis","ATP-PC (phosphocreatine) system ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ intensity, duration, recovery","Lactic acid (glycolytic) system ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ lactate threshold","Aerobic (oxidative) system ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ glycolysis, Krebs cycle, ETC","Interplay of energy systems during exercise","Fatigue mechanisms and recovery"] },
+      { name:"Energy Systems", dotPoints:["ATP structure and resynthesis","ATP-PC (phosphocreatine) system — intensity, duration, recovery","Lactic acid (glycolytic) system — lactate threshold","Aerobic (oxidative) system — glycolysis, Krebs cycle, ETC","Interplay of energy systems during exercise","Fatigue mechanisms and recovery"] },
       { name:"Physiological Responses to Exercise", dotPoints:["Acute responses: heart rate, stroke volume, cardiac output, VO2","Chronic adaptations: cardiac hypertrophy, increased capillary density","Respiratory responses: tidal volume, breathing rate, VO2 max","Blood redistribution and thermoregulation","Hormonal responses: adrenaline, cortisol, insulin"] },
       { name:"Training & Performance Enhancement", dotPoints:["Principles of training: overload, specificity, progression, reversibility, individuality","Periodisation: macrocycle, mesocycle, microcycle","Testing and measurement: VO2 max, lactate testing, strength tests","Performance enhancing drugs: legal and illegal, ethical considerations","Recovery strategies: active, passive, nutrition, sleep"] },
     ]
@@ -1529,7 +1529,7 @@ const VCAA_CURRICULUM = {
   },
 
   "General Maths": {
-    units:"Units 1ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ4", assessmentType:"SAC + end-of-year exam (CAS allowed)",
+    units:"Units 1–4", assessmentType:"SAC + end-of-year exam (CAS allowed)",
     areas: [
       { name:"Algebra & Finance", dotPoints:["Linear and quadratic equations and inequalities","Arithmetic and geometric sequences","Simple and compound interest","Loans, annuities and investment calculations","Depreciation and appreciation"] },
       { name:"Data & Statistics", dotPoints:["Types of data: categorical, numerical, discrete, continuous","Displaying data: histograms, boxplots, dot plots","Measures of centre: mean, median, mode","Measures of spread: range, IQR, standard deviation","Comparing distributions and correlation"] },
@@ -1539,7 +1539,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Foundation Maths": {
-    units:"Units 1ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ4", assessmentType:"SAC (no end-of-year exam)",
+    units:"Units 1–4", assessmentType:"SAC (no end-of-year exam)",
     areas: [
       { name:"Number & Algebra", dotPoints:["Operations with whole numbers, fractions, decimals and percentages","Ratio and proportion","Basic algebra: substitution and solving simple equations","Rates and unit conversions","Financial calculations: wages, budgeting, GST, discounts"] },
       { name:"Shape & Measurement", dotPoints:["2D and 3D shapes: area, perimeter, volume, surface area","Reading and interpreting maps and scales","Time: reading timetables, calculating duration","Basic trigonometry for right-angled triangles","Estimation and approximation"] },
@@ -1554,7 +1554,7 @@ const VCAA_CURRICULUM = {
       { name:"Biodiversity & Ecosystems", dotPoints:["Ecosystem structure: producers, consumers, decomposers","Food webs and energy flow","Biodiversity: genetic, species, ecosystem diversity","Threats to biodiversity: habitat loss, invasive species, climate change","Conservation strategies: in-situ and ex-situ"] },
       { name:"Climate & Atmosphere", dotPoints:["Greenhouse effect and enhanced greenhouse effect","Carbon cycle: sources and sinks","Climate change evidence: temperature records, sea level, ice cores","Climate modelling and predictions","Mitigation and adaptation strategies"] },
       { name:"Water Systems", dotPoints:["Water cycle: evaporation, transpiration, precipitation, runoff","Water quality parameters: pH, turbidity, dissolved oxygen, nutrients","Eutrophication and algal blooms","Water scarcity and management strategies","Murray-Darling Basin as a case study"] },
-      { name:"Human Impact & Sustainability", dotPoints:["Ecological footprint and carrying capacity","Pollution: air, water, soil ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ sources and impacts","Waste management: reduce, reuse, recycle","Sustainable development principles","Environmental impact assessment"] },
+      { name:"Human Impact & Sustainability", dotPoints:["Ecological footprint and carrying capacity","Pollution: air, water, soil — sources and impacts","Waste management: reduce, reuse, recycle","Sustainable development principles","Environmental impact assessment"] },
     ]
   },
 
@@ -1631,7 +1631,7 @@ const VCAA_CURRICULUM = {
   "Geography": {
     units:"Units 3 & 4", assessmentType:"SAC + fieldwork + end-of-year exam",
     areas: [
-      { name:"Changing the Land", dotPoints:["Land use change: agriculture, urbanisation, deforestation","Environmental impacts: erosion, soil degradation, loss of biodiversity","Natural hazards: bushfire, flood, drought ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ causes and impacts","Land management strategies","Case studies: Australian and global examples"] },
+      { name:"Changing the Land", dotPoints:["Land use change: agriculture, urbanisation, deforestation","Environmental impacts: erosion, soil degradation, loss of biodiversity","Natural hazards: bushfire, flood, drought — causes and impacts","Land management strategies","Case studies: Australian and global examples"] },
       { name:"Human Wellbeing", dotPoints:["Measures of wellbeing: GDP, HDI, GNI, life expectancy, literacy","Spatial variation in wellbeing within and between countries","Factors contributing to wellbeing: education, health, political freedom","Food security: causes and consequences of food insecurity","Strategies to improve wellbeing"] },
       { name:"Globalisation", dotPoints:["Definition and indicators of globalisation","Transnational corporations: benefits and drawbacks","Global supply chains and outsourcing","Cultural globalisation: cultural homogenisation vs localisation","Responses to globalisation"] },
       { name:"Geographical Inquiry & Skills", dotPoints:["Geographic information systems (GIS) and mapping","Fieldwork methods: observation, measurement, interview, survey","Data analysis and representation: graphs, tables, maps","Geographic reasoning: spatial patterns, flows, hierarchies","Writing geographical reports and responses"] },
@@ -1651,16 +1651,16 @@ const VCAA_CURRICULUM = {
   "Australian History": {
     units:"Units 3 & 4", assessmentType:"SAC + end-of-year exam",
     areas: [
-      { name:"Colonial Australia", dotPoints:["First Nations peoples before colonisation ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ culture, society, governance","British colonisation: convict settlement, pastoralism, gold rush","Impact of colonisation: disease, dispossession, violence, missions","Development of democracy: responsible government, federation","Federation 1901: reasons, process, exclusions (Aboriginal peoples, women)"] },
+      { name:"Colonial Australia", dotPoints:["First Nations peoples before colonisation — culture, society, governance","British colonisation: convict settlement, pastoralism, gold rush","Impact of colonisation: disease, dispossession, violence, missions","Development of democracy: responsible government, federation","Federation 1901: reasons, process, exclusions (Aboriginal peoples, women)"] },
       { name:"Nation Building", dotPoints:["White Australia Policy: origins, impact, dismantling","Anzac myth and its significance to national identity","Women's suffrage and changing gender roles","Post-WWII immigration: displaced persons, assisted passage","Multicultural Australia: policy and its critics"] },
       { name:"Rights & Reconciliation", dotPoints:["Aboriginal and Torres Strait Islander peoples' rights movements","1967 referendum: context, campaign, outcome","Mabo decision (1992) and native title","Stolen Generations: Bringing Them Home report, apology","Closing the gap: current indicators and challenges"] },
       { name:"Contemporary Australia", dotPoints:["Australia in the Asia-Pacific region","Economic reforms: floating the dollar, tariff reduction","Environment and sustainability in Australian politics","Changing demographics and the ageing population","Australia's role in peacekeeping and global citizenship"] },
     ]
   },
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ YEAR 9 & 10 SUBJECTS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── YEAR 9 & 10 SUBJECTS ──
   "Mathematics": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"School-based assessments + exams",
+    units:"Year 9–10", assessmentType:"School-based assessments + exams",
     areas: [
       { name:"Number & Algebra", dotPoints:["Real numbers: surds, scientific notation, significant figures","Algebra: expanding, factorising, simplifying algebraic fractions","Linear equations and simultaneous equations","Quadratic equations: factorising, quadratic formula, completing the square","Index laws and exponential expressions"] },
       { name:"Measurement & Geometry", dotPoints:["Pythagoras' theorem in 2D and 3D","Trigonometry: sin, cos, tan, sine rule, cosine rule (Year 10)","Perimeter, area, surface area and volume of composite shapes","Circle theorems and geometry proofs","Coordinate geometry: midpoint, gradient, distance, equation of a line"] },
@@ -1670,17 +1670,17 @@ const VCAA_CURRICULUM = {
   },
 
   "Science": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"School-based assessments + practical investigations",
+    units:"Year 9–10", assessmentType:"School-based assessments + practical investigations",
     areas: [
       { name:"Biology", dotPoints:["Cell structure and function: plant vs animal cells","Cell division: mitosis and meiosis","DNA and genetics: genes, alleles, dominant/recessive traits","Evolution: natural selection, variation, adaptation, evidence","Body systems: digestive, respiratory, circulatory, nervous"] },
       { name:"Chemistry", dotPoints:["Atomic structure: protons, neutrons, electrons, electron configuration","Periodic table: groups, periods, properties","Chemical bonding: ionic, covalent, metallic","Chemical reactions: types, word and symbol equations, balancing","Acids and bases: pH, indicators, neutralisation"] },
-      { name:"Physics", dotPoints:["Motion: distance, displacement, speed, velocity, acceleration","Forces: Newton's Laws, friction, gravity, normal force","Energy: kinetic, potential, conservation, work, power","Waves: sound and light ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ properties, reflection, refraction","Electricity: circuits, current, voltage, resistance, Ohm's Law"] },
+      { name:"Physics", dotPoints:["Motion: distance, displacement, speed, velocity, acceleration","Forces: Newton's Laws, friction, gravity, normal force","Energy: kinetic, potential, conservation, work, power","Waves: sound and light — properties, reflection, refraction","Electricity: circuits, current, voltage, resistance, Ohm's Law"] },
       { name:"Earth & Space", dotPoints:["Plate tectonics: earthquakes, volcanoes, mountain building","Earth's resources: minerals, fossil fuels, renewable energy","The universe: stars, galaxies, Big Bang theory","Solar system: planets, moons, asteroids, comets","Human impact on Earth: climate change, sustainability"] },
     ]
   },
 
   "English (Year 9-10)": {
-    units:"Years 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"School-based assessments",
+    units:"Years 9–10", assessmentType:"School-based assessments",
     areas: [
       { name:"Reading & Responding to Texts", dotPoints:["Analyse how authors construct meaning using language and literary features","Identify and discuss the ideas, themes and values in texts","Develop and justify a written interpretation of a text","Use metalanguage: symbolism, imagery, tone, structure, characterisation","Compare and contrast texts in a written response"] },
       { name:"Creating & Presenting", dotPoints:["Create written texts for a specific audience and purpose","Adapt language and form to context","Demonstrate understanding of persuasive and imaginative writing techniques","Use rhetorical devices effectively","Craft arguments supported by evidence"] },
@@ -1690,7 +1690,7 @@ const VCAA_CURRICULUM = {
   },
 
   "History (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"School-based assessments + essays",
+    units:"Year 9–10", assessmentType:"School-based assessments + essays",
     areas: [
       { name:"The Making of the Modern World (Year 9)", dotPoints:["Industrial Revolution: causes, changes to society and work","Imperialism and colonialism: motivations, impacts on colonised peoples","World War I: causes (MAIN), key events, impact on Australia","Russian Revolution: causes and short-term consequences","Social changes: urbanisation, migration, changing roles of women"] },
       { name:"World War II & Rights (Year 10)", dotPoints:["Causes of WWII: rise of Hitler, appeasement, invasion of Poland","The Holocaust: causes, implementation, legacy","Australia's role in WWII: Kokoda, home front","Cold War: origins, key events, impact on Australia","Rights and freedoms: civil rights movement, Indigenous rights, women's liberation"] },
@@ -1700,9 +1700,9 @@ const VCAA_CURRICULUM = {
   },
 
   "Geography (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"School-based assessments + fieldwork",
+    units:"Year 9–10", assessmentType:"School-based assessments + fieldwork",
     areas: [
-      { name:"Biomes & Food Security (Year 9)", dotPoints:["World biomes: rainforest, desert, grassland, tundra ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ characteristics","Factors affecting food production: climate, soil, water, technology","Food security vs food insecurity ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ global distribution","Impacts of changing environments on food production","Strategies to improve food security globally"] },
+      { name:"Biomes & Food Security (Year 9)", dotPoints:["World biomes: rainforest, desert, grassland, tundra — characteristics","Factors affecting food production: climate, soil, water, technology","Food security vs food insecurity — global distribution","Impacts of changing environments on food production","Strategies to improve food security globally"] },
       { name:"Geographies of Interconnection (Year 10)", dotPoints:["Globalisation and its effect on places and cultures","Transnational corporations and global supply chains","Migration: push and pull factors, impacts on source and destination countries","Tourism: benefits and negative impacts on environments and cultures","Digital technology and interconnection"] },
       { name:"Geographic Skills & Inquiry", dotPoints:["Interpreting and creating maps: topographic, thematic, choropleth","GIS and satellite imagery","Fieldwork methods: data collection, observation, interviews","Representing data: graphs, tables, maps, diagrams","Geographic reasoning and report writing"] },
       { name:"Environmental Change & Management", dotPoints:["Human impacts on environments: urbanisation, agriculture, mining","Climate change: evidence, causes, impacts on different regions","Natural hazards: predicting, preparing and responding","Conservation and sustainability strategies","Case studies: local and global environmental management"] },
@@ -1711,7 +1711,7 @@ const VCAA_CURRICULUM = {
 
 
   "Maths: Analysis & Approaches SL": {
-    units:"IB SL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
+    units:"IB SL — 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
     areas: [
       { name:"Number & Algebra", dotPoints:["Sequences and series: arithmetic, geometric","Binomial theorem","Laws of logarithms and exponentials","Proof: direct, contradiction","Financial mathematics: compound interest, depreciation"] },
       { name:"Functions", dotPoints:["Function notation, domain and range","Transformations: translations, reflections, dilations","Inverse functions and composite functions","Rational functions and asymptotes","Exponential and logarithmic functions"] },
@@ -1721,7 +1721,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Digital Technologies": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"School-based project assessments",
+    units:"Year 9–10", assessmentType:"School-based project assessments",
     areas: [
       { name:"Data & Information", dotPoints:["Data types: integer, float, string, boolean, lists","Data representation: binary, hexadecimal, ASCII","Data validation and verification techniques","Databases: tables, queries, relationships","Big data: collection, storage, ethics and privacy"] },
       { name:"Algorithms & Programming", dotPoints:["Algorithm design: pseudocode, flowcharts","Control structures: sequence, selection (if/elif/else), iteration (for/while loops)","Functions and parameters","Debugging strategies: syntax, logic and runtime errors","Python or another language: variables, input/output, string operations"] },
@@ -1735,15 +1735,15 @@ const VCAA_CURRICULUM = {
     areas: [
       { name:"Economics Basics", dotPoints:["Scarcity, choice and opportunity cost","Supply and demand: factors affecting each","Market equilibrium and price determination","Types of economies: traditional, command, market, mixed","Economic indicators: GDP, unemployment, inflation, interest rates"] },
       { name:"Business Fundamentals", dotPoints:["Types of business ownership: sole trader, partnership, company","Business functions: marketing, operations, finance, HR","Consumer rights and responsibilities","Australian Consumer Law","Business ethics and corporate social responsibility"] },
-      { name:"Personal Finance", dotPoints:["Income: wages, salary, commission, government payments","Budgeting: income vs expenses, saving strategies","Banking: types of accounts, interest rates","Credit: credit cards, loans, mortgages ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ advantages and risks","Superannuation and long-term financial planning"] },
+      { name:"Personal Finance", dotPoints:["Income: wages, salary, commission, government payments","Budgeting: income vs expenses, saving strategies","Banking: types of accounts, interest rates","Credit: credit cards, loans, mortgages — advantages and risks","Superannuation and long-term financial planning"] },
       { name:"Global Economy", dotPoints:["Australia's trading partners and major exports/imports","Benefits and disadvantages of international trade","Exchange rates: how they are determined and their effect on trade","Trade agreements and globalisation","Australia's economic relationship with Asia"] },
     ]
   },
 
   "Biology HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
     areas: [
-      { name:"Cell Biology", dotPoints:["Cell theory, ultrastructure of cells (prokaryotic and eukaryotic)","Membrane structure ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ fluid mosaic model","Transport: diffusion, osmosis, active transport, endocytosis","Cell division: mitosis (PMAT), cytokinesis","Stem cells: types, therapeutic uses, ethical issues"] },
+      { name:"Cell Biology", dotPoints:["Cell theory, ultrastructure of cells (prokaryotic and eukaryotic)","Membrane structure — fluid mosaic model","Transport: diffusion, osmosis, active transport, endocytosis","Cell division: mitosis (PMAT), cytokinesis","Stem cells: types, therapeutic uses, ethical issues"] },
       { name:"Molecular Biology", dotPoints:["DNA structure: double helix, nucleotides, base pairing (Chargaff's rules)","DNA replication: semi-conservative, enzymes involved","Transcription and translation (protein synthesis)","Gene expression: regulation, operons (HL)","Biotechnology: PCR, gel electrophoresis, genetic modification"] },
       { name:"Genetics & Evolution", dotPoints:["Mendelian genetics: monohybrid and dihybrid crosses","Chromosomal basis of inheritance: sex-linkage, linkage groups","Mutations: types, effects on protein structure","Evolution: natural selection, speciation, Hardy-Weinberg principle","Cladistics and phylogenetic trees"] },
       { name:"Ecology & Conservation", dotPoints:["Ecosystems: biotic and abiotic factors, food webs, energy flow","Nutrient cycles: carbon, nitrogen","Population dynamics: carrying capacity, logistic growth","Conservation biology: biodiversity hotspots, threats, strategies","Climate change: evidence, impact on ecosystems"] },
@@ -1751,27 +1751,27 @@ const VCAA_CURRICULUM = {
   },
 
   "Chemistry HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
     areas: [
       { name:"Atomic Structure & Bonding", dotPoints:["Atomic structure: protons, neutrons, electrons, isotopes","Electronic configuration and periodic trends","Chemical bonding: ionic, covalent, metallic, hydrogen bonding","VSEPR theory and molecular geometry","Intermolecular forces and their effect on physical properties"] },
-      { name:"Energetics & Kinetics", dotPoints:["Enthalpy changes: standard enthalpies, Hess's Law, Born-Haber cycles (HL)","Entropy and Gibbs free energy (ÃÂÃÂÃÂÃÂG = ÃÂÃÂÃÂÃÂH ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ TÃÂÃÂÃÂÃÂS)","Reaction rates: collision theory, activation energy, Arrhenius equation (HL)","Catalysts: homogeneous and heterogeneous","Maxwell-Boltzmann distribution"] },
-      { name:"Equilibrium & Acid-Base", dotPoints:["Equilibrium constant: Kc, Kp expressions and calculations","Le Chatelier's Principle with industrial applications","BrÃÂÃÂÃÂÃÂ¸nsted-Lowry and Lewis acid-base theories","pH calculations: strong/weak acids and bases, buffers","Titration curves and indicators"] },
+      { name:"Energetics & Kinetics", dotPoints:["Enthalpy changes: standard enthalpies, Hess's Law, Born-Haber cycles (HL)","Entropy and Gibbs free energy (ΔG = ΔH − TΔS)","Reaction rates: collision theory, activation energy, Arrhenius equation (HL)","Catalysts: homogeneous and heterogeneous","Maxwell-Boltzmann distribution"] },
+      { name:"Equilibrium & Acid-Base", dotPoints:["Equilibrium constant: Kc, Kp expressions and calculations","Le Chatelier's Principle with industrial applications","Brønsted-Lowry and Lewis acid-base theories","pH calculations: strong/weak acids and bases, buffers","Titration curves and indicators"] },
       { name:"Organic Chemistry & Biochemistry", dotPoints:["Functional groups: alcohols, aldehydes, ketones, carboxylic acids, esters, amines","Reaction mechanisms: SN1, SN2, electrophilic addition (HL)","Stereoisomerism: structural, geometric, optical isomers (HL)","Biochemistry: proteins, enzymes, carbohydrates, lipids, DNA (HL option)","Spectroscopy: IR, mass spec, NMR interpretation"] },
     ]
   },
 
   "Physics HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
     areas: [
       { name:"Mechanics & Waves", dotPoints:["Kinematics: equations of motion, projectile motion","Newton's Laws, momentum, impulse, conservation","Work, energy, power, conservation of energy","Simple harmonic motion: springs and pendulums (HL)","Wave properties: superposition, standing waves, Doppler effect"] },
       { name:"Electricity & Magnetism", dotPoints:["Electric fields and potential, Coulomb's Law","DC circuits: Kirchhoff's Laws, internal resistance","Magnetic fields: force on moving charges, current-carrying conductors","Electromagnetic induction: Faraday's and Lenz's Laws","Capacitance and RC circuits (HL)"] },
-      { name:"Thermal & Modern Physics", dotPoints:["Thermal concepts: temperature, heat, internal energy","Ideal gas law: PV = nRT, kinetic model of gases","Radioactive decay: alpha, beta, gamma, half-life calculations","Nuclear reactions: fission, fusion, mass defect, E = mcÃÂÃÂÃÂÃÂ²","Photoelectric effect, wave-particle duality, de Broglie wavelength"] },
+      { name:"Thermal & Modern Physics", dotPoints:["Thermal concepts: temperature, heat, internal energy","Ideal gas law: PV = nRT, kinetic model of gases","Radioactive decay: alpha, beta, gamma, half-life calculations","Nuclear reactions: fission, fusion, mass defect, E = mc²","Photoelectric effect, wave-particle duality, de Broglie wavelength"] },
       { name:"Fields & Astrophysics (HL)", dotPoints:["Gravitational, electric and magnetic field comparisons","Orbital mechanics: escape velocity, gravitational potential energy","Structure of the universe: stars, galaxies, cosmic scale","Stellar evolution: H-R diagram, main sequence, red giants, white dwarfs","Cosmology: Hubble's Law, Big Bang, cosmic microwave background"] },
     ]
   },
 
   "Mathematics: Analysis & Approaches HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
     areas: [
       { name:"Algebra & Number", dotPoints:["Proof: mathematical induction, contradiction, counterexample","Complex numbers: polar form, De Moivre's theorem, roots","Binomial theorem","Partial fractions","Systems of linear equations: row reduction"] },
       { name:"Functions & Calculus", dotPoints:["Function types: rational, exponential, logarithmic, trigonometric","Limits and continuity","Differentiation: chain, product, quotient rules; implicit differentiation","Integration: by parts, substitution, partial fractions","Applications: optimisation, kinematics, differential equations"] },
@@ -1781,17 +1781,17 @@ const VCAA_CURRICULUM = {
   },
 
   "History HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
     areas: [
-      { name:"Paper 1 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Prescribed Subjects", dotPoints:["Source analysis: provenance, origin, purpose, limitations","Cross-referencing sources","Historiography: how historians interpret evidence differently","Writing evidence-based historical arguments","Common prescribed subjects: Rights (civil rights, apartheid), Conflict (WWI, WWII)"] },
-      { name:"Paper 2 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ World History Topics", dotPoints:["Causes, practices and effects of war","Democratic states: challenges and responses","Origins and development of authoritarian and single-party states","Independence movements in Asia and Africa","Cold War: superpower tensions and proxy conflicts"] },
-      { name:"Paper 3 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Regional Option (HL)", dotPoints:["In-depth study of a specific region (e.g. Europe, Asia-Pacific, Americas)","Comparative historical analysis across multiple countries","Long-term and short-term causes of historical events","Impact on different social groups within the region","Evaluating historical significance and legacy"] },
+      { name:"Paper 1 — Prescribed Subjects", dotPoints:["Source analysis: provenance, origin, purpose, limitations","Cross-referencing sources","Historiography: how historians interpret evidence differently","Writing evidence-based historical arguments","Common prescribed subjects: Rights (civil rights, apartheid), Conflict (WWI, WWII)"] },
+      { name:"Paper 2 — World History Topics", dotPoints:["Causes, practices and effects of war","Democratic states: challenges and responses","Origins and development of authoritarian and single-party states","Independence movements in Asia and Africa","Cold War: superpower tensions and proxy conflicts"] },
+      { name:"Paper 3 — Regional Option (HL)", dotPoints:["In-depth study of a specific region (e.g. Europe, Asia-Pacific, Americas)","Comparative historical analysis across multiple countries","Long-term and short-term causes of historical events","Impact on different social groups within the region","Evaluating historical significance and legacy"] },
       { name:"Internal Assessment (Historical Investigation)", dotPoints:["Choosing a historical question or problem","Section 1: Identification and evaluation of sources","Section 2: Investigation using primary and secondary sources","Section 3: Reflection on approaches to history (historiography)","Referencing, citation and academic integrity"] },
     ]
   },
 
   "Economics HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
     areas: [
       { name:"Microeconomics", dotPoints:["Supply and demand: shifts, price mechanism, elasticity","Market structures: perfect competition, monopoly, oligopoly, monopolistic competition","Market failure: externalities, public goods, information asymmetry","Government intervention: taxes, subsidies, price controls, regulations","Behavioural economics: nudge theory, bounded rationality (HL)"] },
       { name:"Macroeconomics", dotPoints:["National income accounting: GDP, GNI, HDI","AD/AS model: equilibrium, shifts and multiplier","Fiscal policy: government spending, taxation, budget stance","Monetary policy: central bank, interest rates, money supply","Economic objectives: growth, employment, inflation, balance of payments"] },
@@ -1801,22 +1801,22 @@ const VCAA_CURRICULUM = {
   },
 
   "Psychology HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA (20%) + Paper 1, 2, 3 exams (80%)",
     areas: [
       { name:"Approaches to Understanding Behaviour", dotPoints:["Biological approach: genetics, brain, hormones, neurotransmitters","Cognitive approach: schema theory, memory models, cognitive bias","Sociocultural approach: social identity, enculturation, acculturation","Research methods: experiments, case studies, interviews, observations","Ethical considerations in psychological research"] },
       { name:"Cognitive Psychology", dotPoints:["Memory: encoding, storage, retrieval, forgetting","Schema theory and cognitive appraisal","Thinking and decision-making: heuristics and biases (Kahneman)","Emotion and cognition: flashbulb memory, mood congruence","Cognitive development: Piaget's stages, Vygotsky's ZPD"] },
       { name:"Sociocultural Psychology", dotPoints:["Social influence: conformity (Asch), obedience (Milgram)","Social identity theory (Tajfel and Turner)","Culture and behaviour: collectivism vs individualism","Prejudice and discrimination: causes and reduction strategies","Prosocial behaviour: bystander effect, altruism"] },
-      { name:"Abnormal Psychology (HL option)", dotPoints:["Defining abnormality: statistical, social, functional criteria","Classification systems: DSM-5, ICD-11","Disorders: depression, anxiety, OCD, PTSD ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ symptoms and diagnosis","Biological, psychological and sociocultural explanations","Treatment approaches: drug therapy, CBT, mindfulness, community care"] },
+      { name:"Abnormal Psychology (HL option)", dotPoints:["Defining abnormality: statistical, social, functional criteria","Classification systems: DSM-5, ICD-11","Disorders: depression, anxiety, OCD, PTSD — symptoms and diagnosis","Biological, psychological and sociocultural explanations","Treatment approaches: drug therapy, CBT, mindfulness, community care"] },
     ]
   },
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE LANGUAGES ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE LANGUAGES ──
   "Japanese SL": {
     units:"VCE Units 3 & 4", assessmentType:"SAC + oral + end-of-year exam",
     areas: [
       { name:"Listening & Responding", dotPoints:["Understand spoken Japanese in various contexts: conversations, interviews, broadcasts","Identify main ideas, specific details and speaker attitudes","Respond to questions in English or Japanese","Understand formal and informal registers","Cope with natural speech rate and different accents"] },
       { name:"Reading & Responding", dotPoints:["Read and understand a range of written texts: articles, letters, advertisements, narratives","Identify main ideas, specific information and implied meaning","Understand kanji in context (approximately 200 characters for SL)","Analyse text structure and language choices","Respond to texts in Japanese"] },
-      { name:"Speaking ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Oral Assessment", dotPoints:["Participate in a conversation on a prepared topic","Discuss personal experiences, opinions and ideas","Use appropriate language for formal and informal situations","Demonstrate range of vocabulary and grammatical structures","Respond to unprepared questions during oral examination"] },
-      { name:"Writing & Grammar", dotPoints:["Write in hiragana, katakana and approximately 200 kanji","Grammatical structures: ÃÂÃÂ£ÃÂÃÂÃÂÃÂ¦-form, ÃÂÃÂ£ÃÂÃÂÃÂÃÂ-form, potential, passive, causative, conditional","Particles: ÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ«ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ§ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¾ÃÂÃÂ£ÃÂÃÂÃÂÃÂ§","Sentence endings: ÃÂÃÂ£ÃÂÃÂÃÂÃÂ§ÃÂÃÂ£ÃÂÃÂÃÂÃÂ/ÃÂÃÂ£ÃÂÃÂÃÂÃÂ¾ÃÂÃÂ£ÃÂÃÂÃÂÃÂ and plain form","Writing for different purposes: letters, emails, essays, narratives"] },
+      { name:"Speaking — Oral Assessment", dotPoints:["Participate in a conversation on a prepared topic","Discuss personal experiences, opinions and ideas","Use appropriate language for formal and informal situations","Demonstrate range of vocabulary and grammatical structures","Respond to unprepared questions during oral examination"] },
+      { name:"Writing & Grammar", dotPoints:["Write in hiragana, katakana and approximately 200 kanji","Grammatical structures: て-form, た-form, potential, passive, causative, conditional","Particles: は、が、を、に、で、と、から、まで","Sentence endings: です/ます and plain form","Writing for different purposes: letters, emails, essays, narratives"] },
     ]
   },
 
@@ -1826,7 +1826,7 @@ const VCAA_CURRICULUM = {
       { name:"Listening & Reading Comprehension", dotPoints:["Understand spoken and written French in diverse contexts","Identify gist, main ideas, specific details and implied meaning","Analyse a range of text types: news, interviews, narratives, advertisements","Understand different registers: formal, informal, colloquial","Deal with unfamiliar vocabulary using context clues"] },
       { name:"Speaking", dotPoints:["Conduct a prepared conversation on a cultural topic","Express and justify opinions, agree and disagree","Use appropriate register and social conventions","Demonstrate fluency, pronunciation and intonation","Respond spontaneously to questions from examiner"] },
       { name:"Writing", dotPoints:["Write for a range of purposes and audiences: letter, article, report, narrative","Use complex grammatical structures accurately","Demonstrate range of vocabulary beyond basic level","Structure writing coherently with appropriate discourse markers","Write approximately 200-250 words in examination conditions"] },
-      { name:"Grammar Essentials", dotPoints:["Verb tenses: prÃÂÃÂÃÂÃÂ©sent, passÃÂÃÂÃÂÃÂ© composÃÂÃÂÃÂÃÂ©, imparfait, futur, conditionnel, subjonctif","Pronoun use: direct, indirect, reflexive, relative pronouns","Adjective agreement and placement","Negation structures: ne...pas, ne...jamais, ne...rien","Subjunctive mood for doubt, emotion, necessity"] },
+      { name:"Grammar Essentials", dotPoints:["Verb tenses: présent, passé composé, imparfait, futur, conditionnel, subjonctif","Pronoun use: direct, indirect, reflexive, relative pronouns","Adjective agreement and placement","Negation structures: ne...pas, ne...jamais, ne...rien","Subjunctive mood for doubt, emotion, necessity"] },
     ]
   },
 
@@ -1836,7 +1836,7 @@ const VCAA_CURRICULUM = {
       { name:"Listening & Viewing", dotPoints:["Understand spoken Mandarin in formal and informal contexts","Identify main ideas, specific details and attitudes of speakers","Understand different text types: conversations, interviews, news broadcasts","Deal with natural speech rate and tonal patterns","Respond to questions in Chinese or English"] },
       { name:"Reading", dotPoints:["Read simplified Chinese characters (approximately 600 for SL)","Understand a range of written texts: articles, advertisements, narratives, messages","Identify main ideas, specific information and implied meaning","Analyse how language choices shape meaning","Use context to deal with unfamiliar vocabulary"] },
       { name:"Speaking", dotPoints:["Conduct a prepared conversation demonstrating cultural understanding","Express opinions, describe experiences and explain ideas in Mandarin","Use tones accurately and demonstrate clear pronunciation","Demonstrate range of vocabulary and grammatical structures","Respond to unprepared questions in oral examination"] },
-      { name:"Writing", dotPoints:["Write in simplified Chinese characters accurately","Grammatical structures: aspect markers (ÃÂÃÂ¤ÃÂÃÂºÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¿ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ), resultative complements, topic-comment structure","Sentence patterns: ÃÂÃÂ¦ÃÂÃÂÃÂÃÂ-sentences, ÃÂÃÂ¨ÃÂÃÂ¢ÃÂÃÂ«-passive, ÃÂÃÂ¦ÃÂÃÂÃÂÃÂ¯...ÃÂÃÂ§ÃÂÃÂÃÂÃÂ construction","Write for different purposes: letters, emails, narratives, explanations","Demonstrate understanding of Chinese cultural conventions in writing"] },
+      { name:"Writing", dotPoints:["Write in simplified Chinese characters accurately","Grammatical structures: aspect markers (了、过、着), resultative complements, topic-comment structure","Sentence patterns: 把-sentences, 被-passive, 是...的 construction","Write for different purposes: letters, emails, narratives, explanations","Demonstrate understanding of Chinese cultural conventions in writing"] },
     ]
   },
 
@@ -1864,13 +1864,13 @@ const VCAA_CURRICULUM = {
     units:"VCE Units 3 & 4", assessmentType:"SAC + end-of-year exam (no oral)",
     areas: [
       { name:"Translation & Comprehension", dotPoints:["Translate unseen Latin passages into clear English","Identify and translate set Latin texts (prose and verse)","Use knowledge of grammar and syntax to aid translation","Understand cultural and historical context","Comprehension questions on Latin passages"] },
-      { name:"Grammar & Syntax", dotPoints:["Noun declensions 1ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ5: all cases and their uses","Verb conjugations: all tenses active and passive (indicative and subjunctive)","Participles: present, perfect, future active and passive","Indirect statement with accusative + infinitive","Subordinate clauses: purpose, result, indirect command, conditional"] },
+      { name:"Grammar & Syntax", dotPoints:["Noun declensions 1–5: all cases and their uses","Verb conjugations: all tenses active and passive (indicative and subjunctive)","Participles: present, perfect, future active and passive","Indirect statement with accusative + infinitive","Subordinate clauses: purpose, result, indirect command, conditional"] },
       { name:"Set Texts", dotPoints:["Detailed study of prescribed Latin authors (e.g. Virgil, Cicero, Livy, Ovid)","Literary analysis of style, metre and language","Understanding historical and cultural context of Roman literature","Comparison of themes across texts","Writing analytical responses about set texts"] },
       { name:"Roman Civilisation & Culture", dotPoints:["Roman social structure: patricians, plebeians, slaves, freedmen","Roman religion, mythology and its influence on literature","Political structures: Republic and Empire","Roman military: organisation, tactics, significance","Reception of classical culture in the modern world"] },
     ]
   },
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE ARTS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE ARTS ──
   "Studio Arts": {
     units:"VCE Units 3 & 4", assessmentType:"SAC + studio folio + end-of-year exam",
     areas: [
@@ -1881,7 +1881,7 @@ const VCAA_CURRICULUM = {
     ]
   },
 
-  "Art ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Making & Exhibiting": {
+  "Art — Making & Exhibiting": {
     units:"VCE Units 3 & 4", assessmentType:"SAC + folio + end-of-year exam",
     areas: [
       { name:"Making Art", dotPoints:["Developing and refining artistic ideas in response to a brief or concept","Using materials, techniques and processes with skill and intention","Maintaining a folio documenting artistic decision-making","Creating finished artworks that demonstrate technical and conceptual development","Working across different scales and formats"] },
@@ -1914,7 +1914,7 @@ const VCAA_CURRICULUM = {
   "Food Studies": {
     units:"VCE Units 3 & 4", assessmentType:"SAC + practical folio + end-of-year exam",
     areas: [
-      { name:"Food Science & Nutrition", dotPoints:["Macronutrients: carbohydrates, proteins, fats ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ structure, function, food sources","Micronutrients: vitamins and minerals ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ roles and deficiency diseases","Australian Dietary Guidelines and Healthy Eating Plate","Digestion and absorption of nutrients","Food as a source of energy: kilojoules and metabolic rate"] },
+      { name:"Food Science & Nutrition", dotPoints:["Macronutrients: carbohydrates, proteins, fats — structure, function, food sources","Micronutrients: vitamins and minerals — roles and deficiency diseases","Australian Dietary Guidelines and Healthy Eating Plate","Digestion and absorption of nutrients","Food as a source of energy: kilojoules and metabolic rate"] },
       { name:"Food Safety & Hygiene", dotPoints:["Food safety legislation in Australia: Food Standards Code","Food hazards: biological, chemical, physical","Temperature danger zone and temperature control","HACCP principles: Hazard Analysis Critical Control Points","Food poisoning: causes, symptoms, prevention"] },
       { name:"Food Technology & Production", dotPoints:["Food processing and preservation methods: heat treatment, freezing, drying, fermentation","The role of additives: preservatives, antioxidants, emulsifiers, colours","Food packaging: functions, types, environmental impact","Food labelling requirements in Australia","Technology in food production: from farm to fork"] },
       { name:"Food Equity & Sustainability", dotPoints:["Food security: access, availability, utilisation, stability","Global food system: production, distribution, consumption","Environmental impact of food choices: carbon footprint, water use","Sustainable food practices: local, seasonal, plant-based","Food equity: socioeconomic factors affecting food access in Australia"] },
@@ -1931,12 +1931,12 @@ const VCAA_CURRICULUM = {
     ]
   },
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE HUMANITIES ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE HUMANITIES ──
   "Philosophy": {
     units:"VCE Units 3 & 4", assessmentType:"SAC + end-of-year exam",
     areas: [
-      { name:"Epistemology ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Knowledge & Belief", dotPoints:["What is knowledge? Justified True Belief (JTB)","Gettier problems and the challenge to JTB","Sources of knowledge: reason (rationalism) vs experience (empiricism)","Scepticism: Descartes' Meditations, brain-in-a-vat","A priori vs a posteriori knowledge"] },
-      { name:"Metaphysics ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Mind & Reality", dotPoints:["The mind-body problem: dualism (Descartes), physicalism, functionalism","Personal identity: psychological continuity, physical continuity","Free will and determinism: compatibilism, hard determinism, libertarianism","The nature of time: A-theory vs B-theory","Philosophy of religion: arguments for and against God's existence"] },
+      { name:"Epistemology — Knowledge & Belief", dotPoints:["What is knowledge? Justified True Belief (JTB)","Gettier problems and the challenge to JTB","Sources of knowledge: reason (rationalism) vs experience (empiricism)","Scepticism: Descartes' Meditations, brain-in-a-vat","A priori vs a posteriori knowledge"] },
+      { name:"Metaphysics — Mind & Reality", dotPoints:["The mind-body problem: dualism (Descartes), physicalism, functionalism","Personal identity: psychological continuity, physical continuity","Free will and determinism: compatibilism, hard determinism, libertarianism","The nature of time: A-theory vs B-theory","Philosophy of religion: arguments for and against God's existence"] },
       { name:"Ethics & Moral Philosophy", dotPoints:["Consequentialism: utilitarianism (Bentham, Mill)","Deontological ethics: Kant's categorical imperative","Virtue ethics: Aristotle's concept of eudaimonia","Applied ethics: bioethics, environmental ethics, animal ethics","Meta-ethics: moral realism, anti-realism, relativism"] },
       { name:"Logic & Critical Thinking", dotPoints:["Deductive arguments: validity and soundness","Inductive arguments: strength and cogency","Formal logic: propositional logic, syllogisms","Informal fallacies: ad hominem, straw man, false dilemma, slippery slope","Analysing and constructing philosophical arguments"] },
     ]
@@ -1946,7 +1946,7 @@ const VCAA_CURRICULUM = {
     units:"VCE Units 3 & 4", assessmentType:"SAC + end-of-year exam",
     areas: [
       { name:"Social Structures & Institutions", dotPoints:["Key sociological concepts: society, culture, socialisation, norms, values","Social institutions: family, education, religion, media, government","Agents of socialisation: family, peers, school, media","Social stratification: class, race, gender, age as bases of inequality","Social mobility: structural and individual factors"] },
-      { name:"Sociological Theory", dotPoints:["Functionalism: Durkheim, Parsons ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ society as a system","Conflict theory: Marx, Weber ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ power, class and social change","Symbolic interactionism: Mead, Goffman ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ meaning and everyday life","Feminist sociology: patriarchy, gender inequality, intersectionality","Postmodernism and its critique of grand narratives"] },
+      { name:"Sociological Theory", dotPoints:["Functionalism: Durkheim, Parsons — society as a system","Conflict theory: Marx, Weber — power, class and social change","Symbolic interactionism: Mead, Goffman — meaning and everyday life","Feminist sociology: patriarchy, gender inequality, intersectionality","Postmodernism and its critique of grand narratives"] },
       { name:"Research Methods", dotPoints:["Quantitative methods: surveys, experiments, statistical analysis","Qualitative methods: interviews, ethnography, case studies","Mixed methods research","Ethics in sociological research: informed consent, confidentiality","Evaluating research: validity, reliability, representativeness"] },
       { name:"Contemporary Social Issues", dotPoints:["Globalisation and its social impact","Social media and digital society","Environmental sociology: climate change as a social issue","Crime and deviance: labelling theory, strain theory","Health inequalities: social determinants of health"] },
     ]
@@ -1982,11 +1982,11 @@ const VCAA_CURRICULUM = {
     ]
   },
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE VET ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE VET ──
   "VET Hospitality": {
     units:"VCE VET Certificate II/III", assessmentType:"Practical competency assessments + written theory",
     areas: [
-      { name:"Food Preparation & Cookery", dotPoints:["Safe food handling and hygiene practices (HACCP)","Knife skills and basic cookery techniques: sautÃÂÃÂÃÂÃÂ©, braise, grill, deep fry","Preparing stocks, sauces and soups","Menu planning and recipe costing","Dietary requirements: allergies, intolerances, cultural and religious needs"] },
+      { name:"Food Preparation & Cookery", dotPoints:["Safe food handling and hygiene practices (HACCP)","Knife skills and basic cookery techniques: sauté, braise, grill, deep fry","Preparing stocks, sauces and soups","Menu planning and recipe costing","Dietary requirements: allergies, intolerances, cultural and religious needs"] },
       { name:"Customer Service & Communication", dotPoints:["Professional communication with customers and colleagues","Handling customer complaints and difficult situations","Phone and digital communication in hospitality","Cultural awareness and inclusive service","Teamwork and workplace relationships"] },
       { name:"Hospitality Operations", dotPoints:["Front of house: table service, beverage service, point of sale systems","Workplace health and safety (WHS) in hospitality environments","Understanding hospitality industry structure: hotels, restaurants, catering, events","Environmental sustainability practices in hospitality","Legal responsibilities: responsible service of alcohol (RSA), food safety laws"] },
       { name:"Career Pathways", dotPoints:["Roles in hospitality: chef, front of house, event management, hotel management","Pathways to apprenticeships and traineeships","TAFE and university pathways in hospitality and tourism","Entrepreneurship in hospitality: starting a food business","Professional development and industry expectations"] },
@@ -2026,18 +2026,18 @@ const VCAA_CURRICULUM = {
   "VET Nursing": {
     units:"VCE VET Certificate II/III", assessmentType:"Practical competency assessments + theory + work placement",
     areas: [
-      { name:"Human Biology & Health", dotPoints:["Body systems: cardiovascular, respiratory, digestive, musculoskeletal, neurological","Common diseases and conditions: diabetes, heart disease, stroke, dementia","Vital signs: temperature, pulse, respiration, blood pressure ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ measurement and normal ranges","Infection control: chain of infection, standard precautions, PPE","Anatomy and physiology relevant to nursing practice"] },
+      { name:"Human Biology & Health", dotPoints:["Body systems: cardiovascular, respiratory, digestive, musculoskeletal, neurological","Common diseases and conditions: diabetes, heart disease, stroke, dementia","Vital signs: temperature, pulse, respiration, blood pressure — measurement and normal ranges","Infection control: chain of infection, standard precautions, PPE","Anatomy and physiology relevant to nursing practice"] },
       { name:"Patient Care Skills", dotPoints:["Person-centred care: dignity, respect, privacy, autonomy","Assisting with activities of daily living: hygiene, mobility, nutrition, elimination","Safe manual handling and transferring techniques","Wound care: basic dressing changes, aseptic technique","Medication management: rights of medication administration (5 rights)"] },
       { name:"Healthcare Settings", dotPoints:["Types of healthcare settings: acute, aged care, community, mental health","Roles in healthcare: nurses, doctors, allied health, support workers","Healthcare documentation: patient records, incident reports, care plans","Legal and ethical obligations: duty of care, consent, confidentiality","Australian healthcare system: Medicare, hospitals, aged care sector"] },
       { name:"Communication in Healthcare", dotPoints:["Therapeutic communication: active listening, empathy, non-verbal cues","Communicating with patients from diverse backgrounds","Reporting and handover: ISBAR communication tool","Working in multidisciplinary teams","Managing stress and self-care in healthcare work"] },
     ]
   },
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ IB SL/HL ADDITIONS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── IB SL/HL ADDITIONS ──
   "Biology SL": {
-    units:"IB SL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
+    units:"IB SL — 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
     areas: [
-      { name:"Cell Biology", dotPoints:["Cell theory and ultrastructure: prokaryotic and eukaryotic cells","Membrane structure and transport: diffusion, osmosis, active transport","Cell division: mitosis ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ interphase, PMAT, cytokinesis","Origin of cells: spontaneous generation vs biogenesis","Stem cells: types and therapeutic potential"] },
+      { name:"Cell Biology", dotPoints:["Cell theory and ultrastructure: prokaryotic and eukaryotic cells","Membrane structure and transport: diffusion, osmosis, active transport","Cell division: mitosis — interphase, PMAT, cytokinesis","Origin of cells: spontaneous generation vs biogenesis","Stem cells: types and therapeutic potential"] },
       { name:"Molecular Biology", dotPoints:["DNA structure: double helix, nucleotides, base pairing","DNA replication: semi-conservative, role of DNA polymerase","Protein synthesis: transcription and translation","Metabolism: anabolism and catabolism, enzymes","Cellular respiration: glycolysis, Krebs cycle, electron transport chain"] },
       { name:"Genetics & Evolution", dotPoints:["Genes and alleles: dominant, recessive, codominant","Mendelian genetics: monohybrid crosses, Punnett squares","Chromosomes: sex determination, sex-linked traits","Natural selection and evolution: evidence, mechanisms","Classification: binomial nomenclature, cladograms"] },
       { name:"Ecology", dotPoints:["Ecosystems: biotic and abiotic factors","Energy flow: food chains, food webs, trophic levels","Carbon and nitrogen cycles","Population ecology: growth curves, carrying capacity","Human impact: pollution, climate change, biodiversity loss"] },
@@ -2045,17 +2045,17 @@ const VCAA_CURRICULUM = {
   },
 
   "Chemistry SL": {
-    units:"IB SL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
+    units:"IB SL — 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
     areas: [
       { name:"Stoichiometry & Atomic Structure", dotPoints:["Mole concept: Avogadro's number, molar mass, mole calculations","Atomic structure: protons, neutrons, electrons, isotopes","Electron configuration and periodic trends","Chemical bonding: ionic, covalent, metallic","Writing and balancing chemical equations"] },
       { name:"Energetics & Kinetics", dotPoints:["Enthalpy changes: exothermic and endothermic reactions","Hess's Law and standard enthalpies","Rate of reaction: collision theory, activation energy","Catalysts and their effect on reaction rate","Maxwell-Boltzmann energy distribution"] },
-      { name:"Equilibrium & Acids/Bases", dotPoints:["Dynamic equilibrium and Le Chatelier's Principle","Acid-base theories: BrÃÂÃÂÃÂÃÂ¸nsted-Lowry","pH scale and calculations for strong acids/bases","Neutralisation and titration","Buffer solutions and their importance"] },
+      { name:"Equilibrium & Acids/Bases", dotPoints:["Dynamic equilibrium and Le Chatelier's Principle","Acid-base theories: Brønsted-Lowry","pH scale and calculations for strong acids/bases","Neutralisation and titration","Buffer solutions and their importance"] },
       { name:"Organic Chemistry", dotPoints:["Homologous series: alkanes, alkenes, alcohols, carboxylic acids","Functional groups and their reactions","Isomers: structural and stereoisomers (SL level)","Condensation and addition polymers","Green chemistry principles"] },
     ]
   },
 
   "Physics SL": {
-    units:"IB SL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
+    units:"IB SL — 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
     areas: [
       { name:"Mechanics", dotPoints:["Kinematics: displacement, velocity, acceleration, equations of motion","Newton's Laws of Motion in 1D and 2D","Momentum and impulse: conservation of momentum","Work, energy and power: conservation of energy","Circular motion and gravitation: centripetal force, orbital motion"] },
       { name:"Thermal Physics", dotPoints:["Temperature, heat and internal energy","Ideal gas law: PV = nRT","Kinetic model of an ideal gas","Thermodynamic processes: isothermal, adiabatic, isobaric","Specific heat capacity and latent heat calculations"] },
@@ -2065,9 +2065,9 @@ const VCAA_CURRICULUM = {
   },
 
   "Psychology SL": {
-    units:"IB SL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
+    units:"IB SL — 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
     areas: [
-      { name:"Core Approaches", dotPoints:["Biological approach: brain, genetics, hormones ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ and their influence on behaviour","Cognitive approach: schema theory, reconstructive memory, cognitive bias","Sociocultural approach: social identity theory, conformity, enculturation","Research methods: experiments, interviews, observations","Ethical guidelines in psychological research"] },
+      { name:"Core Approaches", dotPoints:["Biological approach: brain, genetics, hormones — and their influence on behaviour","Cognitive approach: schema theory, reconstructive memory, cognitive bias","Sociocultural approach: social identity theory, conformity, enculturation","Research methods: experiments, interviews, observations","Ethical guidelines in psychological research"] },
       { name:"Abnormal Psychology", dotPoints:["Defining abnormality: statistical, deviance, dysfunction, distress","Classification: DSM-5 and ICD-11","Depression: biological, cognitive and sociocultural explanations","Anxiety disorders: symptoms, aetiology, treatment","Effectiveness of biomedical and psychological treatments"] },
       { name:"Developmental Psychology", dotPoints:["Cognitive development: Piaget's stages","Social development: Vygotsky's ZPD, Bronfenbrenner's ecological model","Attachment theory: Bowlby, Ainsworth's strange situation","Adolescent identity development: Erikson's stages","Influence of culture on development"] },
       { name:"Health Psychology", dotPoints:["Stress: definitions, physiological response (fight or flight, HPA axis)","Stressors: life events (Holmes and Rahe), daily hassles (Lazarus)","Coping strategies: problem-focused and emotion-focused","Health-promoting and health-compromising behaviours","Promoting wellbeing: mindfulness, social support, exercise"] },
@@ -2075,7 +2075,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Economics SL": {
-    units:"IB SL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
+    units:"IB SL — 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
     areas: [
       { name:"Microeconomics", dotPoints:["Supply and demand: determinants, equilibrium, elasticity (PED, PES, YED, XED)","Market failure: externalities, public goods, common access resources","Government intervention: taxes, subsidies, price controls","Theory of the firm: revenue, costs, profit maximisation","Market structures: perfect competition, monopoly, oligopoly"] },
       { name:"Macroeconomics", dotPoints:["National income: GDP, GNI, HDI and their limitations","AD/AS model and macroeconomic equilibrium","Fiscal policy: government spending, taxation, budget positions","Monetary policy: interest rates, money supply","Macroeconomic objectives: growth, full employment, low inflation, equitable distribution"] },
@@ -2085,27 +2085,27 @@ const VCAA_CURRICULUM = {
   },
 
   "History SL": {
-    units:"IB SL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
+    units:"IB SL — 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
     areas: [
-      { name:"Paper 1 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Source Analysis", dotPoints:["Evaluating sources: origin, purpose, value, limitation","Cross-referencing and comparing sources","Identifying perspective, bias and propaganda","Using sources to support historical arguments","Common Paper 1 themes: rights, conflict, leadership"] },
-      { name:"Paper 2 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ World History", dotPoints:["Causes, practices and effects of wars (20th century)","Democratic states: challenges and responses (1918-2000)","Authoritarian states: rise and nature of rule","Cold War: causes, development, effects","Independence movements and decolonisation"] },
+      { name:"Paper 1 — Source Analysis", dotPoints:["Evaluating sources: origin, purpose, value, limitation","Cross-referencing and comparing sources","Identifying perspective, bias and propaganda","Using sources to support historical arguments","Common Paper 1 themes: rights, conflict, leadership"] },
+      { name:"Paper 2 — World History", dotPoints:["Causes, practices and effects of wars (20th century)","Democratic states: challenges and responses (1918-2000)","Authoritarian states: rise and nature of rule","Cold War: causes, development, effects","Independence movements and decolonisation"] },
       { name:"Historical Skills", dotPoints:["Chronological understanding and historical context","Evaluating historical significance","Constructing and sustaining historical arguments","Using primary and secondary sources effectively","Historiographical awareness: how interpretations change"] },
-      { name:"Internal Assessment", dotPoints:["Choosing a historical investigation question","Section 1: Identification and evaluation of two sources","Section 2: Investigation ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ using evidence to answer the question","Section 3: Reflection on the nature of history as a discipline","Academic writing: referencing, citation, bibliography"] },
+      { name:"Internal Assessment", dotPoints:["Choosing a historical investigation question","Section 1: Identification and evaluation of two sources","Section 2: Investigation — using evidence to answer the question","Section 3: Reflection on the nature of history as a discipline","Academic writing: referencing, citation, bibliography"] },
     ]
   },
 
   "Global Politics HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA + Engagement Activity (20%) + Paper 1 & 2 (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA + Engagement Activity (20%) + Paper 1 & 2 (80%)",
     areas: [
       { name:"Power, Sovereignty & International Relations", dotPoints:["Defining power: hard, soft, structural and normative power","State sovereignty vs human sovereignty","International relations theories: realism, liberalism, constructivism, feminism","Nation-states, IGOs, NGOs and TNCs as global actors","Changing nature of power in the 21st century"] },
       { name:"Global Issues", dotPoints:["Human rights: universality vs cultural relativism, monitoring and enforcement","Development: measuring, barriers, strategies (MDGs vs SDGs)","Peace and conflict: causes of war, peacekeeping, peacebuilding","Environmental challenges: climate governance, biodiversity, resource scarcity","Global health: pandemics, WHO, health equity"] },
-      { name:"People, Power & Politics", dotPoints:["Political systems and ideologies across the world","Democracy: liberal, electoral, participatory ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ challenges and strengths","Authoritarian regimes: types, features, stability","Civil society: social movements, NGOs, pressure groups","Media and politics: propaganda, social media, freedom of the press"] },
+      { name:"People, Power & Politics", dotPoints:["Political systems and ideologies across the world","Democracy: liberal, electoral, participatory — challenges and strengths","Authoritarian regimes: types, features, stability","Civil society: social movements, NGOs, pressure groups","Media and politics: propaganda, social media, freedom of the press"] },
       { name:"Engagement Activity & HL Extension", dotPoints:["Engaging with a local or global political event","Documenting engagement and analysing political significance","HL Paper 2: comparing global issues across multiple case studies","Using political science concepts and theories analytically","Writing extended analytical essays under examination conditions"] },
     ]
   },
 
   "Business Management HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA (20%) + Paper 1 & 2 exams (80%)",
     areas: [
       { name:"Business Organisation & Environment", dotPoints:["Types of organisations: private sector, public sector, NGOs","Business objectives: profit, growth, social enterprise, ethics","Stakeholders: interests, conflicts and management","Business environments: STEEPLE analysis","Globalisation: opportunities and challenges for businesses"] },
       { name:"Human Resource Management", dotPoints:["Motivation theories: Taylor, Maslow, Herzberg, Adams, Pink","Organisational structures: hierarchical, flat, matrix, network","Leadership styles: autocratic, democratic, laissez-faire, situational","Workforce planning: recruitment, selection, training, appraisal, dismissal","Industrial and employee relations: collective bargaining, conflict resolution"] },
@@ -2115,7 +2115,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Computer Science HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"IA + case study (20%) + Paper 1, 2, 3 (80%)",
+    units:"IB HL — 2 years", assessmentType:"IA + case study (20%) + Paper 1, 2, 3 (80%)",
     areas: [
       { name:"Systems & Computer Organisation", dotPoints:["Computer architecture: CPU, memory hierarchy, cache, buses","Binary representation: integers, fractions, text, images, sound","Boolean logic: gates, circuits, truth tables","Operating systems: functions, types, resource management","Networks: protocols (TCP/IP, HTTP), topology, hardware"] },
       { name:"Programming & Algorithms", dotPoints:["Object-oriented programming: classes, objects, encapsulation, inheritance, polymorphism","Algorithm design: pseudocode, trace tables, flowcharts","Searching algorithms: linear, binary search","Sorting algorithms: bubble, selection, insertion, merge sort","Recursion: base case, recursive case, call stack"] },
@@ -2125,7 +2125,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Visual Arts HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"Exhibition + Comparative Study + Process Portfolio (100%)",
+    units:"IB HL — 2 years", assessmentType:"Exhibition + Comparative Study + Process Portfolio (100%)",
     areas: [
       { name:"Studio Practice & Making", dotPoints:["Developing and refining artistic ideas across a sustained investigation","Using a range of materials, techniques and processes with skill","Experimenting in response to artists, artworks and contexts","Producing a coherent body of resolved artworks for exhibition","Documenting the development of work in the process portfolio"] },
       { name:"Comparative Study (Critical Investigation)", dotPoints:["Researching and analysing the work of at least 3 artists from different cultural contexts","Comparing artworks formally: elements and principles of design","Examining how cultural context influences artistic production","Making connections between artworks and own studio practice","Presenting the comparative study digitally with written analysis"] },
@@ -2135,19 +2135,19 @@ const VCAA_CURRICULUM = {
   },
 
   "Theatre HL": {
-    units:"IB HL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"Research Presentation + Collaborative Project + Solo Theatre Piece (100%)",
+    units:"IB HL — 2 years", assessmentType:"Research Presentation + Collaborative Project + Solo Theatre Piece (100%)",
     areas: [
       { name:"World Theatre Traditions", dotPoints:["Research presentation on a non-western theatre tradition (e.g. Kabuki, Kathakali, Noh, Commedia dell'arte)","Historical and cultural context of the tradition","Conventions, techniques and performance elements of the tradition","How the tradition has influenced contemporary theatre","Presenting research and demonstrating practical application"] },
       { name:"Collaborative Theatre Making", dotPoints:["Creating original theatre from a starting point (stimulus, text, theme)","Collaborative devising processes: brainstorming, workshopping, rehearsing","Applying a theatrical style or practitioner's approach","Performing to a live audience","Documenting the collaborative process in a theatre log"] },
       { name:"Solo Theatre Piece", dotPoints:["Developing an independent solo performance","Drawing on research into a theatre practitioner","Applying specific techniques and conventions in performance","Creating a director's notebook documenting development","Reflecting on performance process and outcomes"] },
-      { name:"HL Extension ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Independent Portfolio", dotPoints:["Writing critical analysis of live or recorded theatre works","Examining how theatre creates meaning through all production elements","Researching and responding to theatre from a range of cultural contexts","Developing as a reflective theatre maker and analyst","Extended documentation of creative and analytical processes"] },
+      { name:"HL Extension — Independent Portfolio", dotPoints:["Writing critical analysis of live or recorded theatre works","Examining how theatre creates meaning through all production elements","Researching and responding to theatre from a range of cultural contexts","Developing as a reflective theatre maker and analyst","Extended documentation of creative and analytical processes"] },
     ]
   },
 
   "Theory of Knowledge (TOK)": {
-    units:"IB Core ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"TOK Exhibition (33%) + TOK Essay (67%)",
+    units:"IB Core — 2 years", assessmentType:"TOK Exhibition (33%) + TOK Essay (67%)",
     areas: [
-      { name:"Core Theme ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Knowledge & the Knower", dotPoints:["What does it mean to know something?","Personal knowledge vs shared knowledge","The relationship between knowledge, belief and truth","Knower's perspective: bias, assumptions, prior knowledge","The role of emotions, reason, language and sense perception in knowing"] },
+      { name:"Core Theme — Knowledge & the Knower", dotPoints:["What does it mean to know something?","Personal knowledge vs shared knowledge","The relationship between knowledge, belief and truth","Knower's perspective: bias, assumptions, prior knowledge","The role of emotions, reason, language and sense perception in knowing"] },
       { name:"Areas of Knowledge", dotPoints:["Natural sciences: scientific method, paradigm shifts, ethical dimensions","Human sciences: reliability, generalisability, researcher bias","History: sources, interpretations, selectivity","Arts: knowledge through aesthetic experience, ambiguity","Mathematics: certainty, proof, abstraction, axioms","Ethics: moral knowledge, relativism vs universalism, applied ethics","Indigenous knowledge systems: integration into TOK framework"] },
       { name:"TOK Exhibition", dotPoints:["Choosing 3 objects or artefacts that connect to a core TOK theme","Writing a 950-word commentary explaining how each object connects to TOK","Demonstrating knowledge of TOK concepts and themes","Showing how TOK connects to the real world","Selecting from prescribed TOK prompts"] },
       { name:"TOK Essay", dotPoints:["Selecting from 6 prescribed essay titles","Developing a well-structured argument about knowledge","Using real-life examples from different Areas of Knowledge","Evaluating perspectives and counter-arguments","Writing a 1600-word analytical essay with clear thesis and evidence"] },
@@ -2155,7 +2155,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Extended Essay (EE)": {
-    units:"IB Core ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"Written essay (75%) + Viva Voce (25%)",
+    units:"IB Core — 2 years", assessmentType:"Written essay (75%) + Viva Voce (25%)",
     areas: [
       { name:"Research & Question Formulation", dotPoints:["Choosing a subject for the extended essay (any IB subject)","Developing a focused, manageable research question","Understanding the difference between description and analysis","Preliminary research and source identification","Working with a supervisor: meetings, expectations, academic integrity"] },
       { name:"Research Methods & Sources", dotPoints:["Finding and evaluating academic sources: peer-reviewed journals, books, databases","Primary vs secondary sources; distinguishing reliable from unreliable sources","Referencing systems: in-text citations and bibliography (MLA, APA, Chicago)","Avoiding plagiarism: paraphrasing, quoting, citing","Ethical considerations in research"] },
@@ -2165,7 +2165,7 @@ const VCAA_CURRICULUM = {
   },
 
   "CAS (Creativity, Activity, Service)": {
-    units:"IB Core ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2 years", assessmentType:"Ongoing portfolio + reflections (pass/fail)",
+    units:"IB Core — 2 years", assessmentType:"Ongoing portfolio + reflections (pass/fail)",
     areas: [
       { name:"Creativity", dotPoints:["Engaging in arts, design, technology or other creative pursuits","Exploring and expressing ideas and feelings through creative media","Taking creative risks and experimenting with new approaches","Reflecting on the creative process and development","Examples: drama production, music performance, art project, design challenge, creative writing"] },
       { name:"Activity", dotPoints:["Participating in physical exercise or sport as a balanced aspect of healthy living","Setting fitness or skills goals and working towards them","Engaging in new physical experiences or improving existing skills","Reflecting on physical development and challenges overcome","Examples: team sport, dance, martial arts, gym, hiking, swimming, yoga"] },
@@ -2174,9 +2174,9 @@ const VCAA_CURRICULUM = {
     ]
   },
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ YEAR 9-10 ELECTIVES ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── YEAR 9-10 ELECTIVES ──
   "Drama (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Practical performance + written response",
+    units:"Year 9–10", assessmentType:"Practical performance + written response",
     areas: [
       { name:"Drama Elements & Techniques", dotPoints:["Elements of drama: role, character, relationships, situation, focus, tension, space, time","Voice: volume, pitch, pace, tone, diction, projection","Movement: gesture, facial expression, proxemics, physicality","Dramatic tension: conflict, mystery, surprise, contrast","Stagecraft: basic lighting, sound, costume and set concepts"] },
       { name:"Devising & Creating Drama", dotPoints:["Stimulus-based improvisation: responding to images, music, objects, text","Collaborative drama-making processes","Developing characters from scratch","Script writing: dialogue, stage directions, dramatic structure","Adapting stories, poems or news events into dramatic form"] },
@@ -2186,7 +2186,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Music (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Performance + musicology tasks + aural tests",
+    units:"Year 9–10", assessmentType:"Performance + musicology tasks + aural tests",
     areas: [
       { name:"Music Performance", dotPoints:["Developing technical proficiency on chosen instrument or voice","Performing solo and ensemble repertoire","Interpreting notation and following a score","Understanding expressive elements: dynamics, tempo, articulation","Preparing and presenting a performance for assessment"] },
       { name:"Music Theory & Notation", dotPoints:["Reading and writing treble and bass clef notation","Rhythmic notation: note values, rests, time signatures, syncopation","Scales: major, natural minor, pentatonic","Chords and chord progressions: I, IV, V, vi","Intervals, transposition and basic harmonic analysis"] },
@@ -2196,7 +2196,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Visual Arts (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Folio + resolved artwork + written response",
+    units:"Year 9–10", assessmentType:"Folio + resolved artwork + written response",
     areas: [
       { name:"Art Making", dotPoints:["Working in a range of media: drawing, painting, printmaking, sculpture, photography, digital art","Developing technical skills in chosen medium","Exploring a theme or concept through sustained investigation","Documenting the development of work in a folio","Producing resolved artworks that demonstrate skill and intent"] },
       { name:"Art Elements & Principles", dotPoints:["Elements of design: line, shape, form, colour, texture, tone, space","Principles of design: balance, contrast, emphasis, pattern, repetition, unity, movement","Colour theory: colour wheel, complementary, analogous, warm/cool colours","Compositional strategies: rule of thirds, leading lines, framing","Using visual elements to create mood, atmosphere and meaning"] },
@@ -2206,17 +2206,17 @@ const VCAA_CURRICULUM = {
   },
 
   "Food Technology (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Practical tasks + written assessments",
+    units:"Year 9–10", assessmentType:"Practical tasks + written assessments",
     areas: [
-      { name:"Food Science & Nutrition", dotPoints:["Macronutrients: carbohydrates, proteins, fats ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ functions and sources","Micronutrients: vitamins and minerals ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ key roles","Australian Dietary Guidelines for adolescents","Reading and interpreting food labels: nutrition information panel, ingredients","Special dietary needs: vegetarian, vegan, gluten-free, lactose-intolerant, religious requirements"] },
-      { name:"Food Safety & Hygiene", dotPoints:["Personal hygiene practices in food preparation","Cross-contamination: causes and prevention","Temperature control: danger zone (5ÃÂÃÂÃÂÃÂ°CÃÂÃÂ¢ÃÂÃÂÃÂÃÂ60ÃÂÃÂÃÂÃÂ°C), safe cooking temperatures","Food storage: FIFO, correct temperatures, containers","Australian food safety laws and standards"] },
+      { name:"Food Science & Nutrition", dotPoints:["Macronutrients: carbohydrates, proteins, fats — functions and sources","Micronutrients: vitamins and minerals — key roles","Australian Dietary Guidelines for adolescents","Reading and interpreting food labels: nutrition information panel, ingredients","Special dietary needs: vegetarian, vegan, gluten-free, lactose-intolerant, religious requirements"] },
+      { name:"Food Safety & Hygiene", dotPoints:["Personal hygiene practices in food preparation","Cross-contamination: causes and prevention","Temperature control: danger zone (5°C–60°C), safe cooking temperatures","Food storage: FIFO, correct temperatures, containers","Australian food safety laws and standards"] },
       { name:"Food Preparation Skills", dotPoints:["Knife skills: chopping, slicing, dicing, julienne techniques","Cooking methods: boiling, steaming, frying, baking, grilling, roasting","Following recipes: measuring, conversions, scaling","Preparing dishes from different cultural traditions","Plating and presentation techniques"] },
       { name:"Food Systems & Sustainability", dotPoints:["From paddock to plate: how food is grown, processed, distributed","Food waste: causes, impacts and reduction strategies","Sustainable food choices: local, seasonal, plant-based eating","The environmental impact of different foods: meat vs plant-based","Fair trade and ethical food production"] },
     ]
   },
 
   "Design & Technology (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Design folio + practical project",
+    units:"Year 9–10", assessmentType:"Design folio + practical project",
     areas: [
       { name:"Design Process", dotPoints:["Understanding a brief: constraints, requirements, target audience","Research and analysis: gathering information to inform design","Generating and developing ideas: sketching, brainstorming, mind-mapping","Prototype development: models, mockups, 3D printing","Evaluation: testing against criteria and refining design"] },
       { name:"Materials & Manufacturing", dotPoints:["Properties of materials: timber, metals, plastics, composites, textiles","Selecting appropriate materials for a design task","Marking out, cutting and joining techniques","Finishing processes: sanding, painting, coating","Manufacturing processes: hand tools, machine tools, CNC, 3D printing"] },
@@ -2226,7 +2226,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Media Studies (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Media production + analytical tasks",
+    units:"Year 9–10", assessmentType:"Media production + analytical tasks",
     areas: [
       { name:"Media Codes & Conventions", dotPoints:["Technical codes: camera angles and shots, lighting, editing, sound","Symbolic codes: costume, setting, colour, gesture, expression","Narrative codes: plot structure, character types, genre conventions","Written codes: headlines, captions, dialogue","How codes work together to create meaning in media texts"] },
       { name:"Media Industries & Audiences", dotPoints:["Australian media landscape: commercial, public and community media","Media ownership: concentration, regulation, diversity","Target audiences: demographics, psychographics, audience segmentation","How audiences interact with media: active vs passive audience theories","Media regulation in Australia: ACMA, classification system"] },
@@ -2236,27 +2236,27 @@ const VCAA_CURRICULUM = {
   },
 
   "Japanese (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Listening, reading, writing and speaking tasks",
+    units:"Year 9–10", assessmentType:"Listening, reading, writing and speaking tasks",
     areas: [
       { name:"Speaking & Listening", dotPoints:["Hiragana and katakana reading and pronunciation","Conversational phrases: greetings, introductions, shopping, directions","Discussing daily routines, school life, family, hobbies","Understanding spoken Japanese in real-world contexts","Participating in short role-plays and conversations"] },
-      { name:"Reading & Writing", dotPoints:["Reading hiragana, katakana and approximately 100 kanji","Writing simple sentences and short paragraphs in Japanese script","Using basic grammatical structures: ÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ« particles","Verb forms: dictionary form, ÃÂÃÂ£ÃÂÃÂÃÂÃÂ¾ÃÂÃÂ£ÃÂÃÂÃÂÃÂ form, ÃÂÃÂ£ÃÂÃÂÃÂÃÂ¦-form","Reading simple texts: menus, signs, emails, short stories"] },
-      { name:"Grammar & Vocabulary", dotPoints:["Sentence structure: Subject-Object-Verb (SOV)","Adjective types: ÃÂÃÂ£ÃÂÃÂÃÂÃÂ-adjectives and ÃÂÃÂ£ÃÂÃÂÃÂÃÂª-adjectives","Verb conjugation: present/future, past, negative, ÃÂÃÂ£ÃÂÃÂÃÂÃÂ¦-form","Question words: ÃÂÃÂ£ÃÂÃÂÃÂÃÂªÃÂÃÂ£ÃÂÃÂÃÂÃÂ«ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ©ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ©ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¦","Common expressions: ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¿ÃÂÃÂ£ÃÂÃÂÃÂÃÂ¾ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¾ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ"] },
+      { name:"Reading & Writing", dotPoints:["Reading hiragana, katakana and approximately 100 kanji","Writing simple sentences and short paragraphs in Japanese script","Using basic grammatical structures: は、が、を、に particles","Verb forms: dictionary form, ます form, て-form","Reading simple texts: menus, signs, emails, short stories"] },
+      { name:"Grammar & Vocabulary", dotPoints:["Sentence structure: Subject-Object-Verb (SOV)","Adjective types: い-adjectives and な-adjectives","Verb conjugation: present/future, past, negative, て-form","Question words: なに、どこ、いつ、だれ、どうして","Common expressions: ありがとう、すみません、わかりません"] },
       { name:"Japanese Culture", dotPoints:["Japanese school life and education system","Traditional and contemporary Japanese culture: food, festivals, pop culture","Japan's geography: major cities, regions, landmarks","Japanese customs and social etiquette","Comparing Japanese culture with Australian culture"] },
     ]
   },
 
   "French (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Listening, reading, writing and speaking tasks",
+    units:"Year 9–10", assessmentType:"Listening, reading, writing and speaking tasks",
     areas: [
       { name:"Speaking & Listening", dotPoints:["Conversational French: greetings, introductions, shopping, travel","Discussing personal information, family, school, leisure activities","Understanding spoken French at natural speed","Participating in simple conversations and role-plays","Developing pronunciation and intonation"] },
       { name:"Reading & Writing", dotPoints:["Reading simple to moderately complex French texts","Understanding articles, emails, advertisements, short stories","Writing paragraphs and short essays in French","Formal and informal written registers","Using a dictionary and cognates strategically"] },
-      { name:"Grammar Essentials", dotPoints:["Verb tenses: prÃÂÃÂÃÂÃÂ©sent, passÃÂÃÂÃÂÃÂ© composÃÂÃÂÃÂÃÂ©, imparfait, futur proche, futur simple","Gender and agreement: adjectives, articles, past participles","Pronoun use: personal, direct, indirect, reflexive","Negation: ne...pas, ne...jamais, ne...rien, ne...plus","Question forms: inversion, est-ce que, interrogative pronouns"] },
-      { name:"French Culture", dotPoints:["Francophone world: France, QuÃÂÃÂÃÂÃÂ©bec, Africa, Pacific French territories","French customs, food and daily life","French history and its global influence","Contemporary French culture: cinema, music, sport, fashion","Comparing French and Australian social norms and values"] },
+      { name:"Grammar Essentials", dotPoints:["Verb tenses: présent, passé composé, imparfait, futur proche, futur simple","Gender and agreement: adjectives, articles, past participles","Pronoun use: personal, direct, indirect, reflexive","Negation: ne...pas, ne...jamais, ne...rien, ne...plus","Question forms: inversion, est-ce que, interrogative pronouns"] },
+      { name:"French Culture", dotPoints:["Francophone world: France, Québec, Africa, Pacific French territories","French customs, food and daily life","French history and its global influence","Contemporary French culture: cinema, music, sport, fashion","Comparing French and Australian social norms and values"] },
     ]
   },
 
   "Digital Technologies (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Projects + written tasks",
+    units:"Year 9–10", assessmentType:"Projects + written tasks",
     areas: [
       { name:"Data & Information", dotPoints:["Data types: integers, strings, Booleans, floats","Data structures: lists, dictionaries, arrays","Collecting, storing and managing data ethically","Data representation: binary, hexadecimal, ASCII","Databases: tables, queries, relationships"] },
       { name:"Programming & Algorithms", dotPoints:["Algorithm design: flowcharts, pseudocode, structured English","Programming concepts: sequence, selection, iteration","Functions and procedures: parameters, return values","Debugging strategies: syntax errors, logic errors, runtime errors","Programming in Python or another language: variables, loops, conditionals"] },
@@ -2266,7 +2266,7 @@ const VCAA_CURRICULUM = {
   },
 
   "Health & PE (Year 9-10)": {
-    units:"Year 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ10", assessmentType:"Practical tasks + written assessments",
+    units:"Year 9–10", assessmentType:"Practical tasks + written assessments",
     areas: [
       { name:"Personal Health & Wellbeing", dotPoints:["Dimensions of health: physical, mental, social, emotional, spiritual","Factors affecting health: lifestyle, environment, access to services","Adolescent health issues: sleep, nutrition, screen time, stress","Mental health literacy: recognising signs, help-seeking strategies","Australia's health system: Medicare, hospitals, GPs, allied health"] },
       { name:"Movement & Physical Activity", dotPoints:["Components of fitness: cardiovascular endurance, muscular strength, flexibility, speed, power","Principles of training: FITT principle, overload, specificity, reversibility","Energy systems: aerobic and anaerobic pathways","Skill acquisition: cognitive, associative and autonomous stages","Biomechanics: force, balance, motion and their application to sport"] },
@@ -2291,7 +2291,7 @@ function getCurriculumContext(subject, topic, userNotes, yearLevel) {
         || subjData.areas.find(a => topic.toLowerCase().includes(a.name.toLowerCase().split(" ")[0]));
       if (area) {
         context += `\nFocus Area: ${area.name}\nOfficial Curriculum Dot Points:\n`;
-        area.dotPoints.forEach(dp => { context += `ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ ${dp}\n`; });
+        area.dotPoints.forEach(dp => { context += `• ${dp}\n`; });
       } else {
         context += `\nCurrent Topic: ${topic}\n`;
         context += `All Areas: ${subjData.areas.map(a=>a.name).join(", ")}\n`;
@@ -2303,7 +2303,7 @@ function getCurriculumContext(subject, topic, userNotes, yearLevel) {
       context += `\nAll Curriculum Areas:\n`;
       subjData.areas.forEach(a => {
         context += `\n${a.name}:\n`;
-        a.dotPoints.forEach(dp => { context += `ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ ${dp}\n`; });
+        a.dotPoints.forEach(dp => { context += `• ${dp}\n`; });
       });
     }
   } else {
@@ -2313,15 +2313,15 @@ function getCurriculumContext(subject, topic, userNotes, yearLevel) {
   }
 
   if (userNotes?.trim()) {
-    context += `\nSTUDENT'S OWN NOTES/TEXTBOOK (USE THIS AS PRIMARY SOURCE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ prioritise over general curriculum):\n${userNotes}\n`;
+    context += `\nSTUDENT'S OWN NOTES/TEXTBOOK (USE THIS AS PRIMARY SOURCE — prioritise over general curriculum):\n${userNotes}\n`;
   }
   return context;
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// CLEAN MATH ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ converts LaTeX to readable symbols
+// ─────────────────────────────────────────────
+// CLEAN MATH — converts LaTeX to readable symbols
 // Used everywhere text is displayed
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function cleanMath(text) {
   if (!text) return text;
   return text
@@ -2331,50 +2331,50 @@ function cleanMath(text) {
     .replace(/\\\(([^)]+)\\\)/g, (_, math) => convertLatex(math))
     .replace(/\\\[([^\]]+)\\\]/g, (_, math) => convertLatex(math))
     // Handle standalone symbols outside delimiters
-    .replace(/\^2(?!\d)/g, 'ÃÂÃÂÃÂÃÂ²')
-    .replace(/\^3(?!\d)/g, 'ÃÂÃÂÃÂÃÂ³')
-    .replace(/\^4(?!\d)/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ´')
-    .replace(/\^n(?!\w)/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿');
+    .replace(/\^2(?!\d)/g, '²')
+    .replace(/\^3(?!\d)/g, '³')
+    .replace(/\^4(?!\d)/g, '⁴')
+    .replace(/\^n(?!\w)/g, 'ⁿ');
 }
 
 function convertLatex(math) {
   return math
-    .replace(/\\sqrt\{([^}]+)\}/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ($1)')
-    .replace(/\\sqrt(\w)/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ$1')
+    .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+    .replace(/\\sqrt(\w)/g, '√$1')
     .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
-    .replace(/\\times/g, 'ÃÂÃÂÃÂÃÂ')
-    .replace(/\\cdot/g, 'ÃÂÃÂÃÂÃÂ·')
-    .replace(/\\div/g, 'ÃÂÃÂÃÂÃÂ·')
-    .replace(/\\pm/g, 'ÃÂÃÂÃÂÃÂ±')
-    .replace(/\\leq/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¤')
-    .replace(/\\geq/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¥')
-    .replace(/\\neq/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ')
-    .replace(/\\approx/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ')
-    .replace(/\\therefore/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ´')
-    .replace(/\\because/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂµ')
-    .replace(/\\in/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ')
-    .replace(/\\notin/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ')
-    .replace(/\\subset/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ')
-    .replace(/\\pi/g, 'ÃÂÃÂÃÂÃÂ')
-    .replace(/\\alpha/g, 'ÃÂÃÂÃÂÃÂ±')
-    .replace(/\\beta/g, 'ÃÂÃÂÃÂÃÂ²')
-    .replace(/\\gamma/g, 'ÃÂÃÂÃÂÃÂ³')
-    .replace(/\\Delta/g, 'ÃÂÃÂÃÂÃÂ')
-    .replace(/\\delta/g, 'ÃÂÃÂÃÂÃÂ´')
-    .replace(/\\theta/g, 'ÃÂÃÂÃÂÃÂ¸')
-    .replace(/\\lambda/g, 'ÃÂÃÂÃÂÃÂ»')
-    .replace(/\\mu/g, 'ÃÂÃÂÃÂÃÂ¼')
-    .replace(/\\sigma/g, 'ÃÂÃÂÃÂÃÂ')
-    .replace(/\\omega/g, 'ÃÂÃÂÃÂÃÂ')
-    .replace(/\\infty/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ')
-    .replace(/\\sum/g, 'ÃÂÃÂÃÂÃÂ£')
-    .replace(/\\int/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«')
-    .replace(/\^2/g, 'ÃÂÃÂÃÂÃÂ²')
-    .replace(/\^3/g, 'ÃÂÃÂÃÂÃÂ³')
-    .replace(/\^4/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ´')
-    .replace(/\^n/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿')
-    .replace(/\^0/g, 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ°')
-    .replace(/\^1/g, 'ÃÂÃÂÃÂÃÂ¹')
+    .replace(/\\times/g, '×')
+    .replace(/\\cdot/g, '·')
+    .replace(/\\div/g, '÷')
+    .replace(/\\pm/g, '±')
+    .replace(/\\leq/g, '≤')
+    .replace(/\\geq/g, '≥')
+    .replace(/\\neq/g, '≠')
+    .replace(/\\approx/g, '≈')
+    .replace(/\\therefore/g, '∴')
+    .replace(/\\because/g, '∵')
+    .replace(/\\in/g, '∈')
+    .replace(/\\notin/g, '∉')
+    .replace(/\\subset/g, '⊂')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\gamma/g, 'γ')
+    .replace(/\\Delta/g, 'Δ')
+    .replace(/\\delta/g, 'δ')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\mu/g, 'μ')
+    .replace(/\\sigma/g, 'σ')
+    .replace(/\\omega/g, 'ω')
+    .replace(/\\infty/g, '∞')
+    .replace(/\\sum/g, 'Σ')
+    .replace(/\\int/g, '∫')
+    .replace(/\^2/g, '²')
+    .replace(/\^3/g, '³')
+    .replace(/\^4/g, '⁴')
+    .replace(/\^n/g, 'ⁿ')
+    .replace(/\^0/g, '⁰')
+    .replace(/\^1/g, '¹')
     .replace(/\^{([^}]+)}/g, '^($1)')
     .replace(/_{([^}]+)}/g, '_($1)')
     .replace(/\\text\{([^}]+)\}/g, '$1')
@@ -2388,332 +2388,332 @@ function MarkdownRenderer({ content }) {
   return <RenderMD text={content} style={{fontSize:14,lineHeight:1.8}}/>;
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// SUBTOPICS DATABASE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ structured content per topic area
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
+// SUBTOPICS DATABASE — structured content per topic area
+// ─────────────────────────────────────────────
 const SUBTOPICS = {
   "Number & Algebra": [
-    {id:"surds",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",title:"Surds & Irrational Numbers",summary:"Numbers that can't be expressed as exact fractions, left in root form.",keyFacts:["ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ2, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ3, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ5 are irrational ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ they go on forever","Simplify: ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ72 = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(36ÃÂÃÂÃÂÃÂ2) = 6ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ2","Multiply: ÃÂÃÂ¢ÃÂÃÂÃÂÃÂa ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂb = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(ab)","Divide: ÃÂÃÂ¢ÃÂÃÂÃÂÃÂa ÃÂÃÂÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂÃÂÃÂb = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(a/b)","Can't add unlike surds: ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ2 + ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ3 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ  ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ5"],formula:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(ab) = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂa ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂb"},
-    {id:"sci-notation",emoji:"ÃÂÃÂÃÂÃÂ10",title:"Scientific Notation",summary:"Writing very large or small numbers as a ÃÂÃÂÃÂÃÂ 10ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ where 1 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¤ a < 10.",keyFacts:["4,500,000 = 4.5 ÃÂÃÂÃÂÃÂ 10ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¶","0.00032 = 3.2 ÃÂÃÂÃÂÃÂ 10ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ´","Multiply: add the powers of 10","Divide: subtract the powers of 10","Used in science for astronomical/microscopic values"],formula:"a ÃÂÃÂÃÂÃÂ 10ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ where 1 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¤ a < 10"},
-    {id:"expanding",emoji:"()",title:"Expanding Brackets",summary:"Multiply every term inside the brackets by the term outside.",keyFacts:["a(b+c) = ab + ac","(a+b)(c+d) = ac + ad + bc + bd","(a+b)ÃÂÃÂÃÂÃÂ² = aÃÂÃÂÃÂÃÂ² + 2ab + bÃÂÃÂÃÂÃÂ²","(a-b)ÃÂÃÂÃÂÃÂ² = aÃÂÃÂÃÂÃÂ² - 2ab + bÃÂÃÂÃÂÃÂ²","(a+b)(a-b) = aÃÂÃÂÃÂÃÂ² - bÃÂÃÂÃÂÃÂ²  (difference of squares)"],formula:"(a+b)ÃÂÃÂÃÂÃÂ² = aÃÂÃÂÃÂÃÂ² + 2ab + bÃÂÃÂÃÂÃÂ²"},
-    {id:"factorising",emoji:"ÃÂÃÂÃÂÃÂ·",title:"Factorising",summary:"The reverse of expanding ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ find what multiplies to give an expression.",keyFacts:["Find HCF first: 6x + 9 = 3(2x + 3)","Difference of squares: aÃÂÃÂÃÂÃÂ²-bÃÂÃÂÃÂÃÂ² = (a+b)(a-b)","Trinomials: xÃÂÃÂÃÂÃÂ²+5x+6 = (x+2)(x+3)","Find two numbers that multiply to c and add to b","Always check by expanding back"],formula:"aÃÂÃÂÃÂÃÂ²-bÃÂÃÂÃÂÃÂ² = (a+b)(a-b)"},
-    {id:"indices",emoji:"aÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿",title:"Index Laws",summary:"Rules for working with powers and exponents.",keyFacts:["aÃÂÃÂ¡ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ aÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ = aÃÂÃÂ¡ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂºÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿  (multiply: add powers)","aÃÂÃÂ¡ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· aÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ = aÃÂÃÂ¡ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿  (divide: subtract powers)","(aÃÂÃÂ¡ÃÂÃÂµÃÂÃÂ)ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ = aÃÂÃÂ¡ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿  (power of power: multiply)","aÃÂÃÂ¢ÃÂÃÂÃÂÃÂ° = 1  (anything to power 0)","aÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ = 1/aÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿  (negative power = reciprocal)"],formula:"aÃÂÃÂ¡ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ aÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ = aÃÂÃÂ¡ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂºÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿"},
+    {id:"surds",emoji:"√",title:"Surds & Irrational Numbers",summary:"Numbers that can't be expressed as exact fractions, left in root form.",keyFacts:["√2, √3, √5 are irrational — they go on forever","Simplify: √72 = √(36×2) = 6√2","Multiply: √a × √b = √(ab)","Divide: √a ÷ √b = √(a/b)","Can't add unlike surds: √2 + √3 ≠ √5"],formula:"√(ab) = √a × √b"},
+    {id:"sci-notation",emoji:"×10",title:"Scientific Notation",summary:"Writing very large or small numbers as a × 10ⁿ where 1 ≤ a < 10.",keyFacts:["4,500,000 = 4.5 × 10⁶","0.00032 = 3.2 × 10⁻⁴","Multiply: add the powers of 10","Divide: subtract the powers of 10","Used in science for astronomical/microscopic values"],formula:"a × 10ⁿ where 1 ≤ a < 10"},
+    {id:"expanding",emoji:"()",title:"Expanding Brackets",summary:"Multiply every term inside the brackets by the term outside.",keyFacts:["a(b+c) = ab + ac","(a+b)(c+d) = ac + ad + bc + bd","(a+b)² = a² + 2ab + b²","(a-b)² = a² - 2ab + b²","(a+b)(a-b) = a² - b²  (difference of squares)"],formula:"(a+b)² = a² + 2ab + b²"},
+    {id:"factorising",emoji:"÷",title:"Factorising",summary:"The reverse of expanding — find what multiplies to give an expression.",keyFacts:["Find HCF first: 6x + 9 = 3(2x + 3)","Difference of squares: a²-b² = (a+b)(a-b)","Trinomials: x²+5x+6 = (x+2)(x+3)","Find two numbers that multiply to c and add to b","Always check by expanding back"],formula:"a²-b² = (a+b)(a-b)"},
+    {id:"indices",emoji:"aⁿ",title:"Index Laws",summary:"Rules for working with powers and exponents.",keyFacts:["aᵐ × aⁿ = aᵐ⁺ⁿ  (multiply: add powers)","aᵐ ÷ aⁿ = aᵐ⁻ⁿ  (divide: subtract powers)","(aᵐ)ⁿ = aᵐⁿ  (power of power: multiply)","a⁰ = 1  (anything to power 0)","a⁻ⁿ = 1/aⁿ  (negative power = reciprocal)"],formula:"aᵐ × aⁿ = aᵐ⁺ⁿ"},
   ],
   "Measurement & Geometry": [
-    {id:"pythagoras",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Pythagoras' Theorem",summary:"In a right-angled triangle, the square of the hypotenuse equals the sum of squares of the other two sides.",keyFacts:["aÃÂÃÂÃÂÃÂ² + bÃÂÃÂÃÂÃÂ² = cÃÂÃÂÃÂÃÂ²  (c is always the hypotenuse)","Hypotenuse is opposite the right angle ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ always the longest side","Finding hypotenuse: c = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(aÃÂÃÂÃÂÃÂ² + bÃÂÃÂÃÂÃÂ²)","Finding a shorter side: a = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(cÃÂÃÂÃÂÃÂ² - bÃÂÃÂÃÂÃÂ²)","Pythagorean triples: 3,4,5 and 5,12,13 and 8,15,17"],formula:"aÃÂÃÂÃÂÃÂ² + bÃÂÃÂÃÂÃÂ² = cÃÂÃÂÃÂÃÂ²"},
-    {id:"trigonometry",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Trigonometry ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SOH CAH TOA",summary:"Using ratios of sides in right-angled triangles to find unknown sides and angles.",keyFacts:["SOH: sin ÃÂÃÂÃÂÃÂ¸ = Opposite / Hypotenuse","CAH: cos ÃÂÃÂÃÂÃÂ¸ = Adjacent / Hypotenuse","TOA: tan ÃÂÃÂÃÂÃÂ¸ = Opposite / Adjacent","To find an angle: use inverse sinÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂÃÂÃÂ¹, cosÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂÃÂÃÂ¹, tanÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂÃÂÃÂ¹","Label sides relative to the angle you're working with"],formula:"sin ÃÂÃÂÃÂÃÂ¸ = O/H   cos ÃÂÃÂÃÂÃÂ¸ = A/H   tan ÃÂÃÂÃÂÃÂ¸ = O/A"},
-    {id:"area",emoji:"ÃÂÃÂ¢ÃÂÃÂ¬ÃÂÃÂ",title:"Area & Perimeter",summary:"Area is the space inside a 2D shape. Perimeter is the distance around it.",keyFacts:["Rectangle: A = l ÃÂÃÂÃÂÃÂ w, P = 2(l+w)","Triangle: A = ÃÂÃÂÃÂÃÂ½ ÃÂÃÂÃÂÃÂ b ÃÂÃÂÃÂÃÂ h","Circle: A = ÃÂÃÂÃÂÃÂrÃÂÃÂÃÂÃÂ², Circumference = 2ÃÂÃÂÃÂÃÂr","Trapezium: A = ÃÂÃÂÃÂÃÂ½(a+b)h","Parallelogram: A = b ÃÂÃÂÃÂÃÂ h"],formula:"Triangle: A = ÃÂÃÂÃÂÃÂ½bh   Circle: A = ÃÂÃÂÃÂÃÂrÃÂÃÂÃÂÃÂ²"},
-    {id:"volume",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦",title:"Volume & Surface Area",summary:"Volume is the 3D space inside a solid. Surface area is the total of all faces.",keyFacts:["Rectangular prism: V = lwh","Cylinder: V = ÃÂÃÂÃÂÃÂrÃÂÃÂÃÂÃÂ²h","Triangular prism: V = ÃÂÃÂÃÂÃÂ½bhl","Cylinder SA = 2ÃÂÃÂÃÂÃÂrÃÂÃÂÃÂÃÂ² + 2ÃÂÃÂÃÂÃÂrh","Sphere: V = 4/3 ÃÂÃÂÃÂÃÂrÃÂÃÂÃÂÃÂ³, SA = 4ÃÂÃÂÃÂÃÂrÃÂÃÂÃÂÃÂ²"],formula:"Cylinder: V = ÃÂÃÂÃÂÃÂrÃÂÃÂÃÂÃÂ²h   Prism: V = base area ÃÂÃÂÃÂÃÂ height"},
-    {id:"similarity",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Similar Figures & Scale Factors",summary:"Shapes are similar if they have the same angles and proportional sides.",keyFacts:["Matching angles are equal","Corresponding sides are in the same ratio","Scale factor k: if sides ÃÂÃÂÃÂÃÂ k, area ÃÂÃÂÃÂÃÂ kÃÂÃÂÃÂÃÂ², volume ÃÂÃÂÃÂÃÂ kÃÂÃÂÃÂÃÂ³","Find scale factor: divide matching sides","Use ratios to find unknown sides"],formula:"scale factor k: area ratio = kÃÂÃÂÃÂÃÂ²"},
-    {id:"circle-geo",emoji:"ÃÂÃÂ¢ÃÂÃÂ­ÃÂÃÂ",title:"Circle Geometry",summary:"Properties and theorems relating to circles, chords, tangents and angles.",keyFacts:["Angle in semicircle = 90ÃÂÃÂÃÂÃÂ°","Angle at centre = 2 ÃÂÃÂÃÂÃÂ angle at circumference","Angles in same segment are equal","Tangent is perpendicular to radius at point of contact","Chord from centre bisects the chord at 90ÃÂÃÂÃÂÃÂ°"]},
+    {id:"pythagoras",emoji:"📐",title:"Pythagoras' Theorem",summary:"In a right-angled triangle, the square of the hypotenuse equals the sum of squares of the other two sides.",keyFacts:["a² + b² = c²  (c is always the hypotenuse)","Hypotenuse is opposite the right angle — always the longest side","Finding hypotenuse: c = √(a² + b²)","Finding a shorter side: a = √(c² - b²)","Pythagorean triples: 3,4,5 and 5,12,13 and 8,15,17"],formula:"a² + b² = c²"},
+    {id:"trigonometry",emoji:"📏",title:"Trigonometry — SOH CAH TOA",summary:"Using ratios of sides in right-angled triangles to find unknown sides and angles.",keyFacts:["SOH: sin θ = Opposite / Hypotenuse","CAH: cos θ = Adjacent / Hypotenuse","TOA: tan θ = Opposite / Adjacent","To find an angle: use inverse sin⁻¹, cos⁻¹, tan⁻¹","Label sides relative to the angle you're working with"],formula:"sin θ = O/H   cos θ = A/H   tan θ = O/A"},
+    {id:"area",emoji:"⬜",title:"Area & Perimeter",summary:"Area is the space inside a 2D shape. Perimeter is the distance around it.",keyFacts:["Rectangle: A = l × w, P = 2(l+w)","Triangle: A = ½ × b × h","Circle: A = πr², Circumference = 2πr","Trapezium: A = ½(a+b)h","Parallelogram: A = b × h"],formula:"Triangle: A = ½bh   Circle: A = πr²"},
+    {id:"volume",emoji:"📦",title:"Volume & Surface Area",summary:"Volume is the 3D space inside a solid. Surface area is the total of all faces.",keyFacts:["Rectangular prism: V = lwh","Cylinder: V = πr²h","Triangular prism: V = ½bhl","Cylinder SA = 2πr² + 2πrh","Sphere: V = 4/3 πr³, SA = 4πr²"],formula:"Cylinder: V = πr²h   Prism: V = base area × height"},
+    {id:"similarity",emoji:"🔍",title:"Similar Figures & Scale Factors",summary:"Shapes are similar if they have the same angles and proportional sides.",keyFacts:["Matching angles are equal","Corresponding sides are in the same ratio","Scale factor k: if sides × k, area × k², volume × k³","Find scale factor: divide matching sides","Use ratios to find unknown sides"],formula:"scale factor k: area ratio = k²"},
+    {id:"circle-geo",emoji:"⭕",title:"Circle Geometry",summary:"Properties and theorems relating to circles, chords, tangents and angles.",keyFacts:["Angle in semicircle = 90°","Angle at centre = 2 × angle at circumference","Angles in same segment are equal","Tangent is perpendicular to radius at point of contact","Chord from centre bisects the chord at 90°"]},
   ],
   "Statistics & Probability": [
-    {id:"data-types",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Data Types & Displays",summary:"Data is either categorical (types) or numerical (counts/measurements).",keyFacts:["Categorical: colour, gender, type ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no numbers","Numerical discrete: countable whole numbers (goals scored)","Numerical continuous: measurements (height, time)","Dot plots and stem-and-leaf: for small data sets","Box plots: show median, quartiles, outliers"],},
-    {id:"summary-stats",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Summary Statistics",summary:"Single numbers that describe the centre and spread of a data set.",keyFacts:["Mean: sum ÃÂÃÂÃÂÃÂ· count (affected by outliers)","Median: middle value when ordered (resistant to outliers)","Mode: most frequent value","Range: max ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ min","IQR: Q3 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Q1 (middle 50% of data)"],formula:"Mean = ÃÂÃÂÃÂÃÂ£x/n   IQR = Q3 - Q1"},
-    {id:"probability",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²",title:"Probability",summary:"The likelihood of an event occurring, expressed as a number from 0 to 1.",keyFacts:["P(event) = favourable outcomes ÃÂÃÂÃÂÃÂ· total outcomes","P(certain) = 1, P(impossible) = 0","Complement: P(not A) = 1 - P(A)","P(A and B) = P(A) ÃÂÃÂÃÂÃÂ P(B) for independent events","P(A or B) = P(A) + P(B) - P(A and B)"],formula:"P(A) = n(A) / n(S)"},
+    {id:"data-types",emoji:"📊",title:"Data Types & Displays",summary:"Data is either categorical (types) or numerical (counts/measurements).",keyFacts:["Categorical: colour, gender, type — no numbers","Numerical discrete: countable whole numbers (goals scored)","Numerical continuous: measurements (height, time)","Dot plots and stem-and-leaf: for small data sets","Box plots: show median, quartiles, outliers"],},
+    {id:"summary-stats",emoji:"📈",title:"Summary Statistics",summary:"Single numbers that describe the centre and spread of a data set.",keyFacts:["Mean: sum ÷ count (affected by outliers)","Median: middle value when ordered (resistant to outliers)","Mode: most frequent value","Range: max − min","IQR: Q3 − Q1 (middle 50% of data)"],formula:"Mean = Σx/n   IQR = Q3 - Q1"},
+    {id:"probability",emoji:"🎲",title:"Probability",summary:"The likelihood of an event occurring, expressed as a number from 0 to 1.",keyFacts:["P(event) = favourable outcomes ÷ total outcomes","P(certain) = 1, P(impossible) = 0","Complement: P(not A) = 1 - P(A)","P(A and B) = P(A) × P(B) for independent events","P(A or B) = P(A) + P(B) - P(A and B)"],formula:"P(A) = n(A) / n(S)"},
   ],
   "Patterns & Algebra": [
-    {id:"linear-equations",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Linear Equations",summary:"Equations where the highest power is 1. Solve by doing the same to both sides.",keyFacts:["Isolate the variable step by step","Expand brackets first if needed","Collect like terms on each side","Move variables to one side, numbers to the other","Check: substitute your answer back in"]},
-    {id:"graphing",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Graphing Linear Relationships",summary:"Linear relationships form straight lines on a number plane.",keyFacts:["y = mx + b (gradient-intercept form)","m = gradient (rise ÃÂÃÂÃÂÃÂ· run)","b = y-intercept (where line crosses y-axis)","Positive gradient: goes up left to right","Find x-intercept: set y = 0 and solve"],formula:"y = mx + b"},
-    {id:"simultaneous",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Simultaneous Equations",summary:"Two equations, two unknowns ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ find values that satisfy both.",keyFacts:["Substitution: sub one equation into the other","Elimination: add/subtract to remove a variable","Solution is the intersection point of two lines","Check by substituting into BOTH original equations","Parallel lines ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no solution, same line ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ infinite solutions"]},
-    {id:"quadratics",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂª",title:"Quadratic Equations",summary:"Equations with xÃÂÃÂÃÂÃÂ² as highest power. Graphs are parabolas.",keyFacts:["Standard form: axÃÂÃÂÃÂÃÂ² + bx + c = 0","Factorise: (x+p)(x+q) = 0 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ x = -p or x = -q","Quadratic formula: x = (-b ÃÂÃÂÃÂÃÂ± ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(bÃÂÃÂÃÂÃÂ²-4ac)) / 2a","Discriminant bÃÂÃÂÃÂÃÂ²-4ac: >0 two solutions, =0 one, <0 none","Vertex is the turning point of the parabola"],formula:"x = (-b ÃÂÃÂÃÂÃÂ± ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(bÃÂÃÂÃÂÃÂ²-4ac)) / 2a"},
+    {id:"linear-equations",emoji:"⚖️",title:"Linear Equations",summary:"Equations where the highest power is 1. Solve by doing the same to both sides.",keyFacts:["Isolate the variable step by step","Expand brackets first if needed","Collect like terms on each side","Move variables to one side, numbers to the other","Check: substitute your answer back in"]},
+    {id:"graphing",emoji:"📉",title:"Graphing Linear Relationships",summary:"Linear relationships form straight lines on a number plane.",keyFacts:["y = mx + b (gradient-intercept form)","m = gradient (rise ÷ run)","b = y-intercept (where line crosses y-axis)","Positive gradient: goes up left to right","Find x-intercept: set y = 0 and solve"],formula:"y = mx + b"},
+    {id:"simultaneous",emoji:"✖️",title:"Simultaneous Equations",summary:"Two equations, two unknowns — find values that satisfy both.",keyFacts:["Substitution: sub one equation into the other","Elimination: add/subtract to remove a variable","Solution is the intersection point of two lines","Check by substituting into BOTH original equations","Parallel lines → no solution, same line → infinite solutions"]},
+    {id:"quadratics",emoji:"∪",title:"Quadratic Equations",summary:"Equations with x² as highest power. Graphs are parabolas.",keyFacts:["Standard form: ax² + bx + c = 0","Factorise: (x+p)(x+q) = 0 → x = -p or x = -q","Quadratic formula: x = (-b ± √(b²-4ac)) / 2a","Discriminant b²-4ac: >0 two solutions, =0 one, <0 none","Vertex is the turning point of the parabola"],formula:"x = (-b ± √(b²-4ac)) / 2a"},
   ],
   "Functions & Graphs": [
-    {id:"function-notation",emoji:"f(x)",title:"Functions & Function Notation",summary:"A function maps each input to exactly one output.",keyFacts:["f(x) means 'f of x' ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ substitute x into the rule","Domain: all valid input values","Range: all possible output values","Vertical line test: each x has only one y","Composite: f(g(x)) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ apply g first, then f"]},
-    {id:"transformations",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",title:"Transformations of Graphs",summary:"How graphs shift, stretch and flip when we change the function.",keyFacts:["y = f(x) + k: shifts UP k units","y = f(x) - k: shifts DOWN k units","y = f(x - h): shifts RIGHT h units","y = f(x + h): shifts LEFT h units","y = af(x): vertical stretch by factor a","y = -f(x): reflection in x-axis"]},
-    {id:"exp-log",emoji:"eÃÂÃÂÃÂÃÂ£",title:"Exponential & Logarithmic Functions",summary:"Exponentials model growth/decay. Logs are their inverses.",keyFacts:["y = aÃÂÃÂÃÂÃÂ£: exponential growth if a > 1, decay if 0 < a < 1","y = eÃÂÃÂÃÂÃÂ£: natural exponential (e ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 2.718)","ln(x) = log_e(x): natural logarithm","log(ab) = log a + log b","log(a/b) = log a - log b"],formula:"y = eÃÂÃÂÃÂÃÂ£  ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ  x = ln(y)"},
+    {id:"function-notation",emoji:"f(x)",title:"Functions & Function Notation",summary:"A function maps each input to exactly one output.",keyFacts:["f(x) means 'f of x' — substitute x into the rule","Domain: all valid input values","Range: all possible output values","Vertical line test: each x has only one y","Composite: f(g(x)) — apply g first, then f"]},
+    {id:"transformations",emoji:"↔",title:"Transformations of Graphs",summary:"How graphs shift, stretch and flip when we change the function.",keyFacts:["y = f(x) + k: shifts UP k units","y = f(x) - k: shifts DOWN k units","y = f(x - h): shifts RIGHT h units","y = f(x + h): shifts LEFT h units","y = af(x): vertical stretch by factor a","y = -f(x): reflection in x-axis"]},
+    {id:"exp-log",emoji:"eˣ",title:"Exponential & Logarithmic Functions",summary:"Exponentials model growth/decay. Logs are their inverses.",keyFacts:["y = aˣ: exponential growth if a > 1, decay if 0 < a < 1","y = eˣ: natural exponential (e ≈ 2.718)","ln(x) = log_e(x): natural logarithm","log(ab) = log a + log b","log(a/b) = log a - log b"],formula:"y = eˣ  ↔  x = ln(y)"},
   ],
-  "Calculus ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Differentiation": [
-    {id:"power-rule",emoji:"d/dx",title:"Differentiation Rules",summary:"Shortcuts for finding derivatives of common functions.",keyFacts:["Power rule: d/dx(xÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿) = nxÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂÃÂÃÂ¹","d/dx(eÃÂÃÂÃÂÃÂ£) = eÃÂÃÂÃÂÃÂ£","d/dx(ln x) = 1/x","d/dx(sin x) = cos x","d/dx(cos x) = -sin x"],formula:"d/dx(xÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿) = nxÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂÃÂÃÂ¹"},
-    {id:"chain-rule",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",title:"Chain, Product & Quotient Rules",summary:"Rules for differentiating composite and combined functions.",keyFacts:["Chain rule: d/dx[f(g(x))] = f'(g(x)) ÃÂÃÂÃÂÃÂ g'(x)","Product rule: d/dx[uv] = u'v + uv'","Quotient rule: d/dx[u/v] = (u'v - uv') / vÃÂÃÂÃÂÃÂ²","Chain rule tip: 'outside ÃÂÃÂÃÂÃÂ derivative of inside'","Most common exam rule: chain rule"],formula:"Chain: dy/dx = dy/du ÃÂÃÂÃÂÃÂ du/dx"},
-    {id:"applications-diff",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Applications of Differentiation",summary:"Using derivatives to analyse function behaviour and solve optimisation.",keyFacts:["f'(x) = 0 at stationary points (local max/min)","f'(x) > 0: function increasing","f'(x) < 0: function decreasing","f''(x) > 0: minimum; f''(x) < 0: maximum","Tangent gradient at x=a is f'(a)"],},
+  "Calculus — Differentiation": [
+    {id:"power-rule",emoji:"d/dx",title:"Differentiation Rules",summary:"Shortcuts for finding derivatives of common functions.",keyFacts:["Power rule: d/dx(xⁿ) = nxⁿ⁻¹","d/dx(eˣ) = eˣ","d/dx(ln x) = 1/x","d/dx(sin x) = cos x","d/dx(cos x) = -sin x"],formula:"d/dx(xⁿ) = nxⁿ⁻¹"},
+    {id:"chain-rule",emoji:"⛓",title:"Chain, Product & Quotient Rules",summary:"Rules for differentiating composite and combined functions.",keyFacts:["Chain rule: d/dx[f(g(x))] = f'(g(x)) × g'(x)","Product rule: d/dx[uv] = u'v + uv'","Quotient rule: d/dx[u/v] = (u'v - uv') / v²","Chain rule tip: 'outside × derivative of inside'","Most common exam rule: chain rule"],formula:"Chain: dy/dx = dy/du × du/dx"},
+    {id:"applications-diff",emoji:"📈",title:"Applications of Differentiation",summary:"Using derivatives to analyse function behaviour and solve optimisation.",keyFacts:["f'(x) = 0 at stationary points (local max/min)","f'(x) > 0: function increasing","f'(x) < 0: function decreasing","f''(x) > 0: minimum; f''(x) < 0: maximum","Tangent gradient at x=a is f'(a)"],},
   ],
-  "Calculus ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Integration": [
-    {id:"antidiff",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«",title:"Antidifferentiation & Indefinite Integrals",summary:"The reverse of differentiation ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ finding the original function.",keyFacts:["ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«xÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ dx = xÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ÃÂÃÂ¢ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ¹/(n+1) + C  (n ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ  -1)","ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«eÃÂÃÂÃÂÃÂ£ dx = eÃÂÃÂÃÂÃÂ£ + C","ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«(1/x) dx = ln|x| + C","ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«sin x dx = -cos x + C","Always add + C (constant of integration)"],formula:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«xÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ dx = xÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿ÃÂÃÂ¢ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ¹/(n+1) + C"},
-    {id:"definite-integrals",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¡ÃÂÃÂµÃÂÃÂ",title:"Definite Integrals & Area",summary:"Calculates the exact area between a curve and the x-axis.",keyFacts:["ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¡ÃÂÃÂµÃÂÃÂ f(x)dx = F(b) - F(a)  where F' = f","Area above x-axis is positive","Area below x-axis is negative ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ use absolute value for area","Area between two curves: ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«(top - bottom)dx","Fundamental theorem connects differentiation and integration"],formula:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ«ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¡ÃÂÃÂµÃÂÃÂ f(x)dx = F(b) - F(a)"},
+  "Calculus — Integration": [
+    {id:"antidiff",emoji:"∫",title:"Antidifferentiation & Indefinite Integrals",summary:"The reverse of differentiation — finding the original function.",keyFacts:["∫xⁿ dx = xⁿ⁺¹/(n+1) + C  (n ≠ -1)","∫eˣ dx = eˣ + C","∫(1/x) dx = ln|x| + C","∫sin x dx = -cos x + C","Always add + C (constant of integration)"],formula:"∫xⁿ dx = xⁿ⁺¹/(n+1) + C"},
+    {id:"definite-integrals",emoji:"∫ₐᵇ",title:"Definite Integrals & Area",summary:"Calculates the exact area between a curve and the x-axis.",keyFacts:["∫ₐᵇ f(x)dx = F(b) - F(a)  where F' = f","Area above x-axis is positive","Area below x-axis is negative — use absolute value for area","Area between two curves: ∫(top - bottom)dx","Fundamental theorem connects differentiation and integration"],formula:"∫ₐᵇ f(x)dx = F(b) - F(a)"},
   ],
   "Organic Chemistry": [
-    {id:"functional-groups",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Functional Groups",summary:"Organic compounds are classified by their functional groups which determine their reactions.",keyFacts:["Alkanes: C-C single bonds, suffix -ane (methane, ethane, propane)","Alkenes: C=C double bond, suffix -ene","Alcohols: -OH group, suffix -ol (ethanol)","Carboxylic acids: -COOH, suffix -oic acid","Esters: -COO-, formed from acid + alcohol (condensation)"]},
-    {id:"reaction-types",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Organic Reaction Types",summary:"The key reactions organic compounds undergo.",keyFacts:["Addition: adds across C=C double bond (alkenes + HÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, BrÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, HÃÂÃÂ¢ÃÂÃÂÃÂÃÂO)","Substitution: replaces H with another atom (alkanes + ClÃÂÃÂ¢ÃÂÃÂÃÂÃÂ)","Condensation: two molecules join, releasing HÃÂÃÂ¢ÃÂÃÂÃÂÃÂO","Hydrolysis: breaks bonds using water (reverse of condensation)","Combustion: burns in OÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ COÃÂÃÂ¢ÃÂÃÂÃÂÃÂ + HÃÂÃÂ¢ÃÂÃÂÃÂÃÂO + energy"]},
+    {id:"functional-groups",emoji:"⚗️",title:"Functional Groups",summary:"Organic compounds are classified by their functional groups which determine their reactions.",keyFacts:["Alkanes: C-C single bonds, suffix -ane (methane, ethane, propane)","Alkenes: C=C double bond, suffix -ene","Alcohols: -OH group, suffix -ol (ethanol)","Carboxylic acids: -COOH, suffix -oic acid","Esters: -COO-, formed from acid + alcohol (condensation)"]},
+    {id:"reaction-types",emoji:"🔄",title:"Organic Reaction Types",summary:"The key reactions organic compounds undergo.",keyFacts:["Addition: adds across C=C double bond (alkenes + H₂, Br₂, H₂O)","Substitution: replaces H with another atom (alkanes + Cl₂)","Condensation: two molecules join, releasing H₂O","Hydrolysis: breaks bonds using water (reverse of condensation)","Combustion: burns in O₂ → CO₂ + H₂O + energy"]},
   ],
   "Electrochemistry": [
-    {id:"redox",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:"Oxidation & Reduction (OIL RIG)",summary:"Redox reactions involve transfer of electrons between species.",keyFacts:["OIL: Oxidation Is Loss of electrons","RIG: Reduction Is Gain of electrons","Oxidising agent: accepts electrons (gets reduced itself)","Reducing agent: donates electrons (gets oxidised itself)","Assign oxidation numbers to track electron transfer"],formula:"OIL RIG ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Oxidation Is Loss, Reduction Is Gain"},
-    {id:"galvanic-cells",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Galvanic Cells",summary:"Convert chemical energy to electrical energy via spontaneous redox.",keyFacts:["Anode: oxidation occurs (negative terminal)","Cathode: reduction occurs (positive terminal)","Salt bridge: maintains electrical neutrality","EMF = EÃÂÃÂÃÂÃÂ°(cathode) - EÃÂÃÂÃÂÃÂ°(anode)","Electrons flow: anode ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ external circuit ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ cathode"],formula:"EMF = EÃÂÃÂÃÂÃÂ°cathode - EÃÂÃÂÃÂÃÂ°anode"},
-    {id:"electrolysis",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Electrolytic Cells",summary:"Use electrical energy to drive non-spontaneous chemical reactions.",keyFacts:["Anode: oxidation (connected to + terminal)","Cathode: reduction (connected to - terminal)","Faraday's law: mass = (I ÃÂÃÂÃÂÃÂ t ÃÂÃÂÃÂÃÂ M) / (n ÃÂÃÂÃÂÃÂ F)","Applications: electroplating, aluminium smelting","More current ÃÂÃÂÃÂÃÂ more time = more product"],formula:"m = ItM / nF"},
+    {id:"redox",emoji:"⚡",title:"Oxidation & Reduction (OIL RIG)",summary:"Redox reactions involve transfer of electrons between species.",keyFacts:["OIL: Oxidation Is Loss of electrons","RIG: Reduction Is Gain of electrons","Oxidising agent: accepts electrons (gets reduced itself)","Reducing agent: donates electrons (gets oxidised itself)","Assign oxidation numbers to track electron transfer"],formula:"OIL RIG — Oxidation Is Loss, Reduction Is Gain"},
+    {id:"galvanic-cells",emoji:"🔋",title:"Galvanic Cells",summary:"Convert chemical energy to electrical energy via spontaneous redox.",keyFacts:["Anode: oxidation occurs (negative terminal)","Cathode: reduction occurs (positive terminal)","Salt bridge: maintains electrical neutrality","EMF = E°(cathode) - E°(anode)","Electrons flow: anode → external circuit → cathode"],formula:"EMF = E°cathode - E°anode"},
+    {id:"electrolysis",emoji:"🔌",title:"Electrolytic Cells",summary:"Use electrical energy to drive non-spontaneous chemical reactions.",keyFacts:["Anode: oxidation (connected to + terminal)","Cathode: reduction (connected to - terminal)","Faraday's law: mass = (I × t × M) / (n × F)","Applications: electroplating, aluminium smelting","More current × more time = more product"],formula:"m = ItM / nF"},
   ],
   "Energetics & Thermodynamics": [
-    {id:"enthalpy",emoji:"ÃÂÃÂÃÂÃÂH",title:"Enthalpy Changes",summary:"ÃÂÃÂÃÂÃÂH measures heat released or absorbed in a chemical reaction.",keyFacts:["Exothermic: ÃÂÃÂÃÂÃÂH < 0 (heat released, products lower energy)","Endothermic: ÃÂÃÂÃÂÃÂH > 0 (heat absorbed, products higher energy)","q = mcÃÂÃÂÃÂÃÂT for calorimetry calculations","Standard conditions: 25ÃÂÃÂÃÂÃÂ°C, 1 atm, 1 mol/L","Bond breaking absorbs energy; bond forming releases energy"],formula:"q = mcÃÂÃÂÃÂÃÂT"},
-    {id:"gibbs",emoji:"ÃÂÃÂÃÂÃÂG",title:"Gibbs Free Energy & Spontaneity",summary:"ÃÂÃÂÃÂÃÂG predicts whether a reaction occurs spontaneously.",keyFacts:["ÃÂÃÂÃÂÃÂG = ÃÂÃÂÃÂÃÂH - TÃÂÃÂÃÂÃÂS","ÃÂÃÂÃÂÃÂG < 0: spontaneous (will occur without energy input)","ÃÂÃÂÃÂÃÂG > 0: non-spontaneous","ÃÂÃÂÃÂÃÂG = 0: at equilibrium","ÃÂÃÂÃÂÃÂS: entropy ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ measure of disorder (gases > liquids > solids)"],formula:"ÃÂÃÂÃÂÃÂG = ÃÂÃÂÃÂÃÂH - TÃÂÃÂÃÂÃÂS"},
+    {id:"enthalpy",emoji:"ΔH",title:"Enthalpy Changes",summary:"ΔH measures heat released or absorbed in a chemical reaction.",keyFacts:["Exothermic: ΔH < 0 (heat released, products lower energy)","Endothermic: ΔH > 0 (heat absorbed, products higher energy)","q = mcΔT for calorimetry calculations","Standard conditions: 25°C, 1 atm, 1 mol/L","Bond breaking absorbs energy; bond forming releases energy"],formula:"q = mcΔT"},
+    {id:"gibbs",emoji:"ΔG",title:"Gibbs Free Energy & Spontaneity",summary:"ΔG predicts whether a reaction occurs spontaneously.",keyFacts:["ΔG = ΔH - TΔS","ΔG < 0: spontaneous (will occur without energy input)","ΔG > 0: non-spontaneous","ΔG = 0: at equilibrium","ΔS: entropy — measure of disorder (gases > liquids > solids)"],formula:"ΔG = ΔH - TΔS"},
   ],
   "Equilibrium & Acids/Bases": [
-    {id:"equilibrium",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",title:"Dynamic Equilibrium & Le Chatelier's",summary:"A reversible reaction where forward and reverse rates are equal.",keyFacts:["Equilibrium: concentrations constant (not necessarily equal)","Le Chatelier: system opposes changes to restore equilibrium","Add reactant ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ shifts toward products","Increase temperature ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ shifts toward endothermic direction","Increase pressure ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ shifts toward fewer moles of gas","Catalyst: speeds up reaching equilibrium, doesn't shift position"]},
-    {id:"ph",emoji:"pH",title:"pH, Acids & Bases",summary:"pH measures hydrogen ion concentration on a logarithmic scale.",keyFacts:["pH = -log[HÃÂÃÂ¢ÃÂÃÂÃÂÃÂº]","pH < 7: acidic; pH 7: neutral; pH > 7: basic (alkaline)","Strong acids fully dissociate: HCl, HÃÂÃÂ¢ÃÂÃÂÃÂÃÂSOÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, HNOÃÂÃÂ¢ÃÂÃÂÃÂÃÂ","Weak acids partially dissociate: CHÃÂÃÂ¢ÃÂÃÂÃÂÃÂCOOH (acetic acid)","pH + pOH = 14 at 25ÃÂÃÂÃÂÃÂ°C","Kw = [HÃÂÃÂ¢ÃÂÃÂÃÂÃÂº][OHÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»] = 1ÃÂÃÂÃÂÃÂ10ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»ÃÂÃÂÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ´"],formula:"pH = -log[HÃÂÃÂ¢ÃÂÃÂÃÂÃÂº]   pOH = -log[OHÃÂÃÂ¢ÃÂÃÂÃÂÃÂ»]   pH + pOH = 14"},
+    {id:"equilibrium",emoji:"⇌",title:"Dynamic Equilibrium & Le Chatelier's",summary:"A reversible reaction where forward and reverse rates are equal.",keyFacts:["Equilibrium: concentrations constant (not necessarily equal)","Le Chatelier: system opposes changes to restore equilibrium","Add reactant → shifts toward products","Increase temperature → shifts toward endothermic direction","Increase pressure → shifts toward fewer moles of gas","Catalyst: speeds up reaching equilibrium, doesn't shift position"]},
+    {id:"ph",emoji:"pH",title:"pH, Acids & Bases",summary:"pH measures hydrogen ion concentration on a logarithmic scale.",keyFacts:["pH = -log[H⁺]","pH < 7: acidic; pH 7: neutral; pH > 7: basic (alkaline)","Strong acids fully dissociate: HCl, H₂SO₄, HNO₃","Weak acids partially dissociate: CH₃COOH (acetic acid)","pH + pOH = 14 at 25°C","Kw = [H⁺][OH⁻] = 1×10⁻¹⁴"],formula:"pH = -log[H⁺]   pOH = -log[OH⁻]   pH + pOH = 14"},
   ],
   "Motion & Forces": [
-    {id:"kinematics",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Kinematics ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Equations of Motion",summary:"Describes motion using displacement, velocity, acceleration and time.",keyFacts:["v = u + at","s = ut + ÃÂÃÂÃÂÃÂ½atÃÂÃÂÃÂÃÂ²","vÃÂÃÂÃÂÃÂ² = uÃÂÃÂÃÂÃÂ² + 2as","s = ÃÂÃÂÃÂÃÂ½(u+v)t","Only valid for CONSTANT acceleration","v=final, u=initial, a=acceleration, s=displacement, t=time"],formula:"v = u + at  |  s = ut + ÃÂÃÂÃÂÃÂ½atÃÂÃÂÃÂÃÂ²  |  vÃÂÃÂÃÂÃÂ² = uÃÂÃÂÃÂÃÂ² + 2as"},
-    {id:"newtons-laws",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Newton's Three Laws",summary:"Fundamental laws describing how forces affect the motion of objects.",keyFacts:["1st Law (Inertia): object stays at rest or moves at constant velocity unless a net force acts","2nd Law: F = ma (net force = mass ÃÂÃÂÃÂÃÂ acceleration)","3rd Law: every action has equal and opposite reaction pair","Weight W = mg where g = 9.8 m/sÃÂÃÂÃÂÃÂ²","Net force = vector sum of ALL forces acting"],formula:"F = ma  |  W = mg"},
-    {id:"momentum",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",title:"Momentum & Impulse",summary:"Momentum is mass ÃÂÃÂÃÂÃÂ velocity. Impulse is change in momentum.",keyFacts:["p = mv (momentum, kgÃÂÃÂ¢ÃÂÃÂÃÂÃÂm/s)","Impulse J = FÃÂÃÂÃÂÃÂt = ÃÂÃÂÃÂÃÂp","Conservation: total momentum unchanged if no external force","Elastic collision: KE and momentum both conserved","Inelastic: only momentum conserved (objects may stick together)"],formula:"p = mv  |  J = FÃÂÃÂÃÂÃÂt = ÃÂÃÂÃÂÃÂp"},
-    {id:"energy-work",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:"Work, Energy & Power",summary:"Work is done when a force moves an object. Energy is the capacity to do work.",keyFacts:["W = Fs cos ÃÂÃÂÃÂÃÂ¸","KE = ÃÂÃÂÃÂÃÂ½mvÃÂÃÂÃÂÃÂ²","GPE = mgh","Conservation: total mechanical energy is constant (no friction)","P = W/t = Fv","Efficiency = useful output / total input ÃÂÃÂÃÂÃÂ 100%"],formula:"W = Fs  |  KE = ÃÂÃÂÃÂÃÂ½mvÃÂÃÂÃÂÃÂ²  |  PE = mgh  |  P = W/t"},
-    {id:"circular",emoji:"ÃÂÃÂ¢ÃÂÃÂ­ÃÂÃÂ",title:"Circular Motion",summary:"Objects moving in circles experience centripetal acceleration toward the centre.",keyFacts:["Centripetal acceleration: a = vÃÂÃÂÃÂÃÂ²/r","Centripetal force: F = mvÃÂÃÂÃÂÃÂ²/r (directed toward centre, NOT outward)","Period T: time for one complete revolution","Frequency f = 1/T","v = 2ÃÂÃÂÃÂÃÂr/T","Examples: satellites, cars on bends, spinning on a string"],formula:"F = mvÃÂÃÂÃÂÃÂ²/r  |  a = vÃÂÃÂÃÂÃÂ²/r"},
+    {id:"kinematics",emoji:"🏃",title:"Kinematics — Equations of Motion",summary:"Describes motion using displacement, velocity, acceleration and time.",keyFacts:["v = u + at","s = ut + ½at²","v² = u² + 2as","s = ½(u+v)t","Only valid for CONSTANT acceleration","v=final, u=initial, a=acceleration, s=displacement, t=time"],formula:"v = u + at  |  s = ut + ½at²  |  v² = u² + 2as"},
+    {id:"newtons-laws",emoji:"⚖️",title:"Newton's Three Laws",summary:"Fundamental laws describing how forces affect the motion of objects.",keyFacts:["1st Law (Inertia): object stays at rest or moves at constant velocity unless a net force acts","2nd Law: F = ma (net force = mass × acceleration)","3rd Law: every action has equal and opposite reaction pair","Weight W = mg where g = 9.8 m/s²","Net force = vector sum of ALL forces acting"],formula:"F = ma  |  W = mg"},
+    {id:"momentum",emoji:"💥",title:"Momentum & Impulse",summary:"Momentum is mass × velocity. Impulse is change in momentum.",keyFacts:["p = mv (momentum, kg⋅m/s)","Impulse J = FΔt = Δp","Conservation: total momentum unchanged if no external force","Elastic collision: KE and momentum both conserved","Inelastic: only momentum conserved (objects may stick together)"],formula:"p = mv  |  J = FΔt = Δp"},
+    {id:"energy-work",emoji:"⚡",title:"Work, Energy & Power",summary:"Work is done when a force moves an object. Energy is the capacity to do work.",keyFacts:["W = Fs cos θ","KE = ½mv²","GPE = mgh","Conservation: total mechanical energy is constant (no friction)","P = W/t = Fv","Efficiency = useful output / total input × 100%"],formula:"W = Fs  |  KE = ½mv²  |  PE = mgh  |  P = W/t"},
+    {id:"circular",emoji:"⭕",title:"Circular Motion",summary:"Objects moving in circles experience centripetal acceleration toward the centre.",keyFacts:["Centripetal acceleration: a = v²/r","Centripetal force: F = mv²/r (directed toward centre, NOT outward)","Period T: time for one complete revolution","Frequency f = 1/T","v = 2πr/T","Examples: satellites, cars on bends, spinning on a string"],formula:"F = mv²/r  |  a = v²/r"},
   ],
   "Electricity & Magnetism": [
-    {id:"dc-circuits",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"DC Circuits & Ohm's Law",summary:"Circuits with direct current. All obey Ohm's Law: V = IR.",keyFacts:["Ohm's Law: V = IR (Voltage = Current ÃÂÃÂÃÂÃÂ Resistance)","Series: same current everywhere, voltages add, R_total = RÃÂÃÂ¢ÃÂÃÂÃÂÃÂ+RÃÂÃÂ¢ÃÂÃÂÃÂÃÂ+...","Parallel: same voltage, currents add, 1/R = 1/RÃÂÃÂ¢ÃÂÃÂÃÂÃÂ+1/RÃÂÃÂ¢ÃÂÃÂÃÂÃÂ+...","Power: P = VI = IÃÂÃÂÃÂÃÂ²R = VÃÂÃÂÃÂÃÂ²/R","Kirchhoff's voltage law: sum of EMFs = sum of voltage drops"],formula:"V = IR  |  P = VI  |  Series: R=RÃÂÃÂ¢ÃÂÃÂÃÂÃÂ+RÃÂÃÂ¢ÃÂÃÂÃÂÃÂ"},
-    {id:"em-induction",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ÃÂÃÂ²",title:"Electromagnetic Induction",summary:"A changing magnetic field induces an EMF and current in a conductor.",keyFacts:["Faraday's law: EMF = -ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¦/ÃÂÃÂÃÂÃÂt","Lenz's law: induced current OPPOSES the change that caused it","Magnetic flux: ÃÂÃÂÃÂÃÂ¦ = BA cos ÃÂÃÂÃÂÃÂ¸","Generator converts mechanical ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ electrical energy","Transformer: VÃÂÃÂ¢ÃÂÃÂÃÂÃÂ/VÃÂÃÂ¢ÃÂÃÂÃÂÃÂ = NÃÂÃÂ¢ÃÂÃÂÃÂÃÂ/NÃÂÃÂ¢ÃÂÃÂÃÂÃÂ (turns ratio)"],formula:"EMF = -ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¦/ÃÂÃÂÃÂÃÂt  |  VÃÂÃÂ¢ÃÂÃÂÃÂÃÂ/VÃÂÃÂ¢ÃÂÃÂÃÂÃÂ = NÃÂÃÂ¢ÃÂÃÂÃÂÃÂ/NÃÂÃÂ¢ÃÂÃÂÃÂÃÂ"},
+    {id:"dc-circuits",emoji:"🔌",title:"DC Circuits & Ohm's Law",summary:"Circuits with direct current. All obey Ohm's Law: V = IR.",keyFacts:["Ohm's Law: V = IR (Voltage = Current × Resistance)","Series: same current everywhere, voltages add, R_total = R₁+R₂+...","Parallel: same voltage, currents add, 1/R = 1/R₁+1/R₂+...","Power: P = VI = I²R = V²/R","Kirchhoff's voltage law: sum of EMFs = sum of voltage drops"],formula:"V = IR  |  P = VI  |  Series: R=R₁+R₂"},
+    {id:"em-induction",emoji:"🧲",title:"Electromagnetic Induction",summary:"A changing magnetic field induces an EMF and current in a conductor.",keyFacts:["Faraday's law: EMF = -ΔΦ/Δt","Lenz's law: induced current OPPOSES the change that caused it","Magnetic flux: Φ = BA cos θ","Generator converts mechanical → electrical energy","Transformer: V₁/V₂ = N₁/N₂ (turns ratio)"],formula:"EMF = -ΔΦ/Δt  |  V₁/V₂ = N₁/N₂"},
   ],
   "Cell Biology & Regulation": [
-    {id:"cell-structure",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",title:"Cell Structure & Organelles",summary:"All living things are made of cells with specific organelles performing specific functions.",keyFacts:["Nucleus: contains DNA, controls cell activities","Mitochondria: aerobic respiration ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ATP (energy)","Chloroplasts: photosynthesis (plants/algae only)","Ribosomes: protein synthesis (translation)","Cell membrane: controls entry/exit (phospholipid bilayer)","Endoplasmic reticulum: transport network (rough = proteins, smooth = lipids)"]},
-    {id:"dna-protein",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ÃÂÃÂ¬",title:"DNA, Transcription & Translation",summary:"DNA stores genetic information and directs protein synthesis.",keyFacts:["DNA: double helix, nucleotides, base pairs A-T and G-C","Transcription: DNA ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ mRNA (in nucleus)","Translation: mRNA ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ protein (at ribosomes)","Codon: 3 bases on mRNA codes for one amino acid","Start codon: AUG; Stop codons: UAA, UAG, UGA","Gene expression is controlled ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ not all genes are always active"]},
-    {id:"respiration",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:"Cellular Respiration",summary:"Releases energy from glucose to produce ATP.",keyFacts:["Overall: CÃÂÃÂ¢ÃÂÃÂÃÂÃÂHÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂOÃÂÃÂ¢ÃÂÃÂÃÂÃÂ + 6OÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 6COÃÂÃÂ¢ÃÂÃÂÃÂÃÂ + 6HÃÂÃÂ¢ÃÂÃÂÃÂÃÂO + ATP","Glycolysis: glucose ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ pyruvate, in cytoplasm, 2 ATP, no OÃÂÃÂ¢ÃÂÃÂÃÂÃÂ needed","Krebs cycle: pyruvate ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ COÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, in mitochondrial matrix, 2 ATP","ETC: uses OÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, produces ~32 ATP, in inner mitochondrial membrane","Anaerobic (no OÃÂÃÂ¢ÃÂÃÂÃÂÃÂ): fermentation ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ lactic acid (animals) or ethanol (yeast)"],formula:"CÃÂÃÂ¢ÃÂÃÂÃÂÃÂHÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂOÃÂÃÂ¢ÃÂÃÂÃÂÃÂ + 6OÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 6COÃÂÃÂ¢ÃÂÃÂÃÂÃÂ + 6HÃÂÃÂ¢ÃÂÃÂÃÂÃÂO + ~36 ATP"},
+    {id:"cell-structure",emoji:"🔬",title:"Cell Structure & Organelles",summary:"All living things are made of cells with specific organelles performing specific functions.",keyFacts:["Nucleus: contains DNA, controls cell activities","Mitochondria: aerobic respiration → ATP (energy)","Chloroplasts: photosynthesis (plants/algae only)","Ribosomes: protein synthesis (translation)","Cell membrane: controls entry/exit (phospholipid bilayer)","Endoplasmic reticulum: transport network (rough = proteins, smooth = lipids)"]},
+    {id:"dna-protein",emoji:"🧬",title:"DNA, Transcription & Translation",summary:"DNA stores genetic information and directs protein synthesis.",keyFacts:["DNA: double helix, nucleotides, base pairs A-T and G-C","Transcription: DNA → mRNA (in nucleus)","Translation: mRNA → protein (at ribosomes)","Codon: 3 bases on mRNA codes for one amino acid","Start codon: AUG; Stop codons: UAA, UAG, UGA","Gene expression is controlled — not all genes are always active"]},
+    {id:"respiration",emoji:"⚡",title:"Cellular Respiration",summary:"Releases energy from glucose to produce ATP.",keyFacts:["Overall: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP","Glycolysis: glucose → pyruvate, in cytoplasm, 2 ATP, no O₂ needed","Krebs cycle: pyruvate → CO₂, in mitochondrial matrix, 2 ATP","ETC: uses O₂, produces ~32 ATP, in inner mitochondrial membrane","Anaerobic (no O₂): fermentation → lactic acid (animals) or ethanol (yeast)"],formula:"C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ~36 ATP"},
   ],
   "Nervous System & Brain": [
-    {id:"neurons",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ÃÂÃÂ ",title:"Neurons & Synaptic Transmission",summary:"Neurons are specialised cells that transmit electrical and chemical signals.",keyFacts:["Sensory neurons: carry signals from sense organs to brain","Motor neurons: carry signals from brain to muscles/glands","Interneurons: connect sensory and motor pathways in the CNS","Action potential: electrical signal along axon (all-or-nothing response)","Synapse: gap between neurons ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ neurotransmitters diffuse across","Key neurotransmitters: serotonin (mood), dopamine (reward), GABA (calming)"]},
+    {id:"neurons",emoji:"🧠",title:"Neurons & Synaptic Transmission",summary:"Neurons are specialised cells that transmit electrical and chemical signals.",keyFacts:["Sensory neurons: carry signals from sense organs to brain","Motor neurons: carry signals from brain to muscles/glands","Interneurons: connect sensory and motor pathways in the CNS","Action potential: electrical signal along axon (all-or-nothing response)","Synapse: gap between neurons — neurotransmitters diffuse across","Key neurotransmitters: serotonin (mood), dopamine (reward), GABA (calming)"]},
   ],
   "Learning & Memory": [
-    {id:"classical-conditioning",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Classical Conditioning (Pavlov)",summary:"Learning by association ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ a neutral stimulus becomes linked to an automatic response.",keyFacts:["US: Unconditioned Stimulus (food naturally causes salivation)","UR: Unconditioned Response (automatic response to US)","NS: Neutral Stimulus (bell ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no response initially)","CS: Conditioned Stimulus (bell after pairing with food)","CR: Conditioned Response (salivation to bell alone)","Extinction: CR weakens if CS presented repeatedly without US"]},
-    {id:"operant-conditioning",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Operant Conditioning (Skinner)",summary:"Learning through consequences ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ behaviour strengthened or weakened by outcomes.",keyFacts:["Positive reinforcement: add pleasant stimulus ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ behaviour increases","Negative reinforcement: remove unpleasant ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ behaviour increases (e.g. taking painkiller removes pain)","Positive punishment: add unpleasant ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ behaviour decreases","Negative punishment: remove pleasant ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ behaviour decreases","Variable ratio schedule: most resistant to extinction (e.g. pokies, social media)"]},
-    {id:"memory-models",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ÃÂÃÂ ",title:"Atkinson-Shiffrin Memory Model",summary:"Information flows through sensory, short-term and long-term memory stores.",keyFacts:["Sensory memory: fraction of a second (iconic = visual; echoic = auditory)","Short-term memory (STM): 20-30 seconds, capacity of 7ÃÂÃÂÃÂÃÂ±2 chunks","Long-term memory (LTM): potentially unlimited capacity and duration","Maintenance rehearsal transfers STM ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ LTM","Levels of processing: deeper processing = better encoding and recall"]},
+    {id:"classical-conditioning",emoji:"🔔",title:"Classical Conditioning (Pavlov)",summary:"Learning by association — a neutral stimulus becomes linked to an automatic response.",keyFacts:["US: Unconditioned Stimulus (food naturally causes salivation)","UR: Unconditioned Response (automatic response to US)","NS: Neutral Stimulus (bell — no response initially)","CS: Conditioned Stimulus (bell after pairing with food)","CR: Conditioned Response (salivation to bell alone)","Extinction: CR weakens if CS presented repeatedly without US"]},
+    {id:"operant-conditioning",emoji:"🐀",title:"Operant Conditioning (Skinner)",summary:"Learning through consequences — behaviour strengthened or weakened by outcomes.",keyFacts:["Positive reinforcement: add pleasant stimulus → behaviour increases","Negative reinforcement: remove unpleasant → behaviour increases (e.g. taking painkiller removes pain)","Positive punishment: add unpleasant → behaviour decreases","Negative punishment: remove pleasant → behaviour decreases","Variable ratio schedule: most resistant to extinction (e.g. pokies, social media)"]},
+    {id:"memory-models",emoji:"🧠",title:"Atkinson-Shiffrin Memory Model",summary:"Information flows through sensory, short-term and long-term memory stores.",keyFacts:["Sensory memory: fraction of a second (iconic = visual; echoic = auditory)","Short-term memory (STM): 20-30 seconds, capacity of 7±2 chunks","Long-term memory (LTM): potentially unlimited capacity and duration","Maintenance rehearsal transfers STM → LTM","Levels of processing: deeper processing = better encoding and recall"]},
   ],
   "The Victorian Court System": [
-    {id:"court-hierarchy",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Court Hierarchy",summary:"Courts are arranged by jurisdiction and status ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ higher courts set binding precedent.",keyFacts:["Magistrates Court: summary offences, civil up to $100K","County Court: serious indictable offences, civil up to $1M","Supreme Court: most serious crimes, unlimited civil jurisdiction","Court of Appeal: hears appeals from Magistrates and County Courts","High Court of Australia: final court of appeal, constitutional matters","Higher courts bind lower courts through doctrine of precedent"]},
+    {id:"court-hierarchy",emoji:"⚖️",title:"Court Hierarchy",summary:"Courts are arranged by jurisdiction and status — higher courts set binding precedent.",keyFacts:["Magistrates Court: summary offences, civil up to $100K","County Court: serious indictable offences, civil up to $1M","Supreme Court: most serious crimes, unlimited civil jurisdiction","Court of Appeal: hears appeals from Magistrates and County Courts","High Court of Australia: final court of appeal, constitutional matters","Higher courts bind lower courts through doctrine of precedent"]},
   ],
   "Criminal Law": [
-    {id:"elements-crime",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Elements of a Crime",summary:"Every crime requires two elements proved beyond reasonable doubt.",keyFacts:["Actus reus: the guilty act (physical element)","Mens rea: the guilty mind (mental/intention element)","Both must be present AND occur at the same time","Strict liability offences: actus reus only (e.g. speeding)","Standard of proof in criminal law: beyond reasonable doubt","Burden of proof: prosecution must prove guilt (accused is presumed innocent)"]},
+    {id:"elements-crime",emoji:"🔍",title:"Elements of a Crime",summary:"Every crime requires two elements proved beyond reasonable doubt.",keyFacts:["Actus reus: the guilty act (physical element)","Mens rea: the guilty mind (mental/intention element)","Both must be present AND occur at the same time","Strict liability offences: actus reus only (e.g. speeding)","Standard of proof in criminal law: beyond reasonable doubt","Burden of proof: prosecution must prove guilt (accused is presumed innocent)"]},
   ],
   "Functions & Graphs (Year 9-10)": [
-    {id:"linear-graphs",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Linear & Non-Linear Graphs",summary:"Graphs of equations showing relationships between variables.",keyFacts:["Linear: y = mx + b ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ straight line","Gradient m = rise/run","Parabola: y = axÃÂÃÂÃÂÃÂ² + bx + c ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ U-shaped curve","Exponential: y = aÃÂÃÂÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ rapid growth or decay","Transformations shift, stretch and flip graphs"]},
-    {id:"parabolas",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂª",title:"Parabolas & Quadratic Graphs",summary:"U-shaped graphs of quadratic functions y = axÃÂÃÂÃÂÃÂ² + bx + c.",keyFacts:["Vertex: turning point of the parabola","Axis of symmetry: x = -b/2a","x-intercepts: where parabola crosses x-axis (roots)","a > 0: opens upward (happy face) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂª","a < 0: opens downward (sad face) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ©"],formula:"y = axÃÂÃÂÃÂÃÂ² + bx + c"},
+    {id:"linear-graphs",emoji:"📉",title:"Linear & Non-Linear Graphs",summary:"Graphs of equations showing relationships between variables.",keyFacts:["Linear: y = mx + b — straight line","Gradient m = rise/run","Parabola: y = ax² + bx + c — U-shaped curve","Exponential: y = aˣ — rapid growth or decay","Transformations shift, stretch and flip graphs"]},
+    {id:"parabolas",emoji:"∪",title:"Parabolas & Quadratic Graphs",summary:"U-shaped graphs of quadratic functions y = ax² + bx + c.",keyFacts:["Vertex: turning point of the parabola","Axis of symmetry: x = -b/2a","x-intercepts: where parabola crosses x-axis (roots)","a > 0: opens upward (happy face) ∪","a < 0: opens downward (sad face) ∩"],formula:"y = ax² + bx + c"},
   ],
   "Biology (Year 9-10)": [
-    {id:"cells",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",title:"Cells & Cell Division",summary:"All living things are made of cells. New cells form through division.",keyFacts:["Plant cells: cell wall, chloroplasts, large vacuole (not in animal cells)","Animal cells: no cell wall, no chloroplasts, small vacuoles","Mitosis: produces 2 identical daughter cells (growth and repair)","Meiosis: produces 4 gametes with half the chromosomes (reproduction)","DNA in nucleus controls all cell activities"]},
-    {id:"genetics",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ÃÂÃÂ¬",title:"Genetics & Inheritance",summary:"Traits are passed from parents to offspring through genes.",keyFacts:["Genes are sections of DNA on chromosomes","Alleles: different versions of the same gene","Dominant allele (B) masks recessive (b) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ BB or Bb shows dominant trait","Recessive only shows if both alleles are recessive (bb)","Punnett squares predict probability of offspring traits"]},
-    {id:"evolution",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ",title:"Evolution & Natural Selection",summary:"Species change over time through natural selection acting on variation.",keyFacts:["Variation: individuals differ within a species","Survival of the fittest: better-adapted individuals survive and reproduce","Inherited traits: successful adaptations passed to offspring","Evidence: fossil record, comparative anatomy, DNA similarities","Speciation: isolated populations diverge into separate species"]},
+    {id:"cells",emoji:"🔬",title:"Cells & Cell Division",summary:"All living things are made of cells. New cells form through division.",keyFacts:["Plant cells: cell wall, chloroplasts, large vacuole (not in animal cells)","Animal cells: no cell wall, no chloroplasts, small vacuoles","Mitosis: produces 2 identical daughter cells (growth and repair)","Meiosis: produces 4 gametes with half the chromosomes (reproduction)","DNA in nucleus controls all cell activities"]},
+    {id:"genetics",emoji:"🧬",title:"Genetics & Inheritance",summary:"Traits are passed from parents to offspring through genes.",keyFacts:["Genes are sections of DNA on chromosomes","Alleles: different versions of the same gene","Dominant allele (B) masks recessive (b) — BB or Bb shows dominant trait","Recessive only shows if both alleles are recessive (bb)","Punnett squares predict probability of offspring traits"]},
+    {id:"evolution",emoji:"🦎",title:"Evolution & Natural Selection",summary:"Species change over time through natural selection acting on variation.",keyFacts:["Variation: individuals differ within a species","Survival of the fittest: better-adapted individuals survive and reproduce","Inherited traits: successful adaptations passed to offspring","Evidence: fossil record, comparative anatomy, DNA similarities","Speciation: isolated populations diverge into separate species"]},
   ],
   "Chemistry (Year 9-10)": [
-    {id:"atomic-structure",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Atomic Structure",summary:"Atoms have protons, neutrons and electrons arranged in a specific way.",keyFacts:["Protons: positive charge, in nucleus","Neutrons: no charge, in nucleus","Electrons: negative charge, in shells around nucleus","Atomic number = number of protons","Mass number = protons + neutrons","Ions: atoms that have gained or lost electrons"],formula:"Atomic number = protons | Mass number = protons + neutrons"},
-    {id:"periodic-table",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"The Periodic Table",summary:"Elements arranged by atomic number in groups (columns) and periods (rows).",keyFacts:["Group: column ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ elements have similar properties","Period: row ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ same number of electron shells","Metals: left side, conductors, lose electrons to form positive ions","Non-metals: right side, insulators, gain electrons to form negative ions","Noble gases: Group 18, full outer shell, very unreactive","Valence electrons determine reactivity and bonding"]},
-    {id:"chemical-reactions",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Chemical Reactions",summary:"Substances rearrange their atoms to form new products with different properties.",keyFacts:["Reactants ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Products (written as chemical equation)","Law of conservation of mass: total mass doesn't change","Balancing equations: same number of each atom on both sides","Exothermic: releases heat (combustion, neutralisation)","Endothermic: absorbs heat (photosynthesis, cooking)","Indicators: show if a substance is acid, neutral or base"],},
+    {id:"atomic-structure",emoji:"⚛️",title:"Atomic Structure",summary:"Atoms have protons, neutrons and electrons arranged in a specific way.",keyFacts:["Protons: positive charge, in nucleus","Neutrons: no charge, in nucleus","Electrons: negative charge, in shells around nucleus","Atomic number = number of protons","Mass number = protons + neutrons","Ions: atoms that have gained or lost electrons"],formula:"Atomic number = protons | Mass number = protons + neutrons"},
+    {id:"periodic-table",emoji:"🗂️",title:"The Periodic Table",summary:"Elements arranged by atomic number in groups (columns) and periods (rows).",keyFacts:["Group: column — elements have similar properties","Period: row — same number of electron shells","Metals: left side, conductors, lose electrons to form positive ions","Non-metals: right side, insulators, gain electrons to form negative ions","Noble gases: Group 18, full outer shell, very unreactive","Valence electrons determine reactivity and bonding"]},
+    {id:"chemical-reactions",emoji:"⚗️",title:"Chemical Reactions",summary:"Substances rearrange their atoms to form new products with different properties.",keyFacts:["Reactants → Products (written as chemical equation)","Law of conservation of mass: total mass doesn't change","Balancing equations: same number of each atom on both sides","Exothermic: releases heat (combustion, neutralisation)","Endothermic: absorbs heat (photosynthesis, cooking)","Indicators: show if a substance is acid, neutral or base"],},
   ],
   "Physics (Year 9-10)": [
-    {id:"motion-forces",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Motion & Forces",summary:"Motion is described by distance, speed, velocity and acceleration. Forces cause changes in motion.",keyFacts:["Speed = distance ÃÂÃÂÃÂÃÂ· time","Velocity: speed with direction (vector)","Acceleration: change in velocity ÃÂÃÂÃÂÃÂ· time","Newton's 1st Law: object stays at rest or constant velocity unless a net force acts","Newton's 2nd Law: F = ma","Newton's 3rd Law: every action has equal and opposite reaction"],formula:"speed = distance/time | F = ma"},
-    {id:"energy-waves",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Energy & Waves",summary:"Energy comes in many forms and can be transferred and transformed.",keyFacts:["KE = ÃÂÃÂÃÂÃÂ½mvÃÂÃÂÃÂÃÂ² (kinetic energy)","GPE = mgh (gravitational potential energy)","Conservation of energy: total energy stays constant","Waves transfer energy without transferring matter","Frequency (Hz) ÃÂÃÂÃÂÃÂ wavelength (m) = wave speed (m/s)","Light: reflection, refraction, dispersion"],formula:"wave speed = frequency ÃÂÃÂÃÂÃÂ wavelength"},
-    {id:"electricity",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:"Electricity & Circuits",summary:"Electric current is the flow of electrons through a conductor.",keyFacts:["Ohm's Law: V = IR (Voltage = Current ÃÂÃÂÃÂÃÂ Resistance)","Series circuit: same current everywhere, voltages add","Parallel circuit: same voltage, currents add","Power = Voltage ÃÂÃÂÃÂÃÂ Current (P = VI)","Insulators: don't conduct electricity (rubber, plastic)","Conductors: allow current flow (copper, aluminium)"],formula:"V = IR | P = VI"},
+    {id:"motion-forces",emoji:"🏃",title:"Motion & Forces",summary:"Motion is described by distance, speed, velocity and acceleration. Forces cause changes in motion.",keyFacts:["Speed = distance ÷ time","Velocity: speed with direction (vector)","Acceleration: change in velocity ÷ time","Newton's 1st Law: object stays at rest or constant velocity unless a net force acts","Newton's 2nd Law: F = ma","Newton's 3rd Law: every action has equal and opposite reaction"],formula:"speed = distance/time | F = ma"},
+    {id:"energy-waves",emoji:"🌊",title:"Energy & Waves",summary:"Energy comes in many forms and can be transferred and transformed.",keyFacts:["KE = ½mv² (kinetic energy)","GPE = mgh (gravitational potential energy)","Conservation of energy: total energy stays constant","Waves transfer energy without transferring matter","Frequency (Hz) × wavelength (m) = wave speed (m/s)","Light: reflection, refraction, dispersion"],formula:"wave speed = frequency × wavelength"},
+    {id:"electricity",emoji:"⚡",title:"Electricity & Circuits",summary:"Electric current is the flow of electrons through a conductor.",keyFacts:["Ohm's Law: V = IR (Voltage = Current × Resistance)","Series circuit: same current everywhere, voltages add","Parallel circuit: same voltage, currents add","Power = Voltage × Current (P = VI)","Insulators: don't conduct electricity (rubber, plastic)","Conductors: allow current flow (copper, aluminium)"],formula:"V = IR | P = VI"},
   ],
   "Aggregate Demand & Supply": [
-    {id:"aggregate-demand",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Aggregate Demand (AD)",summary:"Total demand for all goods and services in an economy at a given price level.",keyFacts:["AD = C + I + G + (X - M)","C = consumption (households), I = investment (businesses)","G = government spending, X = exports, M = imports","AD shifts right: more spending, lower interest rates, higher confidence","Multiplier effect: initial spending increase amplified through economy"],formula:"AD = C + I + G + (X-M)"},
-    {id:"aggregate-supply",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ­",title:"Aggregate Supply (AS)",summary:"Total production of goods and services at various price levels.",keyFacts:["Short-run AS: upward sloping (higher prices ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ more production)","Long-run AS: vertical at potential GDP (full employment output)","AS shifts right: lower input costs, improved technology, more workers","Supply shock: sudden disruption to AS (e.g. oil price spike)","Equilibrium: AD = AS determines price level and real output"]},
+    {id:"aggregate-demand",emoji:"📊",title:"Aggregate Demand (AD)",summary:"Total demand for all goods and services in an economy at a given price level.",keyFacts:["AD = C + I + G + (X - M)","C = consumption (households), I = investment (businesses)","G = government spending, X = exports, M = imports","AD shifts right: more spending, lower interest rates, higher confidence","Multiplier effect: initial spending increase amplified through economy"],formula:"AD = C + I + G + (X-M)"},
+    {id:"aggregate-supply",emoji:"🏭",title:"Aggregate Supply (AS)",summary:"Total production of goods and services at various price levels.",keyFacts:["Short-run AS: upward sloping (higher prices → more production)","Long-run AS: vertical at potential GDP (full employment output)","AS shifts right: lower input costs, improved technology, more workers","Supply shock: sudden disruption to AS (e.g. oil price spike)","Equilibrium: AD = AS determines price level and real output"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE ENGLISH ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE ENGLISH ──
   "Reading & Responding to Texts": [
-    {id:"analysing-authors",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Analysing How Authors Construct Meaning",summary:"Authors deliberately choose language, structure and literary techniques to shape meaning and influence readers.",keyFacts:["Language features: diction (word choice), syntax, tone, imagery, figurative language","Structure: how a text is organised ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ chronological, non-linear, cyclical","Perspective: the point of view from which the story is told","Context: historical, social and cultural circumstances of the text","Metalanguage: specific vocabulary for discussing texts (e.g. symbolism, characterisation, motif)"]},
-    {id:"themes-values",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡",title:"Ideas, Themes & Values",summary:"Identifying and discussing the central ideas and values explored in a text.",keyFacts:["Theme: a central idea explored throughout the text","Values: beliefs and attitudes promoted or critiqued by the text","Avoid plot summary ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ focus on what the text is saying about human experience","Use evidence (quotes) to support your interpretation","Consider how different readers might interpret the same text differently"]},
-    {id:"written-response",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Writing a Text Response Essay",summary:"A structured argument about a text using evidence and sophisticated analysis.",keyFacts:["Introduction: clear contention (your argument about the text)","Body paragraphs: TEEL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Topic sentence, Evidence, Explanation, Link","Embed quotes: integrate short quotes into your own sentences","Analysis: explain HOW the technique creates meaning, not just WHAT it does","Conclusion: synthesise your argument ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ don't just repeat introduction","Avoid 'the author wants us to think...' ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ use 'the author suggests/explores/reveals'"]},
+    {id:"analysing-authors",emoji:"📖",title:"Analysing How Authors Construct Meaning",summary:"Authors deliberately choose language, structure and literary techniques to shape meaning and influence readers.",keyFacts:["Language features: diction (word choice), syntax, tone, imagery, figurative language","Structure: how a text is organised — chronological, non-linear, cyclical","Perspective: the point of view from which the story is told","Context: historical, social and cultural circumstances of the text","Metalanguage: specific vocabulary for discussing texts (e.g. symbolism, characterisation, motif)"]},
+    {id:"themes-values",emoji:"💡",title:"Ideas, Themes & Values",summary:"Identifying and discussing the central ideas and values explored in a text.",keyFacts:["Theme: a central idea explored throughout the text","Values: beliefs and attitudes promoted or critiqued by the text","Avoid plot summary — focus on what the text is saying about human experience","Use evidence (quotes) to support your interpretation","Consider how different readers might interpret the same text differently"]},
+    {id:"written-response",emoji:"✍️",title:"Writing a Text Response Essay",summary:"A structured argument about a text using evidence and sophisticated analysis.",keyFacts:["Introduction: clear contention (your argument about the text)","Body paragraphs: TEEL — Topic sentence, Evidence, Explanation, Link","Embed quotes: integrate short quotes into your own sentences","Analysis: explain HOW the technique creates meaning, not just WHAT it does","Conclusion: synthesise your argument — don't just repeat introduction","Avoid 'the author wants us to think...' — use 'the author suggests/explores/reveals'"]},
   ],
   "Creating & Presenting": [
-    {id:"writing-for-purpose",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Writing for a Specific Audience & Purpose",summary:"Adapting your writing style, form and language to suit the task, audience and context.",keyFacts:["Purpose: to inform, persuade, entertain, reflect, or a combination","Audience: who will read your text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ formal/informal, specific group","Form: essay, speech, short story, letter, blog post, interview","Voice: the distinctive style and personality of the writer","Register: level of formality ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ match to audience and purpose"]},
-    {id:"persuasive-techniques",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Persuasive Writing Techniques",summary:"Rhetorical devices and language strategies used to persuade an audience.",keyFacts:["Ethos: appeal to credibility/authority ('As an expert...')","Pathos: appeal to emotion ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ evoke fear, sympathy, anger, hope","Logos: appeal to logic ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ statistics, evidence, reasoned argument","Anecdote: personal story to make argument relatable","Rhetorical question: engages reader, implies obvious answer","Rule of three: three examples or points for emphasis and rhythm"]},
-    {id:"imaginative-writing",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨",title:"Imaginative Writing",summary:"Creating original creative texts using narrative techniques and craft.",keyFacts:["Show don't tell: use specific sensory details rather than stating emotions","Characterisation: reveal character through dialogue, action, thought, description","Setting: establishes atmosphere, mood and context","Conflict: drives narrative ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ internal (character vs self) or external","Voice: first person (I) or third person (he/she/they)","Structure: consider beginning, complication, climax, resolution"]},
+    {id:"writing-for-purpose",emoji:"✏️",title:"Writing for a Specific Audience & Purpose",summary:"Adapting your writing style, form and language to suit the task, audience and context.",keyFacts:["Purpose: to inform, persuade, entertain, reflect, or a combination","Audience: who will read your text — formal/informal, specific group","Form: essay, speech, short story, letter, blog post, interview","Voice: the distinctive style and personality of the writer","Register: level of formality — match to audience and purpose"]},
+    {id:"persuasive-techniques",emoji:"🗣️",title:"Persuasive Writing Techniques",summary:"Rhetorical devices and language strategies used to persuade an audience.",keyFacts:["Ethos: appeal to credibility/authority ('As an expert...')","Pathos: appeal to emotion — evoke fear, sympathy, anger, hope","Logos: appeal to logic — statistics, evidence, reasoned argument","Anecdote: personal story to make argument relatable","Rhetorical question: engages reader, implies obvious answer","Rule of three: three examples or points for emphasis and rhythm"]},
+    {id:"imaginative-writing",emoji:"🎨",title:"Imaginative Writing",summary:"Creating original creative texts using narrative techniques and craft.",keyFacts:["Show don't tell: use specific sensory details rather than stating emotions","Characterisation: reveal character through dialogue, action, thought, description","Setting: establishes atmosphere, mood and context","Conflict: drives narrative — internal (character vs self) or external","Voice: first person (I) or third person (he/she/they)","Structure: consider beginning, complication, climax, resolution"]},
   ],
   "Analysing Argument": [
-    {id:"identifying-argument",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Identifying Contention & Arguments",summary:"Analysing how a writer constructs a persuasive argument.",keyFacts:["Contention: the main argument or position of the author","Supporting arguments: specific points used to support the contention","Identify: Who? What audience? What position? What form? What context?","Arguments can be explicit (directly stated) or implicit (implied)","Consider: what is NOT said as well as what is said"]},
-    {id:"analysing-language",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",title:"Analysing Persuasive Language",summary:"Examining how specific language choices are used to persuade.",keyFacts:["Emotive language: words chosen to trigger emotional response","Loaded language: words with strong positive or negative connotations","Inclusive language: 'we', 'our' ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ positions reader as part of the argument","Generalisation: broad statements presented as universal truth","Visuals: images, cartoons, graphs used to support or enhance argument","Tone: the attitude conveyed by the writer (outraged, concerned, sarcastic)"]},
-    {id:"formal-analysis",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Writing a Formal Analytical Response",summary:"A structured analysis of how argument and language are used to persuade.",keyFacts:["Do NOT share your own opinion ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ analyse the author's techniques","Structure: Introduction ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Body paragraphs by argument/technique ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Conclusion","Begin body paragraphs with what the author argues, then HOW they persuade","Metalanguage: name the technique, quote it, explain its effect","Discuss the intended effect on the audience","Present tense: 'The author argues...' not 'The author argued...'"]},
+    {id:"identifying-argument",emoji:"🔍",title:"Identifying Contention & Arguments",summary:"Analysing how a writer constructs a persuasive argument.",keyFacts:["Contention: the main argument or position of the author","Supporting arguments: specific points used to support the contention","Identify: Who? What audience? What position? What form? What context?","Arguments can be explicit (directly stated) or implicit (implied)","Consider: what is NOT said as well as what is said"]},
+    {id:"analysing-language",emoji:"💬",title:"Analysing Persuasive Language",summary:"Examining how specific language choices are used to persuade.",keyFacts:["Emotive language: words chosen to trigger emotional response","Loaded language: words with strong positive or negative connotations","Inclusive language: 'we', 'our' — positions reader as part of the argument","Generalisation: broad statements presented as universal truth","Visuals: images, cartoons, graphs used to support or enhance argument","Tone: the attitude conveyed by the writer (outraged, concerned, sarcastic)"]},
+    {id:"formal-analysis",emoji:"📝",title:"Writing a Formal Analytical Response",summary:"A structured analysis of how argument and language are used to persuade.",keyFacts:["Do NOT share your own opinion — analyse the author's techniques","Structure: Introduction → Body paragraphs by argument/technique → Conclusion","Begin body paragraphs with what the author argues, then HOW they persuade","Metalanguage: name the technique, quote it, explain its effect","Discuss the intended effect on the audience","Present tense: 'The author argues...' not 'The author argued...'"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE MATHS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE MATHS ──
   "Probability & Statistics (Methods)": [
-    {id:"discrete-rv",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²",title:"Discrete Random Variables",summary:"Variables that can only take countable values, each with an associated probability.",keyFacts:["P(X=x) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¥ 0 for all x, and sum of all probabilities = 1","E(X) = ÃÂÃÂÃÂÃÂ£ xÃÂÃÂÃÂÃÂ·P(X=x) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ the expected (mean) value","Var(X) = E(XÃÂÃÂÃÂÃÂ²) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ [E(X)]ÃÂÃÂÃÂÃÂ² ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ how spread out values are","SD(X) = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂVar(X)","Binomial distribution: X ~ B(n,p) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ n trials, probability p each"],formula:"E(X) = ÃÂÃÂÃÂÃÂ£ xÃÂÃÂÃÂÃÂ·P(X=x) | Var(X) = E(XÃÂÃÂÃÂÃÂ²) - [E(X)]ÃÂÃÂÃÂÃÂ²"},
-    {id:"normal-dist-methods",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Normal Distribution",summary:"Bell-shaped distribution described by mean ÃÂÃÂÃÂÃÂ¼ and standard deviation ÃÂÃÂÃÂÃÂ.",keyFacts:["68% of data within 1ÃÂÃÂÃÂÃÂ of mean","95% within 2ÃÂÃÂÃÂÃÂ, 99.7% within 3ÃÂÃÂÃÂÃÂ (68-95-99.7 rule)","Standardise: z = (x-ÃÂÃÂÃÂÃÂ¼)/ÃÂÃÂÃÂÃÂ","Use CAS to find probabilities: normalcdf(lower, upper, ÃÂÃÂÃÂÃÂ¼, ÃÂÃÂÃÂÃÂ)","Inverse normal: find x given a probability"],formula:"z = (x - ÃÂÃÂÃÂÃÂ¼) / ÃÂÃÂÃÂÃÂ"},
-    {id:"confidence-intervals",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Statistical Inference & Confidence Intervals",summary:"Using sample data to make inferences about population parameters.",keyFacts:["Sample proportion pÃÂÃÂÃÂÃÂ estimates population proportion p","Standard error: SE = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(pÃÂÃÂÃÂÃÂ(1-pÃÂÃÂÃÂÃÂ)/n)","95% confidence interval: pÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ± 1.96 ÃÂÃÂÃÂÃÂ SE","Larger sample ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ narrower interval ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ more precise estimate","Margin of error = 1.96 ÃÂÃÂÃÂÃÂ SE for 95% CI"],formula:"95% CI: pÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ± 1.96ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(pÃÂÃÂÃÂÃÂ(1-pÃÂÃÂÃÂÃÂ)/n)"},
+    {id:"discrete-rv",emoji:"🎲",title:"Discrete Random Variables",summary:"Variables that can only take countable values, each with an associated probability.",keyFacts:["P(X=x) ≥ 0 for all x, and sum of all probabilities = 1","E(X) = Σ x·P(X=x) — the expected (mean) value","Var(X) = E(X²) − [E(X)]² — how spread out values are","SD(X) = √Var(X)","Binomial distribution: X ~ B(n,p) — n trials, probability p each"],formula:"E(X) = Σ x·P(X=x) | Var(X) = E(X²) - [E(X)]²"},
+    {id:"normal-dist-methods",emoji:"🔔",title:"Normal Distribution",summary:"Bell-shaped distribution described by mean μ and standard deviation σ.",keyFacts:["68% of data within 1σ of mean","95% within 2σ, 99.7% within 3σ (68-95-99.7 rule)","Standardise: z = (x-μ)/σ","Use CAS to find probabilities: normalcdf(lower, upper, μ, σ)","Inverse normal: find x given a probability"],formula:"z = (x - μ) / σ"},
+    {id:"confidence-intervals",emoji:"📊",title:"Statistical Inference & Confidence Intervals",summary:"Using sample data to make inferences about population parameters.",keyFacts:["Sample proportion p̂ estimates population proportion p","Standard error: SE = √(p̂(1-p̂)/n)","95% confidence interval: p̂ ± 1.96 × SE","Larger sample → narrower interval → more precise estimate","Margin of error = 1.96 × SE for 95% CI"],formula:"95% CI: p̂ ± 1.96√(p̂(1-p̂)/n)"},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE SPECIALIST MATHS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE SPECIALIST MATHS ──
   "Algebra & Number Systems": [
-    {id:"complex-numbers",emoji:"i",title:"Complex Numbers",summary:"Numbers of the form a + bi where i = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(-1).",keyFacts:["i = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(-1), iÃÂÃÂÃÂÃÂ² = -1, iÃÂÃÂÃÂÃÂ³ = -i, iÃÂÃÂ¢ÃÂÃÂÃÂÃÂ´ = 1","Rectangular form: z = a + bi (a = real part, b = imaginary part)","Modulus: |z| = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(aÃÂÃÂÃÂÃÂ² + bÃÂÃÂÃÂÃÂ²)","Argument: ÃÂÃÂÃÂÃÂ¸ = arctan(b/a) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ angle from positive real axis","Polar form: z = r(cos ÃÂÃÂÃÂÃÂ¸ + i sin ÃÂÃÂÃÂÃÂ¸) = rÃÂÃÂÃÂÃÂ·cis(ÃÂÃÂÃÂÃÂ¸)","Complex conjugate: zÃÂÃÂÃÂÃÂ = a - bi"],formula:"z = a + bi | |z| = ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(aÃÂÃÂÃÂÃÂ² + bÃÂÃÂÃÂÃÂ²)"},
-    {id:"proof",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ´",title:"Mathematical Proof",summary:"Rigorous logical arguments that establish mathematical statements as definitely true.",keyFacts:["Direct proof: assume premises, deduce conclusion step by step","Proof by contradiction: assume opposite is true, derive contradiction","Mathematical induction: prove base case, then prove if P(k) true ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ P(k+1) true","Counterexample: one example that disproves a universal statement","Always state what you're proving and every step must follow logically"]},
+    {id:"complex-numbers",emoji:"i",title:"Complex Numbers",summary:"Numbers of the form a + bi where i = √(-1).",keyFacts:["i = √(-1), i² = -1, i³ = -i, i⁴ = 1","Rectangular form: z = a + bi (a = real part, b = imaginary part)","Modulus: |z| = √(a² + b²)","Argument: θ = arctan(b/a) — angle from positive real axis","Polar form: z = r(cos θ + i sin θ) = r·cis(θ)","Complex conjugate: z̄ = a - bi"],formula:"z = a + bi | |z| = √(a² + b²)"},
+    {id:"proof",emoji:"∴",title:"Mathematical Proof",summary:"Rigorous logical arguments that establish mathematical statements as definitely true.",keyFacts:["Direct proof: assume premises, deduce conclusion step by step","Proof by contradiction: assume opposite is true, derive contradiction","Mathematical induction: prove base case, then prove if P(k) true → P(k+1) true","Counterexample: one example that disproves a universal statement","Always state what you're proving and every step must follow logically"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE GENERAL MATHS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE GENERAL MATHS ──
   "Data Analysis": [
-    {id:"univariate-data",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Univariate Data Analysis",summary:"Analysing data with a single variable using numerical and graphical methods.",keyFacts:["Centre: mean (affected by outliers), median (resistant to outliers)","Spread: range, IQR, standard deviation","Five-number summary: min, Q1, median, Q3, max","Box plots: display five-number summary, show outliers","Outlier: more than 1.5 ÃÂÃÂÃÂÃÂ IQR above Q3 or below Q1","Symmetry vs skewness: affects which measure of centre to use"]},
-    {id:"bivariate-data",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Bivariate Data & Regression",summary:"Analysing the relationship between two numerical variables.",keyFacts:["Scatterplot: displays relationship between two variables","Pearson's r: correlation coefficient (-1 to 1)","r close to ÃÂÃÂÃÂÃÂ±1: strong linear relationship; r near 0: no linear relationship","Least squares regression line: y = a + bx (line of best fit)","Interpolation: predicting within data range (reliable)","Extrapolation: predicting outside data range (unreliable)"],formula:"r measures strength and direction of linear relationship"},
-    {id:"time-series",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Time Series Analysis",summary:"Data collected over time ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ identifying trends, seasonality and cycles.",keyFacts:["Trend: long-term increase or decrease","Seasonal variation: regular pattern within each year","Smoothing: moving averages reduce random variation to reveal trend","Seasonal indices: show how much each season differs from average","Deseasonalise: remove seasonal variation to see underlying trend"]},
+    {id:"univariate-data",emoji:"📊",title:"Univariate Data Analysis",summary:"Analysing data with a single variable using numerical and graphical methods.",keyFacts:["Centre: mean (affected by outliers), median (resistant to outliers)","Spread: range, IQR, standard deviation","Five-number summary: min, Q1, median, Q3, max","Box plots: display five-number summary, show outliers","Outlier: more than 1.5 × IQR above Q3 or below Q1","Symmetry vs skewness: affects which measure of centre to use"]},
+    {id:"bivariate-data",emoji:"📈",title:"Bivariate Data & Regression",summary:"Analysing the relationship between two numerical variables.",keyFacts:["Scatterplot: displays relationship between two variables","Pearson's r: correlation coefficient (-1 to 1)","r close to ±1: strong linear relationship; r near 0: no linear relationship","Least squares regression line: y = a + bx (line of best fit)","Interpolation: predicting within data range (reliable)","Extrapolation: predicting outside data range (unreliable)"],formula:"r measures strength and direction of linear relationship"},
+    {id:"time-series",emoji:"📉",title:"Time Series Analysis",summary:"Data collected over time — identifying trends, seasonality and cycles.",keyFacts:["Trend: long-term increase or decrease","Seasonal variation: regular pattern within each year","Smoothing: moving averages reduce random variation to reveal trend","Seasonal indices: show how much each season differs from average","Deseasonalise: remove seasonal variation to see underlying trend"]},
   ],
   "Financial Arithmetic": [
-    {id:"simple-compound",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ°",title:"Simple & Compound Interest",summary:"Two methods of calculating interest on investments and loans.",keyFacts:["Simple interest: I = Prt (Principal ÃÂÃÂÃÂÃÂ rate ÃÂÃÂÃÂÃÂ time)","Compound interest: A = P(1 + r)ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿","Compounding period affects final amount (more frequent = more interest)","Effective annual rate: accounts for compounding frequency","Rule of 72: years to double ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 72 / interest rate %"],formula:"Simple: I = Prt | Compound: A = P(1+r)ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¿"},
-    {id:"loans-annuities",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ",title:"Loans, Annuities & Reducible Interest",summary:"Calculating repayments and future values for financial products.",keyFacts:["Reducible interest: calculated on outstanding balance (most loans)","Annuity: regular equal payments over a fixed period","Present value: current value of future payments","Future value: total accumulated after regular deposits","Recurrence relation: VÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ = VÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(1+r) - d"],formula:"VÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ = VÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(1+r) - d"},
+    {id:"simple-compound",emoji:"💰",title:"Simple & Compound Interest",summary:"Two methods of calculating interest on investments and loans.",keyFacts:["Simple interest: I = Prt (Principal × rate × time)","Compound interest: A = P(1 + r)ⁿ","Compounding period affects final amount (more frequent = more interest)","Effective annual rate: accounts for compounding frequency","Rule of 72: years to double ≈ 72 / interest rate %"],formula:"Simple: I = Prt | Compound: A = P(1+r)ⁿ"},
+    {id:"loans-annuities",emoji:"🏠",title:"Loans, Annuities & Reducible Interest",summary:"Calculating repayments and future values for financial products.",keyFacts:["Reducible interest: calculated on outstanding balance (most loans)","Annuity: regular equal payments over a fixed period","Present value: current value of future payments","Future value: total accumulated after regular deposits","Recurrence relation: Vₙ₊₁ = Vₙ(1+r) - d"],formula:"Vₙ₊₁ = Vₙ(1+r) - d"},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE BIOLOGY ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE BIOLOGY ──
   "Genetics & Inheritance": [
-    {id:"mendelian",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ÃÂÃÂ¬",title:"Mendelian Genetics",summary:"Gregor Mendel's laws describing how traits are inherited from parents.",keyFacts:["Dominant allele (B): expressed even with one copy","Recessive allele (b): only expressed when two copies present (bb)","Homozygous: same alleles (BB or bb); Heterozygous: different alleles (Bb)","Punnett square: predicts offspring ratios","Monohybrid cross: one trait; Dihybrid cross: two traits","Law of segregation: alleles separate during gamete formation"]},
+    {id:"mendelian",emoji:"🧬",title:"Mendelian Genetics",summary:"Gregor Mendel's laws describing how traits are inherited from parents.",keyFacts:["Dominant allele (B): expressed even with one copy","Recessive allele (b): only expressed when two copies present (bb)","Homozygous: same alleles (BB or bb); Heterozygous: different alleles (Bb)","Punnett square: predicts offspring ratios","Monohybrid cross: one trait; Dihybrid cross: two traits","Law of segregation: alleles separate during gamete formation"]},
     {id:"sex-linkage",emoji:"X",title:"Sex Linkage & Non-Mendelian Inheritance",summary:"Genes located on sex chromosomes and patterns that don't follow Mendel's laws.",keyFacts:["Sex chromosomes: females XX, males XY","X-linked genes: carried on X chromosome (e.g. colour blindness, haemophilia)","X-linked recessive: males more often affected (only one X)","Codominance: both alleles expressed (e.g. AB blood type)","Incomplete dominance: intermediate phenotype in heterozygote","Multiple alleles: more than two alleles in population (e.g. ABO blood types)"]},
-    {id:"biotechnology",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",title:"Biotechnology & Gene Technology",summary:"Techniques used to manipulate, analyse and apply genetic material.",keyFacts:["PCR: Polymerase Chain Reaction ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ amplifies tiny DNA samples","Gel electrophoresis: separates DNA fragments by size","DNA profiling: unique pattern used in forensics and paternity testing","CRISPR-Cas9: precise gene editing ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ cut and replace DNA sequences","Recombinant DNA: inserting gene from one organism into another","GMOs: genetically modified organisms ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ethical considerations apply"]},
+    {id:"biotechnology",emoji:"🔬",title:"Biotechnology & Gene Technology",summary:"Techniques used to manipulate, analyse and apply genetic material.",keyFacts:["PCR: Polymerase Chain Reaction — amplifies tiny DNA samples","Gel electrophoresis: separates DNA fragments by size","DNA profiling: unique pattern used in forensics and paternity testing","CRISPR-Cas9: precise gene editing — cut and replace DNA sequences","Recombinant DNA: inserting gene from one organism into another","GMOs: genetically modified organisms — ethical considerations apply"]},
   ],
   "Evolution & Biodiversity": [
-    {id:"natural-selection",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ",title:"Natural Selection & Evolution",summary:"Populations change over time as better-adapted individuals survive and reproduce.",keyFacts:["Variation: individuals differ within a population","Heritability: advantageous traits are passed to offspring","Differential reproduction: better-adapted individuals have more offspring","Over many generations: allele frequencies shift","Evidence: fossil record, comparative anatomy, DNA, biogeography","Antibiotic resistance: natural selection in action ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ real-world example"]},
-    {id:"speciation",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¿",title:"Speciation & Classification",summary:"How new species form and how organisms are classified into groups.",keyFacts:["Species: organisms that can interbreed to produce fertile offspring","Allopatric speciation: geographic isolation leads to divergence","Sympatric speciation: new species form in same area (e.g. polyploidy in plants)","Phylogenetic trees (cladograms): show evolutionary relationships","Binomial nomenclature: Genus species (e.g. Homo sapiens)","Domains: Bacteria, Archaea, Eukarya ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ three domains of life"]},
+    {id:"natural-selection",emoji:"🦎",title:"Natural Selection & Evolution",summary:"Populations change over time as better-adapted individuals survive and reproduce.",keyFacts:["Variation: individuals differ within a population","Heritability: advantageous traits are passed to offspring","Differential reproduction: better-adapted individuals have more offspring","Over many generations: allele frequencies shift","Evidence: fossil record, comparative anatomy, DNA, biogeography","Antibiotic resistance: natural selection in action — real-world example"]},
+    {id:"speciation",emoji:"🌿",title:"Speciation & Classification",summary:"How new species form and how organisms are classified into groups.",keyFacts:["Species: organisms that can interbreed to produce fertile offspring","Allopatric speciation: geographic isolation leads to divergence","Sympatric speciation: new species form in same area (e.g. polyploidy in plants)","Phylogenetic trees (cladograms): show evolutionary relationships","Binomial nomenclature: Genus species (e.g. Homo sapiens)","Domains: Bacteria, Archaea, Eukarya — three domains of life"]},
   ],
   "Immunity & Disease": [
-    {id:"innate-immunity",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Innate (Non-Specific) Immunity",summary:"The body's first line of defence ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ rapid, non-specific response to pathogens.",keyFacts:["Physical barriers: skin, mucus membranes, cilia, stomach acid","Inflammation: redness, heat, swelling ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ brings immune cells to site","Phagocytes: neutrophils and macrophages engulf and destroy pathogens","Fever: elevated temperature slows pathogen reproduction","Complement system: proteins that attack pathogens and signal immune cells"]},
-    {id:"adaptive-immunity",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯",title:"Adaptive (Specific) Immunity",summary:"Targeted immune response that develops over days and creates memory.",keyFacts:["Antigens: molecules on pathogen surface that trigger immune response","B lymphocytes: produce antibodies specific to the antigen","T helper cells: coordinate immune response","T cytotoxic cells: kill infected body cells directly","Clonal selection: B and T cells multiply rapidly when activated","Memory cells: remain after infection ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ faster response if exposed again","Antibodies: Y-shaped proteins that bind to specific antigens"]},
-    {id:"vaccination",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Vaccination & Herd Immunity",summary:"Using vaccines to stimulate adaptive immunity without causing disease.",keyFacts:["Vaccine: contains weakened/dead pathogen or antigen fragments","Stimulates production of antibodies and memory cells","Herd immunity: enough people immune ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ pathogen can't spread","Herd immunity threshold varies by disease (measles ~95%, COVID ~70%)","Types: live attenuated, killed, subunit, mRNA vaccines","Booster shots: refresh memory cell populations over time"]},
+    {id:"innate-immunity",emoji:"🛡️",title:"Innate (Non-Specific) Immunity",summary:"The body's first line of defence — rapid, non-specific response to pathogens.",keyFacts:["Physical barriers: skin, mucus membranes, cilia, stomach acid","Inflammation: redness, heat, swelling — brings immune cells to site","Phagocytes: neutrophils and macrophages engulf and destroy pathogens","Fever: elevated temperature slows pathogen reproduction","Complement system: proteins that attack pathogens and signal immune cells"]},
+    {id:"adaptive-immunity",emoji:"🎯",title:"Adaptive (Specific) Immunity",summary:"Targeted immune response that develops over days and creates memory.",keyFacts:["Antigens: molecules on pathogen surface that trigger immune response","B lymphocytes: produce antibodies specific to the antigen","T helper cells: coordinate immune response","T cytotoxic cells: kill infected body cells directly","Clonal selection: B and T cells multiply rapidly when activated","Memory cells: remain after infection — faster response if exposed again","Antibodies: Y-shaped proteins that bind to specific antigens"]},
+    {id:"vaccination",emoji:"💉",title:"Vaccination & Herd Immunity",summary:"Using vaccines to stimulate adaptive immunity without causing disease.",keyFacts:["Vaccine: contains weakened/dead pathogen or antigen fragments","Stimulates production of antibodies and memory cells","Herd immunity: enough people immune → pathogen can't spread","Herd immunity threshold varies by disease (measles ~95%, COVID ~70%)","Types: live attenuated, killed, subunit, mRNA vaccines","Booster shots: refresh memory cell populations over time"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE PHYSICS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE PHYSICS ──
   "Waves & Light": [
-    {id:"wave-properties",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Wave Properties",summary:"All waves share fundamental properties described by frequency, wavelength, amplitude and speed.",keyFacts:["Wave speed v = fÃÂÃÂÃÂÃÂ» (frequency ÃÂÃÂÃÂÃÂ wavelength)","Frequency f: cycles per second (Hz)","Wavelength ÃÂÃÂÃÂÃÂ»: distance between successive crests","Amplitude: maximum displacement from rest position","Transverse waves: displacement perpendicular to direction (light, water)","Longitudinal waves: displacement parallel to direction (sound)"],formula:"v = fÃÂÃÂÃÂÃÂ»  |  T = 1/f"},
-    {id:"interference",emoji:"ÃÂÃÂ£ÃÂÃÂÃÂÃÂ°ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Interference & Diffraction",summary:"Waves combine (interference) and spread around obstacles (diffraction).",keyFacts:["Constructive interference: waves add together (crest + crest)","Destructive interference: waves cancel (crest + trough)","Path difference: difference in distance each wave travels","Constructive: path difference = nÃÂÃÂÃÂÃÂ» (whole number of wavelengths)","Destructive: path difference = (n + ÃÂÃÂÃÂÃÂ½)ÃÂÃÂÃÂÃÂ»","Diffraction: maximum when gap width ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ wavelength"],formula:"Constructive: ÃÂÃÂÃÂÃÂd = nÃÂÃÂÃÂÃÂ» | Destructive: ÃÂÃÂÃÂÃÂd = (n+ÃÂÃÂÃÂÃÂ½)ÃÂÃÂÃÂÃÂ»"},
-    {id:"photoelectric",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:"Photoelectric Effect & Quantum Model",summary:"Light behaves as particles (photons) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ evidence for quantum nature of light.",keyFacts:["Photon: packet of light energy, E = hf","Threshold frequency: minimum frequency to eject electrons","Increasing intensity: more electrons ejected (not faster ones)","Increasing frequency: electrons ejected with more kinetic energy","Einstein's equation: KE_max = hf - W (W = work function)","Wave-particle duality: light (and matter) exhibits both wave and particle behaviour"],formula:"E = hf  |  KE_max = hf - W"},
+    {id:"wave-properties",emoji:"🌊",title:"Wave Properties",summary:"All waves share fundamental properties described by frequency, wavelength, amplitude and speed.",keyFacts:["Wave speed v = fλ (frequency × wavelength)","Frequency f: cycles per second (Hz)","Wavelength λ: distance between successive crests","Amplitude: maximum displacement from rest position","Transverse waves: displacement perpendicular to direction (light, water)","Longitudinal waves: displacement parallel to direction (sound)"],formula:"v = fλ  |  T = 1/f"},
+    {id:"interference",emoji:"〰️",title:"Interference & Diffraction",summary:"Waves combine (interference) and spread around obstacles (diffraction).",keyFacts:["Constructive interference: waves add together (crest + crest)","Destructive interference: waves cancel (crest + trough)","Path difference: difference in distance each wave travels","Constructive: path difference = nλ (whole number of wavelengths)","Destructive: path difference = (n + ½)λ","Diffraction: maximum when gap width ≈ wavelength"],formula:"Constructive: Δd = nλ | Destructive: Δd = (n+½)λ"},
+    {id:"photoelectric",emoji:"⚡",title:"Photoelectric Effect & Quantum Model",summary:"Light behaves as particles (photons) — evidence for quantum nature of light.",keyFacts:["Photon: packet of light energy, E = hf","Threshold frequency: minimum frequency to eject electrons","Increasing intensity: more electrons ejected (not faster ones)","Increasing frequency: electrons ejected with more kinetic energy","Einstein's equation: KE_max = hf - W (W = work function)","Wave-particle duality: light (and matter) exhibits both wave and particle behaviour"],formula:"E = hf  |  KE_max = hf - W"},
   ],
   "Modern Physics": [
-    {id:"special-relativity",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:"Special Relativity",summary:"Einstein's theory: the laws of physics are the same for all inertial observers, and the speed of light is constant.",keyFacts:["Time dilation: moving clocks run slow: t' = t/ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(1-vÃÂÃÂÃÂÃÂ²/cÃÂÃÂÃÂÃÂ²)","Length contraction: moving objects are shorter: L' = LÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(1-vÃÂÃÂÃÂÃÂ²/cÃÂÃÂÃÂÃÂ²)","Mass-energy equivalence: E = mcÃÂÃÂÃÂÃÂ²","Nothing can reach or exceed the speed of light","Relativistic effects are only significant at speeds close to c","Simultaneity: events simultaneous in one frame may not be in another"],formula:"E = mcÃÂÃÂÃÂÃÂ²  |  t' = t/ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ(1-vÃÂÃÂÃÂÃÂ²/cÃÂÃÂÃÂÃÂ²)"},
-    {id:"nuclear-physics",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Nuclear Physics & Radioactivity",summary:"The nucleus can undergo decay, releasing particles and energy.",keyFacts:["Alpha (ÃÂÃÂÃÂÃÂ±): 2 protons + 2 neutrons ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ low penetration, stopped by paper","Beta (ÃÂÃÂÃÂÃÂ²): fast electron or positron ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ stopped by aluminium","Gamma (ÃÂÃÂÃÂÃÂ³): high-energy photon ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ stopped by thick lead or concrete","Half-life: time for half the nuclei in a sample to decay","Nuclear fission: heavy nucleus splits ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ releases enormous energy","Nuclear fusion: light nuclei combine ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ releases even more energy (powers stars)"]},
+    {id:"special-relativity",emoji:"⚡",title:"Special Relativity",summary:"Einstein's theory: the laws of physics are the same for all inertial observers, and the speed of light is constant.",keyFacts:["Time dilation: moving clocks run slow: t' = t/√(1-v²/c²)","Length contraction: moving objects are shorter: L' = L√(1-v²/c²)","Mass-energy equivalence: E = mc²","Nothing can reach or exceed the speed of light","Relativistic effects are only significant at speeds close to c","Simultaneity: events simultaneous in one frame may not be in another"],formula:"E = mc²  |  t' = t/√(1-v²/c²)"},
+    {id:"nuclear-physics",emoji:"☢️",title:"Nuclear Physics & Radioactivity",summary:"The nucleus can undergo decay, releasing particles and energy.",keyFacts:["Alpha (α): 2 protons + 2 neutrons — low penetration, stopped by paper","Beta (β): fast electron or positron — stopped by aluminium","Gamma (γ): high-energy photon — stopped by thick lead or concrete","Half-life: time for half the nuclei in a sample to decay","Nuclear fission: heavy nucleus splits → releases enormous energy","Nuclear fusion: light nuclei combine → releases even more energy (powers stars)"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE PSYCHOLOGY ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE PSYCHOLOGY ──
   "States of Consciousness": [
-    {id:"sleep-stages",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´",title:"Sleep Stages & Architecture",summary:"Sleep progresses through NREM and REM stages in ~90 minute cycles.",keyFacts:["NREM Stage 1: light sleep, theta waves, easy to wake, hypnic jerks","NREM Stage 2: sleep spindles, K-complexes, harder to wake","NREM Stage 3 (SWS): delta waves, deep sleep, hardest to wake, growth hormone released","REM sleep: rapid eye movement, vivid dreams, brain as active as waking","Typical night: 4-6 cycles, REM increases in later cycles","Adults need 7-9 hours; teens need 8-10 hours"]},
-    {id:"sleep-deprivation",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ",title:"Sleep Deprivation Effects",summary:"Insufficient sleep impairs cognitive, physical and emotional functioning.",keyFacts:["Cognitive effects: impaired attention, memory consolidation, decision-making","Emotional effects: increased irritability, anxiety, emotional reactivity","Physical effects: weakened immune system, weight gain, cardiovascular risk","Microsleeps: involuntary 1-30 second lapses in attention ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ dangerous when driving","Total sleep deprivation: hallucinations after ~72 hours","Partial sleep deprivation: cumulative 'sleep debt' ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ can't be fully repaid quickly"]},
+    {id:"sleep-stages",emoji:"😴",title:"Sleep Stages & Architecture",summary:"Sleep progresses through NREM and REM stages in ~90 minute cycles.",keyFacts:["NREM Stage 1: light sleep, theta waves, easy to wake, hypnic jerks","NREM Stage 2: sleep spindles, K-complexes, harder to wake","NREM Stage 3 (SWS): delta waves, deep sleep, hardest to wake, growth hormone released","REM sleep: rapid eye movement, vivid dreams, brain as active as waking","Typical night: 4-6 cycles, REM increases in later cycles","Adults need 7-9 hours; teens need 8-10 hours"]},
+    {id:"sleep-deprivation",emoji:"😵",title:"Sleep Deprivation Effects",summary:"Insufficient sleep impairs cognitive, physical and emotional functioning.",keyFacts:["Cognitive effects: impaired attention, memory consolidation, decision-making","Emotional effects: increased irritability, anxiety, emotional reactivity","Physical effects: weakened immune system, weight gain, cardiovascular risk","Microsleeps: involuntary 1-30 second lapses in attention — dangerous when driving","Total sleep deprivation: hallucinations after ~72 hours","Partial sleep deprivation: cumulative 'sleep debt' — can't be fully repaid quickly"]},
   ],
   "Research Methods": [
-    {id:"experimental-design",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",title:"Experimental Design",summary:"The structure of a study that allows researchers to investigate cause and effect.",keyFacts:["Independent variable (IV): what the researcher manipulates","Dependent variable (DV): what is measured","Controlled variables: everything kept constant to isolate IV","Experimental group: receives the treatment/intervention","Control group: does not receive treatment ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ used for comparison","Random allocation: participants randomly assigned to groups ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ reduces bias"],},
-    {id:"data-analysis-psych",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Data Analysis & Validity",summary:"Evaluating research quality and interpreting statistical results.",keyFacts:["Mean, median, mode: measures of central tendency","Standard deviation: measure of spread around the mean","p-value < 0.05: results are statistically significant","Validity: does the study measure what it claims to measure?","Reliability: would the study produce same results if repeated?","Generalisation: can results be applied to the broader population?"]},
+    {id:"experimental-design",emoji:"🔬",title:"Experimental Design",summary:"The structure of a study that allows researchers to investigate cause and effect.",keyFacts:["Independent variable (IV): what the researcher manipulates","Dependent variable (DV): what is measured","Controlled variables: everything kept constant to isolate IV","Experimental group: receives the treatment/intervention","Control group: does not receive treatment — used for comparison","Random allocation: participants randomly assigned to groups — reduces bias"],},
+    {id:"data-analysis-psych",emoji:"📊",title:"Data Analysis & Validity",summary:"Evaluating research quality and interpreting statistical results.",keyFacts:["Mean, median, mode: measures of central tendency","Standard deviation: measure of spread around the mean","p-value < 0.05: results are statistically significant","Validity: does the study measure what it claims to measure?","Reliability: would the study produce same results if repeated?","Generalisation: can results be applied to the broader population?"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE LEGAL STUDIES ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE LEGAL STUDIES ──
   "Civil Law": [
-    {id:"tort-law",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Tort Law ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Negligence",summary:"Civil wrongs where one party's carelessness causes harm to another.",keyFacts:["Elements of negligence: duty of care, breach, damage (causation + harm)","Duty of care: legal obligation to take reasonable care (e.g. doctor-patient)","Breach: failed to meet the standard of a reasonable person","Causation: breach must have caused the damage ('but for' test)","Remoteness: damage must be a foreseeable result of the breach","Remedies: compensatory damages (to restore plaintiff to original position)"]},
-    {id:"dispute-resolution",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ",title:"Dispute Resolution Methods",summary:"Alternative methods to resolve civil disputes without going to court.",keyFacts:["Negotiation: parties discuss directly, no third party, cheapest","Mediation: neutral mediator helps parties reach agreement ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ non-binding","Conciliation: conciliator takes more active role, may suggest outcomes","Arbitration: arbitrator makes binding decision (like a private judge)","VCAT: Victorian Civil and Administrative Tribunal ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ quicker and cheaper than courts","Advantages of alternatives: faster, cheaper, less formal, preserves relationships"]},
+    {id:"tort-law",emoji:"⚖️",title:"Tort Law — Negligence",summary:"Civil wrongs where one party's carelessness causes harm to another.",keyFacts:["Elements of negligence: duty of care, breach, damage (causation + harm)","Duty of care: legal obligation to take reasonable care (e.g. doctor-patient)","Breach: failed to meet the standard of a reasonable person","Causation: breach must have caused the damage ('but for' test)","Remoteness: damage must be a foreseeable result of the breach","Remedies: compensatory damages (to restore plaintiff to original position)"]},
+    {id:"dispute-resolution",emoji:"🤝",title:"Dispute Resolution Methods",summary:"Alternative methods to resolve civil disputes without going to court.",keyFacts:["Negotiation: parties discuss directly, no third party, cheapest","Mediation: neutral mediator helps parties reach agreement — non-binding","Conciliation: conciliator takes more active role, may suggest outcomes","Arbitration: arbitrator makes binding decision (like a private judge)","VCAT: Victorian Civil and Administrative Tribunal — quicker and cheaper than courts","Advantages of alternatives: faster, cheaper, less formal, preserves relationships"]},
   ],
   "Law Reform & Justice": [
-    {id:"law-reform-process",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Law Reform",summary:"The process by which laws are changed to better reflect community values and needs.",keyFacts:["Reasons for reform: changing values, new technology, evidence of injustice","Parliament: can pass new legislation or amend existing laws","Courts: can develop common law through precedent (judge-made law)","Law Reform Commission: independent body that researches and recommends reforms","Royal Commissions: major investigations into serious systemic issues","Community groups, media and individual citizens can all advocate for reform"]},
-    {id:"justice-principles",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Principles of Justice",summary:"The legal system should be fair, equitable and accessible to all.",keyFacts:["Fairness: impartial hearing, evidence tested, unbiased decision-maker","Equality: all treated equally before the law","Access: barriers to the legal system (cost, language, knowledge)","Legal aid: government-funded legal assistance for those who can't afford lawyers","Interpreting services: for those with limited English","Rule of law: everyone ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ including government ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ is subject to the law"]},
+    {id:"law-reform-process",emoji:"📜",title:"Law Reform",summary:"The process by which laws are changed to better reflect community values and needs.",keyFacts:["Reasons for reform: changing values, new technology, evidence of injustice","Parliament: can pass new legislation or amend existing laws","Courts: can develop common law through precedent (judge-made law)","Law Reform Commission: independent body that researches and recommends reforms","Royal Commissions: major investigations into serious systemic issues","Community groups, media and individual citizens can all advocate for reform"]},
+    {id:"justice-principles",emoji:"🏛️",title:"Principles of Justice",summary:"The legal system should be fair, equitable and accessible to all.",keyFacts:["Fairness: impartial hearing, evidence tested, unbiased decision-maker","Equality: all treated equally before the law","Access: barriers to the legal system (cost, language, knowledge)","Legal aid: government-funded legal assistance for those who can't afford lawyers","Interpreting services: for those with limited English","Rule of law: everyone — including government — is subject to the law"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE HISTORY ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE HISTORY ──
   "Revolutionary Ideas & Leaders": [
-    {id:"revolutionary-ideology",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ­",title:"Revolutionary Ideologies",summary:"The ideas and beliefs that motivated and justified revolutionary action.",keyFacts:["Liberalism: individual rights, limited government, rule of law","Republicanism: government based on popular sovereignty, not monarchy","Marxism/Socialism: class struggle, collective ownership, workers' revolution","Nationalism: self-determination, pride in national identity","Enlightenment: reason over tradition ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ challenged divine right of kings","Propaganda: revolutionary leaders used print, art and speeches to spread ideas"]},
-    {id:"key-figures",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤",title:"Key Revolutionary Leaders & Their Roles",summary:"Individuals who shaped the direction, success and character of revolutions.",keyFacts:["Leaders often emerge from educated middle class or military","Charisma and oratory: ability to inspire the masses","Competing factions: moderate vs radical revolutionaries","Role of women: often significant but frequently marginalised afterward","Leaders can be both products of revolution and drivers of its direction","Cult of personality: leaders use symbols and myths to consolidate power"]},
+    {id:"revolutionary-ideology",emoji:"💭",title:"Revolutionary Ideologies",summary:"The ideas and beliefs that motivated and justified revolutionary action.",keyFacts:["Liberalism: individual rights, limited government, rule of law","Republicanism: government based on popular sovereignty, not monarchy","Marxism/Socialism: class struggle, collective ownership, workers' revolution","Nationalism: self-determination, pride in national identity","Enlightenment: reason over tradition — challenged divine right of kings","Propaganda: revolutionary leaders used print, art and speeches to spread ideas"]},
+    {id:"key-figures",emoji:"👤",title:"Key Revolutionary Leaders & Their Roles",summary:"Individuals who shaped the direction, success and character of revolutions.",keyFacts:["Leaders often emerge from educated middle class or military","Charisma and oratory: ability to inspire the masses","Competing factions: moderate vs radical revolutionaries","Role of women: often significant but frequently marginalised afterward","Leaders can be both products of revolution and drivers of its direction","Cult of personality: leaders use symbols and myths to consolidate power"]},
   ],
   "Outcomes & Significance": [
-    {id:"short-long-term",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Short & Long-Term Outcomes",summary:"Evaluating what actually changed as a result of the revolution.",keyFacts:["Political change: new government structure, constitution, voting rights","Social change: class structure, gender roles, rights of minorities","Economic change: land ownership, industry, trade policies","Counter-revolution: attempts by conservative forces to reverse change","Short-term violence vs long-term stability ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ tensions between them","Did the revolution achieve its stated goals? For whom?"]},
-    {id:"historiography",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Historiography & Historical Debate",summary:"How historians have interpreted and debated the causes and significance of revolutions.",keyFacts:["Historiography: the study of how history has been written and interpreted","Different historians emphasise: class struggle, individual leaders, ideology, economics","Revisionist historians: challenge the 'standard' interpretation with new evidence","Primary sources: documents, images, speeches from the time","Secondary sources: historians' interpretations written after the event","Evaluating sources: consider origin, purpose, value and limitation"]},
+    {id:"short-long-term",emoji:"📅",title:"Short & Long-Term Outcomes",summary:"Evaluating what actually changed as a result of the revolution.",keyFacts:["Political change: new government structure, constitution, voting rights","Social change: class structure, gender roles, rights of minorities","Economic change: land ownership, industry, trade policies","Counter-revolution: attempts by conservative forces to reverse change","Short-term violence vs long-term stability — tensions between them","Did the revolution achieve its stated goals? For whom?"]},
+    {id:"historiography",emoji:"📚",title:"Historiography & Historical Debate",summary:"How historians have interpreted and debated the causes and significance of revolutions.",keyFacts:["Historiography: the study of how history has been written and interpreted","Different historians emphasise: class struggle, individual leaders, ideology, economics","Revisionist historians: challenge the 'standard' interpretation with new evidence","Primary sources: documents, images, speeches from the time","Secondary sources: historians' interpretations written after the event","Evaluating sources: consider origin, purpose, value and limitation"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE ECONOMICS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE ECONOMICS ──
   "Government Policy": [
-    {id:"fiscal-policy",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Fiscal Policy",summary:"Government use of spending and taxation to influence economic activity.",keyFacts:["Expansionary: increase spending or cut taxes ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ stimulate AD","Contractionary: cut spending or raise taxes ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ reduce inflationary pressure","Budget deficit: spending > revenue (expansionary effect)","Budget surplus: revenue > spending (contractionary effect)","Automatic stabilisers: unemployment benefits, progressive tax ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ work without action","Fiscal policy is slower to implement than monetary policy (political process)"]},
-    {id:"monetary-policy",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦",title:"Monetary Policy",summary:"Reserve Bank of Australia uses interest rates to manage inflation and growth.",keyFacts:["RBA sets the cash rate (interest rate target)","Lower cash rate: cheaper borrowing ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ more spending ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ AD increases","Higher cash rate: more expensive borrowing ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ less spending ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ inflation cools","Inflation target: RBA aims for 2-3% annual inflation","Transmission mechanism: cash rate ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ bank rates ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ borrowing/saving decisions ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ AD","Monetary policy is faster to implement than fiscal policy"]},
+    {id:"fiscal-policy",emoji:"🏛️",title:"Fiscal Policy",summary:"Government use of spending and taxation to influence economic activity.",keyFacts:["Expansionary: increase spending or cut taxes → stimulate AD","Contractionary: cut spending or raise taxes → reduce inflationary pressure","Budget deficit: spending > revenue (expansionary effect)","Budget surplus: revenue > spending (contractionary effect)","Automatic stabilisers: unemployment benefits, progressive tax — work without action","Fiscal policy is slower to implement than monetary policy (political process)"]},
+    {id:"monetary-policy",emoji:"🏦",title:"Monetary Policy",summary:"Reserve Bank of Australia uses interest rates to manage inflation and growth.",keyFacts:["RBA sets the cash rate (interest rate target)","Lower cash rate: cheaper borrowing → more spending → AD increases","Higher cash rate: more expensive borrowing → less spending → inflation cools","Inflation target: RBA aims for 2-3% annual inflation","Transmission mechanism: cash rate → bank rates → borrowing/saving decisions → AD","Monetary policy is faster to implement than fiscal policy"]},
   ],
   "Labour Market": [
-    {id:"unemployment",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ·",title:"Unemployment",summary:"People who are actively seeking work but cannot find it ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ a key macroeconomic indicator.",keyFacts:["Unemployment rate = unemployed / labour force ÃÂÃÂÃÂÃÂ 100","Cyclical unemployment: caused by economic downturns (demand falls)","Structural unemployment: skills mismatch ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ jobs change, workers don't (or can't move)","Frictional unemployment: temporary ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ people between jobs","Natural rate of unemployment (NAIRU): unavoidable level in a healthy economy","Underemployment: working fewer hours than desired ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ also a problem"],formula:"Unemployment rate = (unemployed/labour force) ÃÂÃÂÃÂÃÂ 100"},
-    {id:"wages",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¼",title:"Wages & Wage Determination",summary:"How wages are set in Australia and what influences them.",keyFacts:["Fair Work Commission: sets national minimum wage annually","Enterprise bargaining: employers and employees negotiate agreements","Award wages: minimum pay rates set by industry","Inflation: real wages = nominal wages adjusted for inflation","Productivity: wages tend to rise with worker productivity","Skills and education: higher skills ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ higher wages in most labour markets"]},
+    {id:"unemployment",emoji:"👷",title:"Unemployment",summary:"People who are actively seeking work but cannot find it — a key macroeconomic indicator.",keyFacts:["Unemployment rate = unemployed / labour force × 100","Cyclical unemployment: caused by economic downturns (demand falls)","Structural unemployment: skills mismatch — jobs change, workers don't (or can't move)","Frictional unemployment: temporary — people between jobs","Natural rate of unemployment (NAIRU): unavoidable level in a healthy economy","Underemployment: working fewer hours than desired — also a problem"],formula:"Unemployment rate = (unemployed/labour force) × 100"},
+    {id:"wages",emoji:"💼",title:"Wages & Wage Determination",summary:"How wages are set in Australia and what influences them.",keyFacts:["Fair Work Commission: sets national minimum wage annually","Enterprise bargaining: employers and employees negotiate agreements","Award wages: minimum pay rates set by industry","Inflation: real wages = nominal wages adjusted for inflation","Productivity: wages tend to rise with worker productivity","Skills and education: higher skills → higher wages in most labour markets"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE ACCOUNTING ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE ACCOUNTING ──
   "Recording & Reporting": [
-    {id:"double-entry",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Double-Entry Accounting",summary:"Every transaction affects at least two accounts ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ debits always equal credits.",keyFacts:["Accounting equation: Assets = Liabilities + Owner's Equity","Debit: left side of account ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ increases assets and expenses, decreases liabilities","Credit: right side ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ increases liabilities and equity, decreases assets","Every journal entry: debit(s) = credit(s) (must balance)","General journal: records all transactions chronologically","General ledger: individual accounts updated from journal entries"],formula:"Assets = Liabilities + Owner's Equity"},
-    {id:"trial-balance",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",title:"Trial Balance & Error Detection",summary:"A list of all ledger accounts with their balances ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ checks arithmetic accuracy.",keyFacts:["Debit column total must equal credit column total","Trial balance only detects arithmetic errors ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ not all errors","Errors NOT detected: errors of omission (transaction not recorded at all)","Errors NOT detected: errors of commission (wrong account used)","Errors NOT detected: errors of principle (wrong type of account)","Suspense account: temporary account used while locating errors"]},
+    {id:"double-entry",emoji:"📒",title:"Double-Entry Accounting",summary:"Every transaction affects at least two accounts — debits always equal credits.",keyFacts:["Accounting equation: Assets = Liabilities + Owner's Equity","Debit: left side of account — increases assets and expenses, decreases liabilities","Credit: right side — increases liabilities and equity, decreases assets","Every journal entry: debit(s) = credit(s) (must balance)","General journal: records all transactions chronologically","General ledger: individual accounts updated from journal entries"],formula:"Assets = Liabilities + Owner's Equity"},
+    {id:"trial-balance",emoji:"✅",title:"Trial Balance & Error Detection",summary:"A list of all ledger accounts with their balances — checks arithmetic accuracy.",keyFacts:["Debit column total must equal credit column total","Trial balance only detects arithmetic errors — not all errors","Errors NOT detected: errors of omission (transaction not recorded at all)","Errors NOT detected: errors of commission (wrong account used)","Errors NOT detected: errors of principle (wrong type of account)","Suspense account: temporary account used while locating errors"]},
   ],
   "Financial Statements": [
-    {id:"income-statement",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Income Statement",summary:"Shows revenue, expenses and profit for a specific accounting period.",keyFacts:["Revenue: income earned from normal business activities","COGS: Cost of Goods Sold = opening stock + purchases - closing stock","Gross Profit = Revenue - COGS","Net Profit = Gross Profit - Operating Expenses","Accrual basis: record revenue when earned, expenses when incurred","Non-cash expenses: depreciation reduces profit without cash outflow"],formula:"Gross Profit = Revenue - COGS | Net Profit = Gross Profit - Expenses"},
-    {id:"balance-sheet",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Balance Sheet",summary:"Shows assets, liabilities and owner's equity at a specific point in time.",keyFacts:["Current assets: cash, receivables, inventory (converted to cash within 12 months)","Non-current assets: equipment, land, vehicles (held long-term)","Current liabilities: payables, short-term loans (due within 12 months)","Non-current liabilities: long-term loans, mortgages","Owner's equity: capital + profit - drawings","Must balance: Total Assets = Total Liabilities + Owner's Equity"]},
+    {id:"income-statement",emoji:"📈",title:"Income Statement",summary:"Shows revenue, expenses and profit for a specific accounting period.",keyFacts:["Revenue: income earned from normal business activities","COGS: Cost of Goods Sold = opening stock + purchases - closing stock","Gross Profit = Revenue - COGS","Net Profit = Gross Profit - Operating Expenses","Accrual basis: record revenue when earned, expenses when incurred","Non-cash expenses: depreciation reduces profit without cash outflow"],formula:"Gross Profit = Revenue - COGS | Net Profit = Gross Profit - Expenses"},
+    {id:"balance-sheet",emoji:"⚖️",title:"Balance Sheet",summary:"Shows assets, liabilities and owner's equity at a specific point in time.",keyFacts:["Current assets: cash, receivables, inventory (converted to cash within 12 months)","Non-current assets: equipment, land, vehicles (held long-term)","Current liabilities: payables, short-term loans (due within 12 months)","Non-current liabilities: long-term loans, mortgages","Owner's equity: capital + profit - drawings","Must balance: Total Assets = Total Liabilities + Owner's Equity"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE BUSINESS MANAGEMENT ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE BUSINESS MANAGEMENT ──
   "Human Resource Management": [
-    {id:"motivation-theories",emoji:"ÃÂÃÂ¢ÃÂÃÂ­ÃÂÃÂ",title:"Motivation Theories",summary:"Theories explaining what motivates employees and how to improve performance.",keyFacts:["Maslow's hierarchy: physiological ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ safety ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ social ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ esteem ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ self-actualisation","Herzberg: hygiene factors (prevent dissatisfaction) vs motivators (drive satisfaction)","Locke's Goal Setting: specific, challenging goals improve performance","Pink's Self-Determination: autonomy, mastery, purpose drive intrinsic motivation","Taylor's Scientific Management: financial incentives motivate workers","Apply theories: different employees may respond to different motivators"]},
-    {id:"employee-relations",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ",title:"Employee Relations & Workplace Disputes",summary:"Management of the relationship between employers and employees.",keyFacts:["Enterprise Bargaining Agreement (EBA): negotiated terms and conditions","Fair Work Commission: resolves workplace disputes, sets minimum wages","Industrial action: strikes, work bans, overtime bans ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ employee pressure tactics","Lockouts: employer prevents workers from working ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ employer pressure tactic","Grievance procedures: formal process for employees to raise complaints","Positive employee relations: reduces turnover, increases productivity"]},
+    {id:"motivation-theories",emoji:"⭐",title:"Motivation Theories",summary:"Theories explaining what motivates employees and how to improve performance.",keyFacts:["Maslow's hierarchy: physiological → safety → social → esteem → self-actualisation","Herzberg: hygiene factors (prevent dissatisfaction) vs motivators (drive satisfaction)","Locke's Goal Setting: specific, challenging goals improve performance","Pink's Self-Determination: autonomy, mastery, purpose drive intrinsic motivation","Taylor's Scientific Management: financial incentives motivate workers","Apply theories: different employees may respond to different motivators"]},
+    {id:"employee-relations",emoji:"🤝",title:"Employee Relations & Workplace Disputes",summary:"Management of the relationship between employers and employees.",keyFacts:["Enterprise Bargaining Agreement (EBA): negotiated terms and conditions","Fair Work Commission: resolves workplace disputes, sets minimum wages","Industrial action: strikes, work bans, overtime bans — employee pressure tactics","Lockouts: employer prevents workers from working — employer pressure tactic","Grievance procedures: formal process for employees to raise complaints","Positive employee relations: reduces turnover, increases productivity"]},
   ],
   "Change Management": [
-    {id:"lewin-force-field",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:"Lewin's Force Field Analysis",summary:"A tool for analysing the forces driving and resisting change in an organisation.",keyFacts:["Driving forces: push for change (competition, technology, customer demand)","Restraining forces: resist change (employee resistance, cost, tradition)","If driving > restraining: change happens","Strategy: strengthen driving forces OR weaken restraining forces","Unfreeze ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Change ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Refreeze: Lewin's three-step change model","Large gap between current and desired state ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ more resistance"]},
-    {id:"resistance-strategies",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Resistance to Change & Strategies",summary:"Why employees resist change and how managers can overcome resistance.",keyFacts:["Fear of the unknown: comfort with familiar routines","Loss of job security: fear of redundancy or role changes","Lack of communication: rumours fill information gaps","Strategies: communicate clearly and early, involve employees in planning","Training: build confidence with new skills and systems","Empathy: acknowledge concerns, provide support and incentives"]},
+    {id:"lewin-force-field",emoji:"⚡",title:"Lewin's Force Field Analysis",summary:"A tool for analysing the forces driving and resisting change in an organisation.",keyFacts:["Driving forces: push for change (competition, technology, customer demand)","Restraining forces: resist change (employee resistance, cost, tradition)","If driving > restraining: change happens","Strategy: strengthen driving forces OR weaken restraining forces","Unfreeze → Change → Refreeze: Lewin's three-step change model","Large gap between current and desired state → more resistance"]},
+    {id:"resistance-strategies",emoji:"🛡️",title:"Resistance to Change & Strategies",summary:"Why employees resist change and how managers can overcome resistance.",keyFacts:["Fear of the unknown: comfort with familiar routines","Loss of job security: fear of redundancy or role changes","Lack of communication: rumours fill information gaps","Strategies: communicate clearly and early, involve employees in planning","Training: build confidence with new skills and systems","Empathy: acknowledge concerns, provide support and incentives"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE SOFTWARE DEVELOPMENT ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE SOFTWARE DEVELOPMENT ──
   "Programming Concepts": [
-    {id:"data-structures-prog",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦",title:"Data Types & Structures",summary:"The building blocks for storing and organising data in programs.",keyFacts:["Integer: whole numbers (e.g. 5, -3, 100)","Float/Real: decimal numbers (e.g. 3.14, -0.5)","String: text (e.g. 'hello', 'VCE 2025')","Boolean: True or False only","List/Array: ordered collection of items (e.g. [1, 2, 3])","Dictionary: key-value pairs (e.g. {'name': 'Veer', 'age': 17})"]},
-    {id:"oop",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ·",title:"Object-Oriented Programming",summary:"Programming paradigm that organises code into objects with attributes and methods.",keyFacts:["Class: blueprint/template for creating objects","Object: instance of a class with its own data","Attribute: data belonging to an object (e.g. name, age)","Method: function belonging to a class (behaviour of object)","Encapsulation: bundling data and methods, hiding internal details","Inheritance: child class inherits attributes/methods from parent class","Polymorphism: same method name, different behaviour in different classes"]},
-    {id:"algorithms-prog",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Algorithms & Control Structures",summary:"Step-by-step instructions that solve problems using sequence, selection and iteration.",keyFacts:["Sequence: instructions executed in order","Selection: IF/ELIF/ELSE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ executes code based on condition","Iteration: FOR loops (known count) and WHILE loops (condition-based)","Pseudocode: informal language to describe algorithm logic","Trace table: manually tracking variable values through an algorithm","Nested structures: control structures inside other control structures"]},
+    {id:"data-structures-prog",emoji:"📦",title:"Data Types & Structures",summary:"The building blocks for storing and organising data in programs.",keyFacts:["Integer: whole numbers (e.g. 5, -3, 100)","Float/Real: decimal numbers (e.g. 3.14, -0.5)","String: text (e.g. 'hello', 'VCE 2025')","Boolean: True or False only","List/Array: ordered collection of items (e.g. [1, 2, 3])","Dictionary: key-value pairs (e.g. {'name': 'Veer', 'age': 17})"]},
+    {id:"oop",emoji:"🔷",title:"Object-Oriented Programming",summary:"Programming paradigm that organises code into objects with attributes and methods.",keyFacts:["Class: blueprint/template for creating objects","Object: instance of a class with its own data","Attribute: data belonging to an object (e.g. name, age)","Method: function belonging to a class (behaviour of object)","Encapsulation: bundling data and methods, hiding internal details","Inheritance: child class inherits attributes/methods from parent class","Polymorphism: same method name, different behaviour in different classes"]},
+    {id:"algorithms-prog",emoji:"🔄",title:"Algorithms & Control Structures",summary:"Step-by-step instructions that solve problems using sequence, selection and iteration.",keyFacts:["Sequence: instructions executed in order","Selection: IF/ELIF/ELSE — executes code based on condition","Iteration: FOR loops (known count) and WHILE loops (condition-based)","Pseudocode: informal language to describe algorithm logic","Trace table: manually tracking variable values through an algorithm","Nested structures: control structures inside other control structures"]},
   ],
   "Software Development Lifecycle": [
-    {id:"testing",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ÃÂÃÂª",title:"Testing Strategies",summary:"Systematic methods to find and fix errors before software is released.",keyFacts:["Syntax errors: incorrect code structure (caught by compiler/interpreter)","Logic errors: code runs but gives wrong output (hardest to find)","Runtime errors: crash during execution (e.g. division by zero)","Black-box testing: tests functionality without knowing internal code","White-box testing: tests internal logic with knowledge of code","Unit testing: tests individual components in isolation","Integration testing: tests how components work together","User acceptance testing (UAT): end users test in real conditions"]},
+    {id:"testing",emoji:"🧪",title:"Testing Strategies",summary:"Systematic methods to find and fix errors before software is released.",keyFacts:["Syntax errors: incorrect code structure (caught by compiler/interpreter)","Logic errors: code runs but gives wrong output (hardest to find)","Runtime errors: crash during execution (e.g. division by zero)","Black-box testing: tests functionality without knowing internal code","White-box testing: tests internal logic with knowledge of code","Unit testing: tests individual components in isolation","Integration testing: tests how components work together","User acceptance testing (UAT): end users test in real conditions"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE MEDIA ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE MEDIA ──
   "Media Codes & Conventions": [
-    {id:"technical-codes",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",title:"Technical Codes",summary:"The technical choices that create meaning in media texts.",keyFacts:["Camera angles: low angle (powerful), high angle (vulnerable), eye-level (neutral)","Camera shots: extreme close-up (emotion), wide shot (context), mid shot (relationship)","Lighting: high-key (positive/happy), low-key (dark/sinister), backlighting (mystery)","Editing: cut, fade, dissolve ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ control pacing and mood","Sound: diegetic (within the story world) vs non-diegetic (soundtrack, voiceover)","Mise-en-scÃÂÃÂÃÂÃÂ¨ne: everything visible in the frame ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ setting, costume, props, expression"]},
-    {id:"narrative-codes",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Narrative Codes & Genre",summary:"How stories are constructed and how genre shapes audience expectations.",keyFacts:["Narrative structure: Equilibrium ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Disruption ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Resolution (Todorov)","Character types: hero, villain, helper, mentor (Propp's character functions)","Genre: set of conventions audiences recognise and expect","Genre codes: iconography, settings, character types, narrative patterns","Hybridisation: combining elements of different genres","Subverting conventions: deliberately breaking genre expectations for effect"]},
+    {id:"technical-codes",emoji:"🎬",title:"Technical Codes",summary:"The technical choices that create meaning in media texts.",keyFacts:["Camera angles: low angle (powerful), high angle (vulnerable), eye-level (neutral)","Camera shots: extreme close-up (emotion), wide shot (context), mid shot (relationship)","Lighting: high-key (positive/happy), low-key (dark/sinister), backlighting (mystery)","Editing: cut, fade, dissolve — control pacing and mood","Sound: diegetic (within the story world) vs non-diegetic (soundtrack, voiceover)","Mise-en-scène: everything visible in the frame — setting, costume, props, expression"]},
+    {id:"narrative-codes",emoji:"📖",title:"Narrative Codes & Genre",summary:"How stories are constructed and how genre shapes audience expectations.",keyFacts:["Narrative structure: Equilibrium → Disruption → Resolution (Todorov)","Character types: hero, villain, helper, mentor (Propp's character functions)","Genre: set of conventions audiences recognise and expect","Genre codes: iconography, settings, character types, narrative patterns","Hybridisation: combining elements of different genres","Subverting conventions: deliberately breaking genre expectations for effect"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE DRAMA ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE DRAMA ──
   "Drama Elements & Techniques": [
-    {id:"elements-drama",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ­",title:"Elements of Drama",summary:"The building blocks that all drama uses to create meaning and engage audiences.",keyFacts:["Role & Character: who the performer is being ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ layered, believable characterisation","Relationships: how characters relate to each other ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ power, conflict, intimacy","Tension: what drives drama ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ conflict, mystery, surprise, dilemma","Focus: where the audience's attention is directed","Space: how performers use the performance area ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ proxemics, levels, staging","Time: pace, rhythm, duration ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ slowing down or speeding up time in performance","Language: what is said and how (subtext is often more important than text)"]},
-    {id:"voice-movement",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤",title:"Voice & Movement",summary:"The performer's primary instruments for creating and communicating character.",keyFacts:["Voice: volume, pitch, pace, tone, articulation, accent, rhythm","Projection: making voice heard without shouting","Physicality: posture, gesture, facial expression, gait","Status: how body language conveys power relationships","Stillness: can be more powerful than constant movement","Eye contact: direct, averted, shared ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ each communicates differently"]},
+    {id:"elements-drama",emoji:"🎭",title:"Elements of Drama",summary:"The building blocks that all drama uses to create meaning and engage audiences.",keyFacts:["Role & Character: who the performer is being — layered, believable characterisation","Relationships: how characters relate to each other — power, conflict, intimacy","Tension: what drives drama — conflict, mystery, surprise, dilemma","Focus: where the audience's attention is directed","Space: how performers use the performance area — proxemics, levels, staging","Time: pace, rhythm, duration — slowing down or speeding up time in performance","Language: what is said and how (subtext is often more important than text)"]},
+    {id:"voice-movement",emoji:"🎤",title:"Voice & Movement",summary:"The performer's primary instruments for creating and communicating character.",keyFacts:["Voice: volume, pitch, pace, tone, articulation, accent, rhythm","Projection: making voice heard without shouting","Physicality: posture, gesture, facial expression, gait","Status: how body language conveys power relationships","Stillness: can be more powerful than constant movement","Eye contact: direct, averted, shared — each communicates differently"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE MUSIC ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE MUSIC ──
   "Music Theory & Notation": [
-    {id:"pitch-scales",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ",title:"Pitch, Scales & Keys",summary:"The fundamental building blocks of melody and harmony in Western music.",keyFacts:["Major scale: whole, whole, half, whole, whole, whole, half pattern (W W H W W W H)","Natural minor scale: W H W W H W W pattern","Key signature: sharps or flats at start of staff ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ indicates the key","Intervals: distance between two pitches (unison, 2nd, 3rd...octave)","Chromatic scale: all 12 semitones","Relative major/minor: share same key signature (e.g. C major and A minor)"]},
-    {id:"rhythm-metre",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ",title:"Rhythm, Metre & Notation",summary:"How music is organised in time ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ beat, rhythm patterns and time signatures.",keyFacts:["Beat: steady pulse underlying music","Tempo: speed of the beat (BPM = beats per minute)","Time signature: top = beats per bar, bottom = beat note value","4/4: four crotchet beats per bar (most common)","3/4: three crotchet beats (waltz feel)","Syncopation: emphasis on off-beats ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ creates rhythmic interest","Note values: semibreve (4), minim (2), crotchet (1), quaver (ÃÂÃÂÃÂÃÂ½), semiquaver (ÃÂÃÂÃÂÃÂ¼)"]},
-    {id:"music-analysis",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¼",title:"Analysing Music ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SHMRG",summary:"A framework for analysing and describing music systematically.",keyFacts:["S ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Sound: instrumentation, timbre, texture (monophonic, homophonic, polyphonic)","H ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Harmony: chords, key, major/minor, dissonance/consonance, modulation","M ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Melody: shape, range, intervals, sequence, conjunct/disjunct motion","R ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Rhythm: tempo, metre, syncopation, rhythmic patterns","G ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Growth/Structure: form (binary AB, ternary ABA, rondo, sonata), dynamics, development","Use SHMRG as a framework for written analysis responses"]},
+    {id:"pitch-scales",emoji:"🎵",title:"Pitch, Scales & Keys",summary:"The fundamental building blocks of melody and harmony in Western music.",keyFacts:["Major scale: whole, whole, half, whole, whole, whole, half pattern (W W H W W W H)","Natural minor scale: W H W W H W W pattern","Key signature: sharps or flats at start of staff — indicates the key","Intervals: distance between two pitches (unison, 2nd, 3rd...octave)","Chromatic scale: all 12 semitones","Relative major/minor: share same key signature (e.g. C major and A minor)"]},
+    {id:"rhythm-metre",emoji:"🥁",title:"Rhythm, Metre & Notation",summary:"How music is organised in time — beat, rhythm patterns and time signatures.",keyFacts:["Beat: steady pulse underlying music","Tempo: speed of the beat (BPM = beats per minute)","Time signature: top = beats per bar, bottom = beat note value","4/4: four crotchet beats per bar (most common)","3/4: three crotchet beats (waltz feel)","Syncopation: emphasis on off-beats — creates rhythmic interest","Note values: semibreve (4), minim (2), crotchet (1), quaver (½), semiquaver (¼)"]},
+    {id:"music-analysis",emoji:"🎼",title:"Analysing Music — SHMRG",summary:"A framework for analysing and describing music systematically.",keyFacts:["S — Sound: instrumentation, timbre, texture (monophonic, homophonic, polyphonic)","H — Harmony: chords, key, major/minor, dissonance/consonance, modulation","M — Melody: shape, range, intervals, sequence, conjunct/disjunct motion","R — Rhythm: tempo, metre, syncopation, rhythmic patterns","G — Growth/Structure: form (binary AB, ternary ABA, rondo, sonata), dynamics, development","Use SHMRG as a framework for written analysis responses"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE VISUAL COMMUNICATION DESIGN ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE VISUAL COMMUNICATION DESIGN ──
   "Design Process": [
-    {id:"design-elements",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨",title:"Elements & Principles of Design",summary:"The fundamental visual tools and organising principles used in all design.",keyFacts:["Elements: line, shape, form, colour, texture, tone, space","Principles: balance, contrast, emphasis/focal point, pattern, repetition, unity, movement","Colour theory: hue, saturation, value; colour wheel relationships","Typography: typeface, font weight, tracking, leading, kerning","Visual hierarchy: arrangement that guides viewer through design","Gestalt principles: proximity, similarity, closure, figure-ground"]},
-    {id:"design-methods",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Design Methods & Drawing Techniques",summary:"Systematic processes and technical drawing skills used in design.",keyFacts:["Freehand drawing: quick idea generation, thumbnails, sketches","Instrumental drawing: precise technical drawings using tools","CAD: computer-aided design ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ accuracy and easy editing","Orthographic projection: front, top, side views on 2D surface","Isometric drawing: 3D representation ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no vanishing points","Rendering: adding tone, texture and colour to communicate materials"]},
+    {id:"design-elements",emoji:"🎨",title:"Elements & Principles of Design",summary:"The fundamental visual tools and organising principles used in all design.",keyFacts:["Elements: line, shape, form, colour, texture, tone, space","Principles: balance, contrast, emphasis/focal point, pattern, repetition, unity, movement","Colour theory: hue, saturation, value; colour wheel relationships","Typography: typeface, font weight, tracking, leading, kerning","Visual hierarchy: arrangement that guides viewer through design","Gestalt principles: proximity, similarity, closure, figure-ground"]},
+    {id:"design-methods",emoji:"📐",title:"Design Methods & Drawing Techniques",summary:"Systematic processes and technical drawing skills used in design.",keyFacts:["Freehand drawing: quick idea generation, thumbnails, sketches","Instrumental drawing: precise technical drawings using tools","CAD: computer-aided design — accuracy and easy editing","Orthographic projection: front, top, side views on 2D surface","Isometric drawing: 3D representation — no vanishing points","Rendering: adding tone, texture and colour to communicate materials"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE FOOD STUDIES ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE FOOD STUDIES ──
   "Food Safety & Hygiene": [
-    {id:"food-hazards",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Food Hazards & HACCP",summary:"Identifying and controlling hazards to ensure food is safe to eat.",keyFacts:["Biological hazards: bacteria, viruses, parasites (most common cause of illness)","Chemical hazards: pesticides, cleaning agents, food additives","Physical hazards: glass, metal, bone, pits","HACCP: Hazard Analysis Critical Control Points ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ systematic food safety system","Critical control points: steps where hazards must be controlled","Temperature danger zone: 5ÃÂÃÂÃÂÃÂ°C ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 60ÃÂÃÂÃÂÃÂ°C ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ bacteria multiply rapidly","2-hour/4-hour rule: discard if in danger zone >4 hours total"]},
-    {id:"pathogens",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ ",title:"Food-Borne Illness & Pathogens",summary:"Micro-organisms that cause illness through contaminated food.",keyFacts:["Salmonella: raw poultry, eggs ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ causes gastroenteritis 6-72 hours after consumption","Campylobacter: undercooked chicken ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ most common food-borne illness in Australia","Staphylococcus aureus: food handlers with skin infections ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ toxin not destroyed by heat","E. coli: undercooked beef, unpasteurised juice ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ can cause serious kidney damage","Prevent: cook to correct temperature, separate raw/cooked, chill promptly, clean hands"]},
+    {id:"food-hazards",emoji:"⚠️",title:"Food Hazards & HACCP",summary:"Identifying and controlling hazards to ensure food is safe to eat.",keyFacts:["Biological hazards: bacteria, viruses, parasites (most common cause of illness)","Chemical hazards: pesticides, cleaning agents, food additives","Physical hazards: glass, metal, bone, pits","HACCP: Hazard Analysis Critical Control Points — systematic food safety system","Critical control points: steps where hazards must be controlled","Temperature danger zone: 5°C – 60°C — bacteria multiply rapidly","2-hour/4-hour rule: discard if in danger zone >4 hours total"]},
+    {id:"pathogens",emoji:"🦠",title:"Food-Borne Illness & Pathogens",summary:"Micro-organisms that cause illness through contaminated food.",keyFacts:["Salmonella: raw poultry, eggs — causes gastroenteritis 6-72 hours after consumption","Campylobacter: undercooked chicken — most common food-borne illness in Australia","Staphylococcus aureus: food handlers with skin infections — toxin not destroyed by heat","E. coli: undercooked beef, unpasteurised juice — can cause serious kidney damage","Prevent: cook to correct temperature, separate raw/cooked, chill promptly, clean hands"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE OUTDOOR ED ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE OUTDOOR ED ──
   "Personal & Social Development": [
-    {id:"risk-management",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ°ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Risk Management in Outdoor Education",summary:"Identifying, assessing and managing risks in outdoor environments.",keyFacts:["Hazard: something that could cause harm (wet rocks, weather change)","Risk: likelihood and consequence of harm occurring","Risk assessment: identify hazard ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ assess likelihood ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ assess consequence ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ control","Hierarchy of controls: eliminate ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ substitute ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ isolate ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ engineering ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ administrative ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ PPE","Dynamic risk management: ongoing assessment as conditions change","Safety vs challenge: managed risk is educational ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ aim for 'stretch zone' not 'panic zone'"]},
-    {id:"leadership",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",title:"Leadership & Group Dynamics",summary:"How leadership and group cohesion affect outcomes in outdoor experiences.",keyFacts:["Autocratic leadership: leader decides ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ best in emergencies","Democratic leadership: group input ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ builds ownership and morale","Laissez-faire: minimal direction ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ works with highly skilled, motivated groups","Tuckman's stages: Forming ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Storming ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Norming ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Performing ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Adjourning","Cohesion: task cohesion (shared goal) and social cohesion (relationships)","Communication: clear, assertive, respectful ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ essential for group safety"]},
+    {id:"risk-management",emoji:"⛰️",title:"Risk Management in Outdoor Education",summary:"Identifying, assessing and managing risks in outdoor environments.",keyFacts:["Hazard: something that could cause harm (wet rocks, weather change)","Risk: likelihood and consequence of harm occurring","Risk assessment: identify hazard → assess likelihood → assess consequence → control","Hierarchy of controls: eliminate → substitute → isolate → engineering → administrative → PPE","Dynamic risk management: ongoing assessment as conditions change","Safety vs challenge: managed risk is educational — aim for 'stretch zone' not 'panic zone'"]},
+    {id:"leadership",emoji:"👥",title:"Leadership & Group Dynamics",summary:"How leadership and group cohesion affect outcomes in outdoor experiences.",keyFacts:["Autocratic leadership: leader decides — best in emergencies","Democratic leadership: group input — builds ownership and morale","Laissez-faire: minimal direction — works with highly skilled, motivated groups","Tuckman's stages: Forming → Storming → Norming → Performing → Adjourning","Cohesion: task cohesion (shared goal) and social cohesion (relationships)","Communication: clear, assertive, respectful — essential for group safety"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE PE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE PE ──
   "Energy Systems & Fatigue": [
-    {id:"energy-systems-pe",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:"Three Energy Systems",summary:"The body uses three energy systems to produce ATP ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ the fuel for all muscle activity.",keyFacts:["ATP-PC (phosphocreatine): 0-10 seconds, explosive power (sprint start, weightlifting), no oxygen, no lactate","Anaerobic glycolysis (lactic acid): 10 seconds-2 minutes, high intensity, produces lactate causing burning sensation","Aerobic system: 2+ minutes, low-moderate intensity, uses oxygen, COÃÂÃÂ¢ÃÂÃÂÃÂÃÂ and HÃÂÃÂ¢ÃÂÃÂÃÂÃÂO as by-products, most ATP produced","Energy system interplay: all three operate simultaneously, one dominates based on intensity","Oxygen uptake: VOÃÂÃÂ¢ÃÂÃÂÃÂÃÂ max is maximum oxygen body can use ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ key indicator of aerobic fitness"],formula:"ATP ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ADP + Pi + energy (muscle contraction)"},
-    {id:"fatigue-recovery",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Fatigue & Recovery",summary:"Why muscles fatigue and how the body recovers after exercise.",keyFacts:["Peripheral fatigue: at the muscle ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ lactate accumulation, fuel depletion, ion imbalance","Central fatigue: in the brain ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ reduced neural drive to muscles","EPOC (excess post-exercise oxygen consumption): elevated oxygen use after exercise to restore body","Active recovery: light exercise post-training ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ clears lactate faster than rest","Nutrition: carbohydrates restore glycogen, protein repairs muscle","Sleep: primary time for muscle repair and adaptation (growth hormone released)"]},
+    {id:"energy-systems-pe",emoji:"⚡",title:"Three Energy Systems",summary:"The body uses three energy systems to produce ATP — the fuel for all muscle activity.",keyFacts:["ATP-PC (phosphocreatine): 0-10 seconds, explosive power (sprint start, weightlifting), no oxygen, no lactate","Anaerobic glycolysis (lactic acid): 10 seconds-2 minutes, high intensity, produces lactate causing burning sensation","Aerobic system: 2+ minutes, low-moderate intensity, uses oxygen, CO₂ and H₂O as by-products, most ATP produced","Energy system interplay: all three operate simultaneously, one dominates based on intensity","Oxygen uptake: VO₂ max is maximum oxygen body can use — key indicator of aerobic fitness"],formula:"ATP → ADP + Pi + energy (muscle contraction)"},
+    {id:"fatigue-recovery",emoji:"😓",title:"Fatigue & Recovery",summary:"Why muscles fatigue and how the body recovers after exercise.",keyFacts:["Peripheral fatigue: at the muscle — lactate accumulation, fuel depletion, ion imbalance","Central fatigue: in the brain — reduced neural drive to muscles","EPOC (excess post-exercise oxygen consumption): elevated oxygen use after exercise to restore body","Active recovery: light exercise post-training — clears lactate faster than rest","Nutrition: carbohydrates restore glycogen, protein repairs muscle","Sleep: primary time for muscle repair and adaptation (growth hormone released)"]},
   ],
   "Cardiovascular & Respiratory Adaptations": [
-    {id:"acute-responses",emoji:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"Acute Responses to Exercise",summary:"Immediate, short-term changes in heart, lungs and blood during exercise.",keyFacts:["Heart rate: increases from ~70 bpm rest to 200+ bpm max exercise","Stroke volume: increases ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ more blood pumped per beat","Cardiac output = HR ÃÂÃÂÃÂÃÂ SV: increases to deliver more OÃÂÃÂ¢ÃÂÃÂÃÂÃÂ to muscles","Breathing rate: increases from ~15 to 50+ breaths/min","Tidal volume: volume of air per breath increases","Blood redistribution: vasoconstriction diverts blood to working muscles"],formula:"Cardiac output = heart rate ÃÂÃÂÃÂÃÂ stroke volume"},
-    {id:"chronic-adaptations",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂª",title:"Chronic Training Adaptations",summary:"Long-term structural and functional changes from regular training.",keyFacts:["Cardiac hypertrophy: heart wall thickens ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ more powerful contractions","Increased stroke volume: at rest and during exercise","Lower resting heart rate: trained athletes 40-60 bpm (more efficient)","Increased VOÃÂÃÂ¢ÃÂÃÂÃÂÃÂ max: more oxygen delivered and used by muscles","Increased mitochondrial density: more ATP produced aerobically","Increased blood volume and haemoglobin: more oxygen-carrying capacity"]},
+    {id:"acute-responses",emoji:"❤️",title:"Acute Responses to Exercise",summary:"Immediate, short-term changes in heart, lungs and blood during exercise.",keyFacts:["Heart rate: increases from ~70 bpm rest to 200+ bpm max exercise","Stroke volume: increases — more blood pumped per beat","Cardiac output = HR × SV: increases to deliver more O₂ to muscles","Breathing rate: increases from ~15 to 50+ breaths/min","Tidal volume: volume of air per breath increases","Blood redistribution: vasoconstriction diverts blood to working muscles"],formula:"Cardiac output = heart rate × stroke volume"},
+    {id:"chronic-adaptations",emoji:"💪",title:"Chronic Training Adaptations",summary:"Long-term structural and functional changes from regular training.",keyFacts:["Cardiac hypertrophy: heart wall thickens — more powerful contractions","Increased stroke volume: at rest and during exercise","Lower resting heart rate: trained athletes 40-60 bpm (more efficient)","Increased VO₂ max: more oxygen delivered and used by muscles","Increased mitochondrial density: more ATP produced aerobically","Increased blood volume and haemoglobin: more oxygen-carrying capacity"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCE HEALTH & HUMAN DEVELOPMENT ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── VCE HEALTH & HUMAN DEVELOPMENT ──
   "Health & Wellbeing": [
-    {id:"dimensions-health",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Dimensions of Health & Wellbeing",summary:"Health is multidimensional ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ physical, social, emotional, mental and spiritual.",keyFacts:["Physical: body functioning well, fitness, disease-free","Social: quality relationships, sense of belonging, social support","Emotional: manage feelings, resilience, positive self-concept","Mental: positive thinking, effective cognitive functioning, self-esteem","Spiritual: sense of meaning, purpose and connection (may or may not involve religion)","Dimensions are interconnected ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ a change in one affects others"]},
-    {id:"social-determinants",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"Social Determinants of Health",summary:"Social, economic and environmental factors that significantly influence health outcomes.",keyFacts:["Income and social status: strong predictor of health ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ higher income = better health","Education: higher education links to better health literacy and outcomes","Social support networks: isolation linked to poorer mental and physical health","Employment and working conditions: job security, safe conditions matter","Access to healthcare: cost, location, cultural appropriateness","Early life experiences: ACEs (adverse childhood experiences) have lifelong impact"]},
+    {id:"dimensions-health",emoji:"💚",title:"Dimensions of Health & Wellbeing",summary:"Health is multidimensional — physical, social, emotional, mental and spiritual.",keyFacts:["Physical: body functioning well, fitness, disease-free","Social: quality relationships, sense of belonging, social support","Emotional: manage feelings, resilience, positive self-concept","Mental: positive thinking, effective cognitive functioning, self-esteem","Spiritual: sense of meaning, purpose and connection (may or may not involve religion)","Dimensions are interconnected — a change in one affects others"]},
+    {id:"social-determinants",emoji:"🌍",title:"Social Determinants of Health",summary:"Social, economic and environmental factors that significantly influence health outcomes.",keyFacts:["Income and social status: strong predictor of health — higher income = better health","Education: higher education links to better health literacy and outcomes","Social support networks: isolation linked to poorer mental and physical health","Employment and working conditions: job security, safe conditions matter","Access to healthcare: cost, location, cultural appropriateness","Early life experiences: ACEs (adverse childhood experiences) have lifelong impact"]},
   ],
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ IB SUBJECTS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── IB SUBJECTS ──
   "Core Approaches (IB Biology)": [
-    {id:"ib-bio-core",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬",title:"IB Biology Core Concepts",summary:"Key themes that run through all areas of IB Biology.",keyFacts:["Cell theory: all living things are made of cells, cells come from existing cells","Metabolism: sum of all chemical reactions in an organism","Heredity: passing of genetic information from parents to offspring","Evolution: change in heritable characteristics of populations over time","Ecology: study of organisms and their interactions with the environment","Structure and function: form is correlated with function at all levels of organisation"]},
+    {id:"ib-bio-core",emoji:"🔬",title:"IB Biology Core Concepts",summary:"Key themes that run through all areas of IB Biology.",keyFacts:["Cell theory: all living things are made of cells, cells come from existing cells","Metabolism: sum of all chemical reactions in an organism","Heredity: passing of genetic information from parents to offspring","Evolution: change in heritable characteristics of populations over time","Ecology: study of organisms and their interactions with the environment","Structure and function: form is correlated with function at all levels of organisation"]},
   ],
-  "Paper 1 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Source Analysis": [
-    {id:"source-analysis",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"IB History Source Analysis Skills",summary:"Evaluating historical sources for their value and limitations.",keyFacts:["OPVL: Origin, Purpose, Value, Limitation","Origin: who created it, when, where ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ affects reliability","Purpose: why was it created ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ intended audience affects content","Value: what useful information does it provide for the investigation","Limitation: what does it NOT tell us, bias, incompleteness","Compare and contrast sources: identify agreements, contradictions, gaps","Primary vs secondary: both have value and limitations for historians"]},
+  "Paper 1 — Source Analysis": [
+    {id:"source-analysis",emoji:"📄",title:"IB History Source Analysis Skills",summary:"Evaluating historical sources for their value and limitations.",keyFacts:["OPVL: Origin, Purpose, Value, Limitation","Origin: who created it, when, where — affects reliability","Purpose: why was it created — intended audience affects content","Value: what useful information does it provide for the investigation","Limitation: what does it NOT tell us, bias, incompleteness","Compare and contrast sources: identify agreements, contradictions, gaps","Primary vs secondary: both have value and limitations for historians"]},
   ],
   "Theory of Knowledge (TOK)": [
-    {id:"tok-knowledge",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ",title:"Knowledge & The Knower",summary:"Exploring what knowledge is, how we know things, and our role as knowers.",keyFacts:["Knowledge: justified true belief (but challenged by Gettier problems)","Personal knowledge: based on individual experience and intuition","Shared knowledge: accumulated by communities over time","Ways of knowing: reason, emotion, language, sense perception, intuition, memory, imagination, faith","Areas of knowledge: natural sciences, human sciences, history, arts, mathematics, ethics","Knowledge question: open, contestable question about the nature of knowledge itself"]},
-    {id:"tok-exhibition",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¼ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:"TOK Exhibition",summary:"Connecting three objects to a prescribed TOK prompt ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ worth 33% of final grade.",keyFacts:["Choose one prompt from the IB prescribed list (released annually)","Select 3 objects (physical or digital) that connect to the prompt","Write ~950 words total ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ approximately 300 words per object","Explain HOW each object connects to the prompt (not just that it does)","Objects should connect to different aspects of the prompt","Real-world connection: objects must be from the real world, not hypothetical","Submit evidence of each object with the written component"]},
+    {id:"tok-knowledge",emoji:"🤔",title:"Knowledge & The Knower",summary:"Exploring what knowledge is, how we know things, and our role as knowers.",keyFacts:["Knowledge: justified true belief (but challenged by Gettier problems)","Personal knowledge: based on individual experience and intuition","Shared knowledge: accumulated by communities over time","Ways of knowing: reason, emotion, language, sense perception, intuition, memory, imagination, faith","Areas of knowledge: natural sciences, human sciences, history, arts, mathematics, ethics","Knowledge question: open, contestable question about the nature of knowledge itself"]},
+    {id:"tok-exhibition",emoji:"🖼️",title:"TOK Exhibition",summary:"Connecting three objects to a prescribed TOK prompt — worth 33% of final grade.",keyFacts:["Choose one prompt from the IB prescribed list (released annually)","Select 3 objects (physical or digital) that connect to the prompt","Write ~950 words total — approximately 300 words per object","Explain HOW each object connects to the prompt (not just that it does)","Objects should connect to different aspects of the prompt","Real-world connection: objects must be from the real world, not hypothetical","Submit evidence of each object with the written component"]},
   ],
   "CAS (Creativity, Activity, Service)": [
-    {id:"cas-requirements",emoji:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:"CAS Requirements & Learning Outcomes",summary:"CAS must be completed over the two IB years ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ it is pass/fail but essential.",keyFacts:["Creativity: arts, design, music, theatre, creative writing, coding ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ anything creative","Activity: physical exercise ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ sport, dance, gym, hiking, martial arts","Service: unpaid contribution to community ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ volunteering, tutoring, environmental projects","CAS project: at least one collaborative project combining two or three strands","7 learning outcomes must be evidenced across all CAS activities","Reflections: meaningful written reflections required ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ not just descriptions of activities"]},
+    {id:"cas-requirements",emoji:"🌟",title:"CAS Requirements & Learning Outcomes",summary:"CAS must be completed over the two IB years — it is pass/fail but essential.",keyFacts:["Creativity: arts, design, music, theatre, creative writing, coding — anything creative","Activity: physical exercise — sport, dance, gym, hiking, martial arts","Service: unpaid contribution to community — volunteering, tutoring, environmental projects","CAS project: at least one collaborative project combining two or three strands","7 learning outcomes must be evidenced across all CAS activities","Reflections: meaningful written reflections required — not just descriptions of activities"]},
   ],
 };
 
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // SUBTOPIC BOOKMARKS COMPONENT
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function SubtopicBookmarks({ selTopic, subject, curriculum, staticSubtopics, gs }) {
   const [aiSubtopics, setAiSubtopics] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
@@ -2736,11 +2736,11 @@ function SubtopicBookmarks({ selTopic, subject, curriculum, staticSubtopics, gs 
     try {
       const subjData = VCAA_CURRICULUM[subject];
       const area = subjData?.areas?.find(a => a.name === selTopic);
-      const dotPoints = area?.dotPoints?.join("\nÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ ") || selTopic;
+      const dotPoints = area?.dotPoints?.join("\n• ") || selTopic;
       const prompt = `Generate 5-7 subtopic study cards for "${selTopic}" in ${curriculum} ${subject}.
 
 Official curriculum dot points:
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ ${dotPoints}
+• ${dotPoints}
 
 For each subtopic return a study card. ONLY return valid JSON, no markdown:
 [{
@@ -2752,7 +2752,7 @@ For each subtopic return a study card. ONLY return valid JSON, no markdown:
   "formula": "key formula in plain text or null"
 }]
 
-Write ALL maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ use ÃÂÃÂÃÂÃÂ², ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ·, ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NEVER LaTeX.`;
+Write ALL maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX.`;
       const raw = await callGemini(prompt);
       const parsed = JSON.parse(raw.replace(/```json|```/g,"").trim());
       localStorage.setItem(cacheKey, JSON.stringify(parsed));
@@ -2771,9 +2771,9 @@ Write ALL maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
       const prompt = `Generate 3 exam-style multiple choice questions about "${sub.title}" for ${curriculum} ${subject}.
 
 Key content:
-${sub.keyFacts.map(f=>`ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ ${f}`).join("\n")}
+${sub.keyFacts.map(f=>`• ${f}`).join("\n")}
 
-Write ALL maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NO LaTeX. Return ONLY valid JSON:
+Write ALL maths in plain text — NO LaTeX. Return ONLY valid JSON:
 [{"question":"...","options":["A...","B...","C...","D..."],"correct":0,"explanation":"..."}]`;
       const raw = await callGemini(prompt);
       const parsed = JSON.parse(raw.replace(/```json|```/g,"").trim());
@@ -2799,7 +2799,7 @@ Write ALL maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ N
       const prompt = `You are an expert ${curriculum} tutor. Write comprehensive study notes for "${sub.title}" in ${curriculum} ${subject}.
 
 Key content to cover:
-${sub.keyFacts.map(f=>`ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ ${f}`).join('\n')}
+${sub.keyFacts.map(f=>`• ${f}`).join('\n')}
 ${sub.formula ? `Key formula: ${sub.formula}` : ''}
 
 Write detailed, exam-focused notes including:
@@ -2815,13 +2815,13 @@ Write detailed, exam-focused notes including:
 ## Exam Tips
 [specific tips for ${curriculum} assessment]
 
-Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ use ÃÂÃÂÃÂÃÂ², ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ·, ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NEVER LaTeX. Use ## headings, **bold** key terms, - bullet points.`;
+Write all maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX. Use ## headings, **bold** key terms, - bullet points.`;
 
       const content = await callGemini(prompt);
       localStorage.setItem(cacheKey, content);
       setDeepNotes(d => ({...d, [key]: {loading: false, visible: true, content}}));
     } catch {
-      setDeepNotes(d => ({...d, [key]: {loading: false, visible: true, content: "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Couldn't generate notes. Try again."}}));
+      setDeepNotes(d => ({...d, [key]: {loading: false, visible: true, content: "⚠️ Couldn't generate notes. Try again."}}));
     }
   };
 
@@ -2846,9 +2846,9 @@ Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
 
   if (loadingAI) return (
     <div style={{textAlign:"center",padding:"32px",color:"var(--muted)"}}>
-      <div style={{fontSize:24,marginBottom:8}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨</div>
+      <div style={{fontSize:24,marginBottom:8}}>✨</div>
       <div style={{fontSize:14,fontWeight:600}}>Generating subtopics from VCAA curriculum...</div>
-      <div style={{fontSize:11,marginTop:4,color:"var(--muted2)"}}>Saved after first load ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ instant next time</div>
+      <div style={{fontSize:11,marginTop:4,color:"var(--muted2)"}}>Saved after first load — instant next time</div>
       <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:12}}>{[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
     </div>
   );
@@ -2858,7 +2858,7 @@ Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
   return (
     <div>
       <div style={{fontWeight:800,fontSize:13,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>
-        {staticSubtopics ? "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Key Subtopics" : "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨ Subtopics (AI-generated from curriculum)"}
+        {staticSubtopics ? "📚 Key Subtopics" : "✨ Subtopics (AI-generated from curriculum)"}
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:10}}>
         {subtopics.map((sub,i) => {
@@ -2876,7 +2876,7 @@ Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
                   <div style={{fontWeight:700,fontSize:14,color:"var(--text)"}}>{sub.title}</div>
                   <div style={{fontSize:12,color:"var(--muted)",marginTop:2,lineHeight:1.4}}>{sub.summary}</div>
                 </div>
-                <div style={{color:"var(--muted)",fontSize:12,transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¼</div>
+                <div style={{color:"var(--muted)",fontSize:12,transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▼</div>
               </div>
 
               {/* Expanded content */}
@@ -2895,7 +2895,7 @@ Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
                     <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>Key Facts</div>
                     {sub.keyFacts.map((fact,j)=>(
                       <div key={j} style={{display:"flex",gap:8,marginBottom:7,alignItems:"flex-start"}}>
-                        <span style={{color:color,fontSize:13,flexShrink:0,marginTop:1}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢</span>
+                        <span style={{color:color,fontSize:13,flexShrink:0,marginTop:1}}>•</span>
                         <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.6}}>{cleanMath(fact)}</span>
                       </div>
                     ))}
@@ -2905,7 +2905,7 @@ Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
                   {qs?.showQuiz && (
                     <div style={{margin:"0 18px 18px",background:"var(--bg3)",borderRadius:10,padding:"14px"}}>
                       {qs.loading ? (
-                        <div style={{textAlign:"center",color:"var(--muted)",fontSize:13,padding:"12px 0"}}>Generating questions... ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨</div>
+                        <div style={{textAlign:"center",color:"var(--muted)",fontSize:13,padding:"12px 0"}}>Generating questions... ✨</div>
                       ) : qs.done ? (
                         <div style={{textAlign:"center",padding:"12px 0"}}>
                           <div style={{fontSize:36,fontWeight:900,color:qs.score===3?"var(--success)":qs.score>=2?"var(--gold)":"var(--danger)"}}>{qs.score}/{qs.questions?.length}</div>
@@ -2929,18 +2929,18 @@ Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
                               <div key={j} onClick={()=>quizChoose(sub.id,j)}
                                 style={{padding:"9px 12px",borderRadius:8,marginBottom:6,cursor:qs.answered?"default":"pointer",background:bg,border,color:clr,fontSize:13,transition:"all .15s"}}>
                                 <strong>{String.fromCharCode(65+j)}.</strong> {cleanMath(opt)}
-                                {qs.answered&&isCorrect&&<span style={{float:"right"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
-                                {qs.answered&&isSel&&!isCorrect&&<span style={{float:"right"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
+                                {qs.answered&&isCorrect&&<span style={{float:"right"}}>✓</span>}
+                                {qs.answered&&isSel&&!isCorrect&&<span style={{float:"right"}}>✗</span>}
                               </div>
                             );
                           })}
                           {qs.answered&&(
                             <>
                               <div style={{background:"rgba(92,224,198,.08)",border:"1px solid var(--success-bg)",borderRadius:8,padding:"9px 12px",marginTop:8,fontSize:12,color:"#9090c0"}}>
-                                ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ {cleanMath(qs.questions[qs.qi]?.explanation)}
+                                💡 {cleanMath(qs.questions[qs.qi]?.explanation)}
                               </div>
                               <button className="btn btn-p btn-sm" style={{marginTop:10}} onClick={()=>quizNext(sub.id)}>
-                                {qs.qi<qs.questions.length-1?"Next ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ":"Finish"}
+                                {qs.qi<qs.questions.length-1?"Next →":"Finish"}
                               </button>
                             </>
                           )}
@@ -2954,15 +2954,15 @@ Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
                     <div style={{margin:"0 18px 14px",background:"var(--bg3)",borderRadius:10,padding:"16px"}}>
                       {deepNotes[sub.id]?.loading ? (
                         <div style={{textAlign:"center",padding:"20px 0",color:"var(--muted)"}}>
-                          <div style={{fontSize:20,marginBottom:6}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨</div>
+                          <div style={{fontSize:20,marginBottom:6}}>✨</div>
                           <div style={{fontSize:13}}>Generating deep notes for {sub.title}...</div>
                           <div style={{display:"flex",gap:6,justifyContent:"center",marginTop:8}}>{[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
                         </div>
                       ) : (
                         <div>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                            <div style={{fontSize:12,fontWeight:700,color:color,textTransform:"uppercase",letterSpacing:".06em"}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Deep Study Notes ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {sub.title}</div>
-                            <button onClick={()=>setDeepNotes(d=>({...d,[sub.id]:{...d[sub.id],visible:false}}))} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:14}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+                            <div style={{fontSize:12,fontWeight:700,color:color,textTransform:"uppercase",letterSpacing:".06em"}}>📖 Deep Study Notes — {sub.title}</div>
+                            <button onClick={()=>setDeepNotes(d=>({...d,[sub.id]:{...d[sub.id],visible:false}}))} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:14}}>✕</button>
                           </div>
                           <MarkdownRenderer content={deepNotes[sub.id]?.content||""}/>
                         </div>
@@ -2973,10 +2973,10 @@ Write all maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ u
                   {/* Action buttons */}
                   <div style={{padding:"0 18px 16px",display:"flex",gap:8,flexWrap:"wrap"}}>
                     <button className="btn btn-sm" style={{background:color,color:"#fff",border:"none"}} onClick={()=>loadMiniQuiz(sub)}>
-                      {qs?.showQuiz?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Hide Quiz":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ Practice Questions"}
+                      {qs?.showQuiz?"✕ Hide Quiz":"🎯 Practice Questions"}
                     </button>
                     <button className="btn btn-s btn-sm" onClick={()=>loadDeeperNotes(sub)}>
-                      {deepNotes[sub.id]?.visible?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Hide Notes":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Dive Deeper"}
+                      {deepNotes[sub.id]?.visible?"✕ Hide Notes":"🔍 Dive Deeper"}
                     </button>
                   </div>
                 </div>
@@ -3030,7 +3030,7 @@ function SubjectsScreen({ profile, gs }) {
   const loadTopics = async (subject) => {
     setSel(subject); setTopicsLoading(true); setTopics([]); setSelTopic(null); setActiveTab("overview"); setContent("");
 
-    // Alias map ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Year 9/10 subjects to their curriculum entries
+    // Alias map — Year 9/10 subjects to their curriculum entries
     const ALIASES = {
       "History": "History (Year 9-10)",
       "Geography": "Geography (Year 9-10)",
@@ -3094,7 +3094,7 @@ ${ctx}
 
 Cover ALL of these sections:
 1. Key definitions and concepts (bold with **bold**)
-2. Important formulas or rules (plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ use ÃÂÃÂÃÂÃÂ², ÃÂÃÂÃÂÃÂ³, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ·, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¤, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¥, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NOT LaTeX)
+2. Important formulas or rules (plain text — use ², ³, √, ×, ÷, ≤, ≥, π, Δ — NOT LaTeX)
 3. Common exam question types and model answers
 4. Worked examples
 5. Key things examiners look for
@@ -3109,7 +3109,7 @@ Rules:
 - Each question must have exactly 4 options (A, B, C, D)
 - correct is the INDEX (0, 1, 2 or 3) of the correct answer
 - Include a clear explanation
-- Write maths in plain text: ÃÂÃÂÃÂÃÂ², ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ·, ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NO LaTeX
+- Write maths in plain text: ², √, ×, ÷, π — NO LaTeX
 
 Return ONLY this JSON array with no other text, no markdown, no backticks:
 [{"question":"...","options":["A...","B...","C...","D..."],"correct":0,"explanation":"..."},{"question":"...","options":["A...","B...","C...","D..."],"correct":1,"explanation":"..."},{"question":"...","options":["A...","B...","C...","D..."],"correct":2,"explanation":"..."},{"question":"...","options":["A...","B...","C...","D..."],"correct":0,"explanation":"..."},{"question":"...","options":["A...","B...","C...","D..."],"correct":3,"explanation":"..."}]`,
@@ -3117,7 +3117,7 @@ Return ONLY this JSON array with no other text, no markdown, no backticks:
       flashcards: `Generate exactly 8 flashcards for ${curriculum} on:
 ${ctx}
 
-Write maths in plain text: ÃÂÃÂÃÂÃÂ², ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ·, ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NO LaTeX.
+Write maths in plain text: ², √, ×, ÷, π — NO LaTeX.
 
 Return ONLY this JSON array with no other text, no markdown, no backticks:
 [{"q":"question 1","a":"answer 1"},{"q":"question 2","a":"answer 2"},{"q":"question 3","a":"answer 3"},{"q":"question 4","a":"answer 4"},{"q":"question 5","a":"answer 5"},{"q":"question 6","a":"answer 6"},{"q":"question 7","a":"answer 7"},{"q":"question 8","a":"answer 8"}]`,
@@ -3126,10 +3126,10 @@ Return ONLY this JSON array with no other text, no markdown, no backticks:
 ${ctx}
 
 Include:
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ All key terms and definitions
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ Important formulas/rules (plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ², ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ·, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NOT LaTeX)
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ Key cause-effect relationships
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ Common exam traps to avoid
+• All key terms and definitions
+• Important formulas/rules (plain text — ², √, ×, ÷, π, Δ — NOT LaTeX)
+• Key cause-effect relationships
+• Common exam traps to avoid
 
 Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exam-focused.`
     };
@@ -3138,7 +3138,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
       const tokenLimits = { study: 6000, quiz: 1500, flashcards: 1500, notes: 2000 };
       const raw = await callGemini(prompts[type], tokenLimits[type] || 4000);
       if (!raw || !raw.trim()) {
-        setContent("ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ No response received. Try again.");
+        setContent("⚠️ No response received. Try again.");
         setContentLoading(false);
         return;
       }
@@ -3156,12 +3156,12 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
         setContent(raw);
       }
     } catch(e) {
-      setContent("ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Error generating content ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ " + (e.message || "try again"));
+      setContent("⚠️ Error generating content — " + (e.message || "try again"));
     }
     setContentLoading(false);
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ TOPIC STUDY VIEW ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ with subtopic bookmarks ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── TOPIC STUDY VIEW — with subtopic bookmarks ──
   if (sel && selTopic) {
     const color = getColor(sel);
     const subjData = getCurriculum(sel);
@@ -3176,18 +3176,18 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
     return (
       <div className="content fade-up">
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20}}>
-          <button className="btn btn-g btn-sm" onClick={()=>{setSelTopic(null);setContent("");setActiveTab("overview");}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
+          <button className="btn btn-g btn-sm" onClick={()=>{setSelTopic(null);setContent("");setActiveTab("overview");}}>← Back</button>
           <div style={{width:3,height:24,background:color,borderRadius:2}}/>
           <div>
             <div style={{fontWeight:900,fontSize:18}}>{selTopic}</div>
-            <div style={{fontSize:12,color:"var(--muted)"}}>{sel} ÃÂÃÂÃÂÃÂ· {curriculum}</div>
+            <div style={{fontSize:12,color:"var(--muted)"}}>{sel} · {curriculum}</div>
           </div>
         </div>
 
         {/* Official VCAA dot points */}
         {topicArea?.dotPoints && (
           <div style={{background:"rgba(124,106,247,.06)",border:"1px solid rgba(124,106,247,.15)",borderRadius:12,padding:"14px 16px",marginBottom:18}}>
-            <div style={{fontSize:11,fontWeight:700,color:"var(--accent)",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Official VCAA Curriculum</div>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--accent)",marginBottom:8,textTransform:"uppercase",letterSpacing:".06em"}}>📋 Official VCAA Curriculum</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
               {topicArea.dotPoints.map((dp,i)=>(
                 <span key={i} style={{fontSize:11,background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:20,padding:"3px 10px",color:"#9090c0"}}>{dp.slice(0,50)}{dp.length>50?"...":""}</span>
@@ -3199,10 +3199,10 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
         {/* Generate full content buttons */}
         <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
           {[
-            {id:"study",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Full Study Notes"},
-            {id:"quiz",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ Full Quiz (5 Qs)"},
-            {id:"flashcards",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Flashcard Deck"},
-            {id:"notes",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Quick Summary"},
+            {id:"study",label:"📖 Full Study Notes"},
+            {id:"quiz",label:"🎯 Full Quiz (5 Qs)"},
+            {id:"flashcards",label:"🃏 Flashcard Deck"},
+            {id:"notes",label:"📋 Quick Summary"},
           ].map(t=>(
             <button key={t.id} className="btn btn-sm"
               style={{background:activeTab===t.id?color:"var(--bg3)",color:activeTab===t.id?"#fff":"var(--muted)",border:`1px solid ${activeTab===t.id?color:"var(--border)"}`}}
@@ -3215,7 +3215,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
         {/* Generated content */}
         {contentLoading ? (
           <div className="card" style={{textAlign:"center",padding:"40px",marginBottom:20}}>
-            <div style={{fontSize:28,marginBottom:10}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨</div>
+            <div style={{fontSize:28,marginBottom:10}}>✨</div>
             <div style={{fontWeight:700,marginBottom:6}}>Generating {activeTab} for {selTopic}...</div>
             <div style={{color:"var(--muted)",fontSize:13,marginBottom:16}}>Using official {curriculum} curriculum</div>
             <div style={{display:"flex",gap:8,justifyContent:"center"}}>{[0,.2,.4].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`}}/>)}</div>
@@ -3224,7 +3224,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
           <div style={{marginBottom:20}}>
             {(activeTab==="study"||activeTab==="notes") && !parsedContent && (
               <div className="card">
-                <div className="ch"><div className="ct">{activeTab==="study"?"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Study Notes":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Revision Summary"} ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {selTopic}</div><span className="tag tag-a">{curriculum}</span></div>
+                <div className="ch"><div className="ct">{activeTab==="study"?"📖 Study Notes":"📋 Revision Summary"} — {selTopic}</div><span className="tag tag-a">{curriculum}</span></div>
                 <div className="cb"><MarkdownRenderer content={content}/></div>
               </div>
             )}
@@ -3233,7 +3233,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
           </div>
         ) : null}
 
-        {/* ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SUBTOPIC BOOKMARKS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ */}
+        {/* ── SUBTOPIC BOOKMARKS ── */}
         <SubtopicBookmarks
           selTopic={selTopic}
           subject={sel}
@@ -3245,7 +3245,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
     );
   }
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SUBJECT VIEW ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── SUBJECT VIEW ──
   if (sel) {
     const color = getColor(sel);
     const subjData = getCurriculum(sel);
@@ -3255,11 +3255,11 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
     return (
       <div className="content fade-up">
         <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:22}}>
-          <button className="btn btn-g btn-sm" onClick={()=>setSel(null)}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
+          <button className="btn btn-g btn-sm" onClick={()=>setSel(null)}>← Back</button>
           <div style={{width:4,height:32,background:color,borderRadius:2}}/>
           <div style={{flex:1}}>
             <div style={{fontWeight:900,fontSize:20}}>{sel}</div>
-            <div style={{color:"var(--muted)",fontSize:12}}>{curriculum} ÃÂÃÂÃÂÃÂ· {subjData?.assessmentType||"Assessment"}</div>
+            <div style={{color:"var(--muted)",fontSize:12}}>{curriculum} · {subjData?.assessmentType||"Assessment"}</div>
           </div>
           <Ring val={gs?.state?.masteryMap?.[sel]||50} size={56} stroke={5} color={color}/>
         </div>
@@ -3267,7 +3267,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
         {/* What are you studying right now? */}
         <div className="card" style={{marginBottom:16,borderColor:`${color}44`}}>
           <div className="ch">
-            <div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ What are you studying right now?</div>
+            <div className="ct">📍 What are you studying right now?</div>
             {!editingTopic && <button className="btn btn-g btn-sm" onClick={()=>{setTopicInput(myTopic||"");setEditingTopic(true);}}>
               {myTopic?"Edit":"Set topic"}
             </button>}
@@ -3277,7 +3277,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
               <div style={{display:"flex",gap:8}}>
                 <input value={topicInput} onChange={e=>setTopicInput(e.target.value)}
                   onKeyDown={e=>e.key==="Enter"&&saveCurrentTopic(sel,topicInput)}
-                  placeholder={`e.g. "Electrochemistry", "Chapter 4 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Calculus"...`}
+                  placeholder={`e.g. "Electrochemistry", "Chapter 4 — Calculus"...`}
                   style={{flex:1,background:"var(--bg3)",border:`1px solid ${color}66`,borderRadius:8,padding:"9px 12px",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--ff)"}}
                   autoFocus/>
                 <button className="btn btn-p btn-sm" onClick={()=>saveCurrentTopic(sel,topicInput)}>Save</button>
@@ -3287,7 +3287,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:color}}/>
                 <span style={{fontSize:14,fontWeight:600}}>{myTopic}</span>
-                <span style={{fontSize:12,color:"var(--muted)"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ all quizzes and flashcards will focus on this</span>
+                <span style={{fontSize:12,color:"var(--muted)"}}>— all quizzes and flashcards will focus on this</span>
               </div>
             ) : (
               <div style={{color:"var(--muted)",fontSize:13}}>
@@ -3300,7 +3300,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
         {/* Paste your own notes */}
         <div className="card" style={{marginBottom:16}}>
           <div className="ch">
-            <div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Your Notes / Textbook Excerpt</div>
+            <div className="ct">📄 Your Notes / Textbook Excerpt</div>
             {!editingNotes && <button className="btn btn-g btn-sm" onClick={()=>{setNotesInput(myNotes||"");setEditingNotes(true);}}>
               {myNotes?"Edit":"Paste notes"}
             </button>}
@@ -3319,11 +3319,11 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
           ) : myNotes ? (
             <div className="cb">
               <div style={{fontSize:13,color:"var(--muted)",lineHeight:1.6,whiteSpace:"pre-wrap",maxHeight:80,overflow:"hidden",maskImage:"linear-gradient(180deg,black 60%,transparent)"}}>{myNotes}</div>
-              <div style={{fontSize:11,color:"var(--muted)",marginTop:4}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {myNotes.length} characters ÃÂÃÂÃÂÃÂ· Gemini will use your notes as primary source</div>
+              <div style={{fontSize:11,color:"var(--muted)",marginTop:4}}>✅ {myNotes.length} characters · Gemini will use your notes as primary source</div>
             </div>
           ) : (
             <div className="cb" style={{color:"var(--muted)",fontSize:13}}>
-              Optionally paste your textbook or teacher notes ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Gemini will generate questions directly from YOUR content rather than general curriculum.
+              Optionally paste your textbook or teacher notes — Gemini will generate questions directly from YOUR content rather than general curriculum.
             </div>
           )}
         </div>
@@ -3336,7 +3336,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
         ) : (
           <>
             <div style={{fontWeight:800,fontSize:14,marginBottom:12,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".06em"}}>
-              {subjData?"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Official VCAA Study Areas":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Topic Areas"}
+              {subjData?"📋 Official VCAA Study Areas":"📚 Topic Areas"}
             </div>
             <div className="g2" style={{marginBottom:18}}>
               {topics.map((topic,i)=>{
@@ -3349,17 +3349,17 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
                       <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>
                         {area.dotPoints.slice(0,2).map((dp,j)=>(
                           <div key={j} style={{display:"flex",gap:6,marginBottom:3}}>
-                            <span style={{color:color,flexShrink:0}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢</span>{dp}
+                            <span style={{color:color,flexShrink:0}}>•</span>{dp}
                           </div>
                         ))}
-                        {area.dotPoints.length > 2 && <div style={{color:"var(--muted)",marginTop:3}}>+{area.dotPoints.length-2} more dot points ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div>}
+                        {area.dotPoints.length > 2 && <div style={{color:"var(--muted)",marginTop:3}}>+{area.dotPoints.length-2} more dot points →</div>}
                       </div>
                     )}
                     <div style={{display:"flex",gap:6,marginTop:10,flexWrap:"wrap"}}>
-                      <span className="tag tag-a">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Notes</span>
-                      <span className="tag tag-g">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ Quiz</span>
-                      <span className="tag tag-r">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Flashcards</span>
-                      <span style={{fontSize:10,color:"var(--muted)",padding:"2px 8px"}}>Click to study ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>
+                      <span className="tag tag-a">📖 Notes</span>
+                      <span className="tag tag-g">🎯 Quiz</span>
+                      <span className="tag tag-r">🃏 Flashcards</span>
+                      <span style={{fontSize:10,color:"var(--muted)",padding:"2px 8px"}}>Click to study →</span>
                     </div>
                   </div>
                 );
@@ -3369,15 +3369,15 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
             {/* Quick generate for current topic */}
             {myTopic && (
               <div className="card" style={{borderColor:`${color}44`}}>
-                <div className="ch"><div className="ct">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡ Quick Study ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {myTopic}</div><span className="tag tag-g">Current Topic</span></div>
+                <div className="ch"><div className="ct">⚡ Quick Study — {myTopic}</div><span className="tag tag-g">Current Topic</span></div>
                 <div className="cb">
                   <div style={{fontSize:13,color:"var(--muted)",marginBottom:14}}>Generate study materials specifically for what you're doing right now in class</div>
                   <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
                     {[
-                      {type:"study",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Study Notes"},
-                      {type:"quiz",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ Practice Quiz"},
-                      {type:"flashcards",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Flashcards"},
-                      {type:"notes",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Quick Summary"},
+                      {type:"study",label:"📖 Study Notes"},
+                      {type:"quiz",label:"🎯 Practice Quiz"},
+                      {type:"flashcards",label:"🃏 Flashcards"},
+                      {type:"notes",label:"📋 Quick Summary"},
                     ].map(t=>(
                       <button key={t.type} className="btn btn-s btn-sm"
                         onClick={()=>{setSelTopic(myTopic);generateContent(t.type);}}>
@@ -3394,7 +3394,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
     );
   }
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SUBJECT LIST ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── SUBJECT LIST ──
   const vceGroups = ALL_SUBJECTS.vce.groups;
   const ibGroups = ALL_SUBJECTS.ib.groups;
   const grouped = {};
@@ -3409,7 +3409,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <div>
           <div style={{fontWeight:900,fontSize:22}}>My Subjects</div>
-          <div style={{color:"var(--muted)",fontSize:13,marginTop:3}}>{subjs.length} subjects ÃÂÃÂÃÂÃÂ· {ALL_SUBJECTS[profile.yearLevel]?.label} ÃÂÃÂÃÂÃÂ· Click a subject to start studying</div>
+          <div style={{color:"var(--muted)",fontSize:13,marginTop:3}}>{subjs.length} subjects · {ALL_SUBJECTS[profile.yearLevel]?.label} · Click a subject to start studying</div>
         </div>
       </div>
       {Object.entries(grouped).map(([group,ss])=>(
@@ -3425,10 +3425,10 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
                   <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:getColor(s)}}/>
                   <div style={{marginBottom:8}}>
                     <div style={{fontSize:10,fontWeight:700,color:getColor(s),textTransform:"uppercase",letterSpacing:".05em"}}>{profile.yearLevel?.toUpperCase()}</div>
-                    {hasVCAA && <div style={{fontSize:9,color:"var(--muted)",marginTop:2}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ VCAA curriculum</div>}
+                    {hasVCAA && <div style={{fontSize:9,color:"var(--muted)",marginTop:2}}>✅ VCAA curriculum</div>}
                   </div>
                   <div className="sn">{s}</div>
-                  {myTopic && <div style={{fontSize:10,color:getColor(s),marginTop:4,fontWeight:600}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {myTopic}</div>}
+                  {myTopic && <div style={{fontSize:10,color:getColor(s),marginTop:4,fontWeight:600}}>📍 {myTopic}</div>}
                   <div className="mb" style={{marginTop:10,height:5}}>
                     <div className="mf" style={{width:`${mastery}%`,background:getColor(s)}}/>
                   </div>
@@ -3443,9 +3443,9 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// INLINE QUIZ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ used inside SubjectsScreen
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
+// INLINE QUIZ — used inside SubjectsScreen
+// ─────────────────────────────────────────────
 function InlineQuiz({ questions, subject, gs }) {
   const [qi, setQi] = useState(0);
   const [sel, setSel] = useState(null);
@@ -3471,7 +3471,7 @@ function InlineQuiz({ questions, subject, gs }) {
     return (
       <div className="card" style={{textAlign:"center",padding:"36px 24px"}}>
         <div style={{fontSize:52,fontWeight:900,color:pct>=75?"var(--success)":pct>=50?"var(--gold)":"var(--danger)",fontFamily:"var(--ff)"}}>{pct}%</div>
-        <div style={{color:"var(--muted)",marginTop:6}}>{score}/{questions.length} correct ÃÂÃÂÃÂÃÂ· +{score*60} XP</div>
+        <div style={{color:"var(--muted)",marginTop:6}}>{score}/{questions.length} correct · +{score*60} XP</div>
         <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:12}}>
           {results.map((r,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:r.ok?"var(--success)":"var(--danger)"}}/>)}
         </div>
@@ -3495,21 +3495,21 @@ function InlineQuiz({ questions, subject, gs }) {
             <div key={i} className={cls} onClick={()=>choose(i)}>
               <div className="ql" style={answered&&i===q.correct?{background:"rgba(92,224,198,.2)",color:"var(--success)"}:answered&&i===sel?{background:"var(--danger-bg)",color:"var(--danger)"}:{}}>{String.fromCharCode(65+i)}</div>
               {cleanMath(opt)}
-              {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--success)"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
-              {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--danger)"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
+              {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--success)"}}>✓</span>}
+              {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--danger)"}}>✗</span>}
             </div>
           );
         })}
-        {answered&&<div className="qexp fade-up"><strong style={{color:"var(--success)"}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ </strong>{cleanMath(q.explanation)}</div>}
-        {answered&&<button className="btn btn-p" style={{marginTop:14}} onClick={next}>{qi<questions.length-1?"Next ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ":"Finish"}</button>}
+        {answered&&<div className="qexp fade-up"><strong style={{color:"var(--success)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
+        {answered&&<button className="btn btn-p" style={{marginTop:14}} onClick={next}>{qi<questions.length-1?"Next →":"Finish"}</button>}
       </div>
     </div>
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// INLINE FLASHCARDS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ used inside SubjectsScreen
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
+// INLINE FLASHCARDS — used inside SubjectsScreen
+// ─────────────────────────────────────────────
 function InlineFlashcards({ cards, subject }) {
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -3525,9 +3525,9 @@ function InlineFlashcards({ cards, subject }) {
 
   if(done) return (
     <div className="card" style={{textAlign:"center",padding:"36px"}}>
-      <div style={{fontSize:48}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+      <div style={{fontSize:48}}>🃏</div>
       <div style={{fontWeight:900,fontSize:42,color:"var(--success)",margin:"10px 0"}}>{known.length}/{cards.length}</div>
-      <div style={{color:"var(--muted)",fontSize:14}}>Cards mastered ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {subject}</div>
+      <div style={{color:"var(--muted)",fontSize:14}}>Cards mastered — {subject}</div>
       <button className="btn btn-p" style={{marginTop:16}} onClick={()=>{setIdx(0);setFlipped(false);setKnown([]);setDone(false);}}>Restart</button>
     </div>
   );
@@ -3535,7 +3535,7 @@ function InlineFlashcards({ cards, subject }) {
   return (
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-        <span style={{fontWeight:700,fontSize:13,color:"var(--muted)"}}>{idx+1}/{cards.length} ÃÂÃÂÃÂÃÂ· {subject}</span>
+        <span style={{fontWeight:700,fontSize:13,color:"var(--muted)"}}>{idx+1}/{cards.length} · {subject}</span>
         <div style={{height:4,width:160,background:"var(--bg3)",borderRadius:2,overflow:"hidden"}}>
           <div style={{height:"100%",background:"linear-gradient(90deg,#7C6AF7,#5CE0C6)",width:`${(idx/cards.length)*100}%`}}/>
         </div>
@@ -3555,17 +3555,17 @@ function InlineFlashcards({ cards, subject }) {
       </div>
       {flipped && (
         <div style={{display:"flex",gap:12,marginTop:16}} className="fade-up">
-          <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(255,107,107,.4)",color:"var(--danger)",background:"rgba(255,107,107,.05)"}} onClick={()=>verdict("rev")}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Still Learning</button>
-          <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(92,224,198,.4)",color:"var(--success)",background:"rgba(92,224,198,.05)"}} onClick={()=>verdict("know")}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Got It!</button>
+          <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(255,107,107,.4)",color:"var(--danger)",background:"rgba(255,107,107,.05)"}} onClick={()=>verdict("rev")}>✗ Still Learning</button>
+          <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(92,224,198,.4)",color:"var(--success)",background:"rgba(92,224,198,.05)"}} onClick={()=>verdict("know")}>✓ Got It!</button>
         </div>
       )}
     </div>
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// QUIZ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Gemini generates questions for YOUR subjects
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
+// QUIZ — Gemini generates questions for YOUR subjects
+// ─────────────────────────────────────────────
 function QuizScreen({ profile, gs }) {
   const [questions, setQuestions] = useState([]);
   const [qi, setQi] = useState(0);
@@ -3597,9 +3597,9 @@ ${ctx}
 ${currentTopic ? `Focus specifically on: ${currentTopic}` : "Cover a range of topics from the curriculum above."}
 
 CRITICAL FORMATTING RULES:
-- Write ALL maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ use ÃÂÃÂÃÂÃÂ², ÃÂÃÂÃÂÃÂ³, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ·, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¤, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¥, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ¸ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NEVER use LaTeX ($...$) or backslash commands
-- Example: write "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ72 - ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ18" NOT "$\\sqrt{72} - \\sqrt{18}$"
-- Example: write "xÃÂÃÂÃÂÃÂ² + 3x - 4" NOT "$x^2 + 3x - 4$"
+- Write ALL maths in plain text — use ², ³, √, ×, ÷, ≤, ≥, π, Δ, θ — NEVER use LaTeX ($...$) or backslash commands
+- Example: write "√72 - √18" NOT "$\\sqrt{72} - \\sqrt{18}$"
+- Example: write "x² + 3x - 4" NOT "$x^2 + 3x - 4$"
 - Questions must be genuine exam style with correct difficulty
 - Each question has exactly 4 options (A, B, C, D)
 - Only ONE correct answer
@@ -3610,7 +3610,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
 [{"subject":"${selSubj}","question":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
 
       const raw = await callGemini(prompt);
-      // Robust JSON extraction ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ handles markdown, extra text, etc.
+      // Robust JSON extraction — handles markdown, extra text, etc.
       let clean = raw.replace(/```json\n?|```\n?/g, "").trim();
       // Find the JSON array
       const start = clean.indexOf("[");
@@ -3624,7 +3624,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
       if (valid.length === 0) throw new Error("No valid questions");
       setQuestions(valid);
     } catch(e) {
-      setError("Couldn't generate questions ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ " + (e.message || "try again"));
+      setError("Couldn't generate questions — " + (e.message || "try again"));
     }
     setLoading(false);
   };
@@ -3666,7 +3666,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
     <div className="content fade-up">
       <SubjectPicker/>
       <div className="card" style={{textAlign:"center",padding:"60px 24px"}}>
-        <div style={{fontSize:36,marginBottom:16}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨</div>
+        <div style={{fontSize:36,marginBottom:16}}>✨</div>
         <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>Generating your {selSubj} quiz...</div>
         <div style={{color:"var(--muted)",fontSize:13}}>Gemini is creating personalised {profile.yearLevel?.toUpperCase()} questions for you</div>
         <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:20}}>
@@ -3680,7 +3680,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
     <div className="content fade-up">
       <SubjectPicker/>
       <div className="card" style={{textAlign:"center",padding:"48px 24px"}}>
-        <div style={{fontSize:36,marginBottom:12}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ</div>
+        <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
         <div style={{fontWeight:700,marginBottom:8}}>{error}</div>
         <button className="btn btn-p" style={{marginTop:12}} onClick={()=>generateQuiz(selSubj)}>Try Again</button>
       </div>
@@ -3695,16 +3695,16 @@ Respond ONLY with valid JSON, no markdown, no backticks:
         <div className="card">
           <div style={{textAlign:"center",padding:"48px 24px"}}>
             <div style={{fontSize:64,fontWeight:900,color:pct>=75?"var(--success)":pct>=50?"var(--gold)":"var(--danger)",fontFamily:"var(--ff)"}}>{pct}%</div>
-            <div style={{fontSize:16,color:"var(--muted)",marginTop:6}}>{score}/{questions.length} correct ÃÂÃÂÃÂÃÂ· +{score*60} XP earned</div>
-            <div style={{marginTop:8,fontSize:13,color:"var(--muted)"}}>{selSubj} ÃÂÃÂÃÂÃÂ· {profile.yearLevel?.toUpperCase()}</div>
+            <div style={{fontSize:16,color:"var(--muted)",marginTop:6}}>{score}/{questions.length} correct · +{score*60} XP earned</div>
+            <div style={{marginTop:8,fontSize:13,color:"var(--muted)"}}>{selSubj} · {profile.yearLevel?.toUpperCase()}</div>
             <div style={{marginTop:14,fontSize:14,color:"var(--muted)"}}>
-              {pct>=75?"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Excellent! You're on track.":pct>=50?"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Good effort ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ review the missed topics.":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Let's revisit these with the AI Tutor."}
+              {pct>=75?"🎉 Excellent! You're on track.":pct>=50?"👍 Good effort — review the missed topics.":"📚 Let's revisit these with the AI Tutor."}
             </div>
             <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:16}}>
               {results.map((r,i)=><div key={i} style={{width:11,height:11,borderRadius:"50%",background:r.ok?"var(--success)":"var(--danger)"}}/>)}
             </div>
             <div style={{display:"flex",gap:10,justifyContent:"center",marginTop:24}}>
-              <button className="btn btn-p" onClick={restart}>New Quiz ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²</button>
+              <button className="btn btn-p" onClick={restart}>New Quiz 🎲</button>
               <button className="btn btn-s" onClick={()=>setDone(false)}>Review Answers</button>
             </div>
           </div>
@@ -3725,7 +3725,7 @@ Respond ONLY with valid JSON, no markdown, no backticks:
         </div>
         <div style={{display:"flex",gap:10,alignItems:"center"}}>
           <span style={{fontWeight:700,color:"var(--muted)"}}>Q {qi+1} / {questions.length}</span>
-          <button className="btn btn-g btn-sm" onClick={restart}>New Quiz ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²</button>
+          <button className="btn btn-g btn-sm" onClick={restart}>New Quiz 🎲</button>
         </div>
       </div>
       <div style={{height:5,background:"var(--bg3)",borderRadius:3,marginBottom:22,overflow:"hidden"}}>
@@ -3741,18 +3741,18 @@ Respond ONLY with valid JSON, no markdown, no backticks:
               <div key={i} className={cls} onClick={()=>choose(i)}>
                 <div className="ql" style={answered&&i===q.correct?{background:"rgba(92,224,198,.2)",color:"var(--success)"}:answered&&i===sel?{background:"var(--danger-bg)",color:"var(--danger)"}:{}}>{String.fromCharCode(65+i)}</div>
                 {cleanMath(opt)}
-                {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--success)"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
-                {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--danger)"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
+                {answered&&i===q.correct&&<span style={{marginLeft:"auto",color:"var(--success)"}}>✓</span>}
+                {answered&&i===sel&&i!==q.correct&&<span style={{marginLeft:"auto",color:"var(--danger)"}}>✗</span>}
               </div>
             );
           })}
-          {answered&&<div className="qexp fade-up"><strong style={{color:"var(--success)"}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ </strong>{cleanMath(q.explanation)}</div>}
+          {answered&&<div className="qexp fade-up"><strong style={{color:"var(--success)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
         </div>
       </div>
       {answered&&(
         <div style={{display:"flex",justifyContent:"flex-end",gap:10}} className="fade-up">
-          <button className="btn btn-s">ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ Ask Claude</button>
-          <button className="btn btn-p" onClick={next}>{qi<questions.length-1?"Next ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ":"Results ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯"}</button>
+          <button className="btn btn-s">🤖 Ask Claude</button>
+          <button className="btn btn-p" onClick={next}>{qi<questions.length-1?"Next →":"Results 🎯"}</button>
         </div>
       )}
     </div>
@@ -3760,9 +3760,9 @@ Respond ONLY with valid JSON, no markdown, no backticks:
 }
 
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // FLASHCARDS
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function FlashcardsScreen({ profile }) {
   const [cards, setCards] = useState([]);
   const [idx, setIdx] = useState(0);
@@ -3789,8 +3789,8 @@ ${ctx}
 ${currentTopic ? `Focus on: ${currentTopic}` : "Cover key concepts across the curriculum."}
 
 CRITICAL FORMATTING RULES:
-- Write ALL maths in plain text ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ use ÃÂÃÂÃÂÃÂ², ÃÂÃÂÃÂÃÂ³, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ·, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¤, ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¥, ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NEVER use LaTeX ($...$)
-- Example: write "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ72 - ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ18" NOT "$\\sqrt{72} - \\sqrt{18}$"
+- Write ALL maths in plain text — use ², ³, √, ×, ÷, ≤, ≥, π, Δ — NEVER use LaTeX ($...$)
+- Example: write "√72 - √18" NOT "$\\sqrt{72} - \\sqrt{18}$"
 - Questions should be concise, answers clear but complete
 - Focus on exam-relevant content
 
@@ -3830,7 +3830,7 @@ Return ONLY valid JSON, no markdown:
     <div className="content fade-up">
       <SubjectPicker/>
       <div className="card" style={{textAlign:"center",padding:"60px 24px"}}>
-        <div style={{fontSize:36,marginBottom:16}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+        <div style={{fontSize:36,marginBottom:16}}>🃏</div>
         <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>Creating your {selSubj} flashcards...</div>
         <div style={{color:"var(--muted)",fontSize:13}}>Gemini is generating personalised cards from the {profile.yearLevel?.toUpperCase()} curriculum</div>
         <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:20}}>
@@ -3844,7 +3844,7 @@ Return ONLY valid JSON, no markdown:
     <div className="content fade-up">
       <SubjectPicker/>
       <div className="card" style={{textAlign:"center",padding:"48px 24px"}}>
-        <div style={{fontSize:36,marginBottom:12}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ</div>
+        <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
         <div style={{fontWeight:700,marginBottom:8}}>{error}</div>
         <button className="btn btn-p" style={{marginTop:12}} onClick={()=>generateCards(selSubj)}>Try Again</button>
       </div>
@@ -3857,15 +3857,15 @@ Return ONLY valid JSON, no markdown:
     <div className="content fade-up">
       <SubjectPicker/>
       <div className="card" style={{textAlign:"center",padding:"48px 24px"}}>
-        <div style={{fontSize:48}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+        <div style={{fontSize:48}}>🃏</div>
         <div style={{fontWeight:900,fontSize:52,color:"var(--success)",margin:"12px 0"}}>{known.length}/{cards.length}</div>
-        <div style={{color:"var(--muted)",fontSize:14}}>Cards mastered ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {selSubj}</div>
+        <div style={{color:"var(--muted)",fontSize:14}}>Cards mastered — {selSubj}</div>
         <div style={{display:"flex",gap:24,justifyContent:"center",margin:"20px 0"}}>
-          <div style={{textAlign:"center"}}><div style={{fontSize:24,fontWeight:900,color:"var(--success)"}}>{known.length}</div><div style={{fontSize:11,color:"var(--muted)"}}>Know it ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div></div>
+          <div style={{textAlign:"center"}}><div style={{fontSize:24,fontWeight:900,color:"var(--success)"}}>{known.length}</div><div style={{fontSize:11,color:"var(--muted)"}}>Know it ✓</div></div>
           <div style={{textAlign:"center"}}><div style={{fontSize:24,fontWeight:900,color:"var(--danger)"}}>{rev.length}</div><div style={{fontSize:11,color:"var(--muted)"}}>Review again</div></div>
         </div>
         <div style={{display:"flex",gap:10,justifyContent:"center"}}>
-          <button className="btn btn-p" onClick={()=>generateCards(selSubj)}>New Deck ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²</button>
+          <button className="btn btn-p" onClick={()=>generateCards(selSubj)}>New Deck 🎲</button>
           <button className="btn btn-s" onClick={()=>{setIdx(0);setFlipped(false);setKnown([]);setRev([]);setDone(false);}}>Restart Same</button>
         </div>
       </div>
@@ -3878,10 +3878,10 @@ Return ONLY valid JSON, no markdown:
     <div className="content fade-up">
       <SubjectPicker/>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-        <div><div style={{fontWeight:900,fontSize:20}}>Flashcards</div><div style={{color:"var(--muted)",fontSize:12,marginTop:3}}>Spaced Repetition ÃÂÃÂÃÂÃÂ· Tap to flip</div></div>
+        <div><div style={{fontWeight:900,fontSize:20}}>Flashcards</div><div style={{color:"var(--muted)",fontSize:12,marginTop:3}}>Spaced Repetition · Tap to flip</div></div>
         <div style={{display:"flex",gap:10,alignItems:"center"}}>
           <span style={{fontWeight:700,color:"var(--muted)"}}>{idx+1}/{cards.length}</span>
-          <button className="btn btn-g btn-sm" onClick={()=>generateCards(selSubj)}>New Deck ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²</button>
+          <button className="btn btn-g btn-sm" onClick={()=>generateCards(selSubj)}>New Deck 🎲</button>
         </div>
       </div>
       <div style={{height:5,background:"var(--bg3)",borderRadius:3,marginBottom:22,overflow:"hidden"}}>
@@ -3903,8 +3903,8 @@ Return ONLY valid JSON, no markdown:
         </div>
         {flipped&&(
           <div style={{display:"flex",gap:12,marginTop:18}} className="fade-up">
-            <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(255,107,107,.4)",color:"var(--danger)",background:"rgba(255,107,107,.05)"}} onClick={()=>verdict("rev")}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Still Learning</button>
-            <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(92,224,198,.4)",color:"var(--success)",background:"rgba(92,224,198,.05)"}} onClick={()=>verdict("know")}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Got It!</button>
+            <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(255,107,107,.4)",color:"var(--danger)",background:"rgba(255,107,107,.05)"}} onClick={()=>verdict("rev")}>✗ Still Learning</button>
+            <button className="btn btn-full" style={{flex:1,justifyContent:"center",border:"1.5px solid rgba(92,224,198,.4)",color:"var(--success)",background:"rgba(92,224,198,.05)"}} onClick={()=>verdict("know")}>✓ Got It!</button>
           </div>
         )}
       </div>
@@ -3912,18 +3912,18 @@ Return ONLY valid JSON, no markdown:
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // CLAUDE AI TUTOR
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // GEMINI AI TUTOR
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function AIScreen({ profile }) {
   const firstName = profile.userName?.split(" ")[0] || "there";
   const curriculum = profile.yearLevel === "ib" ? "IB Diploma" : profile.yearLevel === "vce" ? "VCE" : ALL_SUBJECTS[profile.yearLevel]?.label || "Victorian secondary";
   const MEMORY_KEY = `ss_chat_${profile.userName||"user"}`;
 
-  const welcomeMsg = {role:"ai", text:`Hey ${firstName}! I'm your AI tutor ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ powered by Google Gemini.\n\nI know you're studying ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3).join(", ")}${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length > 3 ? ` and ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length - 3} more` : ""} in ${curriculum}.\n\nAsk me anything, or upload a photo of your homework, worksheet or textbook ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ I'll answer it directly.`};
+  const welcomeMsg = {role:"ai", text:`Hey ${firstName}! I'm your AI tutor — powered by Google Gemini.\n\nI know you're studying ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3).join(", ")}${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length > 3 ? ` and ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length - 3} more` : ""} in ${curriculum}.\n\nAsk me anything, or upload a photo of your homework, worksheet or textbook — I'll answer it directly.`};
 
   const [msgs, setMsgs] = useState(() => {
     try {
@@ -3950,9 +3950,9 @@ function AIScreen({ profile }) {
   const cameraRef = useRef(null);
 
   const systemPrompt = `You are an expert tutor for Australian secondary students in ${curriculum}.
-Student: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).join(", ")} ÃÂÃÂÃÂÃÂ· Goal: ${profile.futurePath || "academic success"}
+Student: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).join(", ")} · Goal: ${profile.futurePath || "academic success"}
 VCAA curriculum context: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).slice(0,3).map(s => { const d = VCAA_CURRICULUM[s]; return d ? `${s}: ${d.areas?.map(a=>a.name).join(", ")}` : s; }).join(" | ")}
-Rules: Australian English. Warm and direct. Plain text maths (ÃÂÃÂÃÂÃÂ², ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ, ÃÂÃÂÃÂÃÂ). Bold **key terms**. If image uploaded, analyse it carefully and solve any questions shown step by step.`;
+Rules: Australian English. Warm and direct. Plain text maths (², √, ×). Bold **key terms**. If image uploaded, analyse it carefully and solve any questions shown step by step.`;
 
   const processFiles = (files) => {
     Array.from(files).forEach(file => {
@@ -4005,7 +4005,7 @@ Rules: Australian English. Warm and direct. Plain text maths (ÃÂÃÂÃ
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || data.error || "Sorry, try again.";
       setMsgs(m => [...m, { role:"ai", text: reply }]);
     } catch {
-      setMsgs(m => [...m, { role:"ai", text: "Connection error ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ check your internet and try again." }]);
+      setMsgs(m => [...m, { role:"ai", text: "Connection error — check your internet and try again." }]);
     }
     setLoading(false);
   }, [input, images, msgs, loading, systemPrompt]);
@@ -4030,7 +4030,7 @@ Rules: Australian English. Warm and direct. Plain text maths (ÃÂÃÂÃ
       {dragging && (
         <div style={{position:"absolute",inset:0,background:"rgba(200,169,110,.1)",border:"3px dashed var(--gold)",borderRadius:"var(--r2)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
           <div style={{textAlign:"center"}}>
-            <div style={{fontSize:48,marginBottom:8}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ·</div>
+            <div style={{fontSize:48,marginBottom:8}}>📷</div>
             <div style={{fontWeight:800,fontSize:18,color:"var(--gold)"}}>Drop image to upload</div>
           </div>
         </div>
@@ -4082,7 +4082,7 @@ Rules: Australian English. Warm and direct. Plain text maths (ÃÂÃÂÃ
                   style={{width:60,height:60,objectFit:"cover",borderRadius:"var(--r)",border:"1.5px solid var(--border)"}}/>
                 <button onClick={() => setImages(p => p.filter((_,j) => j!==i))}
                   style={{position:"absolute",top:-6,right:-6,width:18,height:18,borderRadius:"50%",background:"var(--text)",color:"var(--bg2)",border:"none",cursor:"pointer",fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>
-                  ÃÂÃÂÃÂÃÂ
+                  ×
                 </button>
               </div>
             ))}
@@ -4099,19 +4099,19 @@ Rules: Australian English. Warm and direct. Plain text maths (ÃÂÃÂÃ
 
         {/* Input row */}
         <div className="chat-row">
-          {/* Attach file ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ desktop */}
+          {/* Attach file — desktop */}
           <button onClick={() => fileRef.current?.click()} title="Attach image or file"
             style={{width:40,height:40,borderRadius:"var(--r)",border:"1.5px solid var(--border-light)",background:"var(--bg3)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0,transition:"all .15s"}}
             onMouseEnter={e=>e.currentTarget.style.borderColor="var(--border)"}
             onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border-light)"}>
-            ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ
+            📎
           </button>
-          {/* Camera ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ shows on mobile, useful on desktop too */}
+          {/* Camera — shows on mobile, useful on desktop too */}
           <button onClick={() => cameraRef.current?.click()} title="Take a photo"
             style={{width:40,height:40,borderRadius:"var(--r)",border:"1.5px solid var(--border-light)",background:"var(--bg3)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0,transition:"all .15s"}}
             onMouseEnter={e=>e.currentTarget.style.borderColor="var(--border)"}
             onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border-light)"}>
-            ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ·
+            📷
           </button>
 
           <textarea className="chat-inp" rows={2}
@@ -4123,12 +4123,12 @@ Rules: Australian English. Warm and direct. Plain text maths (ÃÂÃÂÃ
           <button className="btn btn-primary" onClick={() => send()}
             disabled={!input.trim() && images.length===0}
             style={{padding:"11px 16px",alignSelf:"flex-end",borderRadius:"var(--r2)"}}>
-            ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+            ↑
           </button>
         </div>
 
         <div style={{fontSize:10,color:"var(--muted2)",marginTop:8,display:"flex",gap:12,alignItems:"center",justifyContent:"space-between"}}>
-          <span>Powered by Google Gemini ÃÂÃÂÃÂÃÂ· {curriculum} ÃÂÃÂÃÂÃÂ· Chat saved</span>
+          <span>Powered by Google Gemini · {curriculum} · Chat saved</span>
           <button onClick={()=>{ localStorage.removeItem(MEMORY_KEY); setMsgs([welcomeMsg]); }}
             style={{fontSize:10,color:"var(--muted)",background:"none",border:"none",cursor:"pointer",fontFamily:"var(--ff)",padding:0,textDecoration:"underline"}}>
             Clear chat
@@ -4139,9 +4139,9 @@ Rules: Australian English. Warm and direct. Plain text maths (ÃÂÃÂÃ
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// STUDY PLANNER ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ interactive plan with sessions
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
+// STUDY PLANNER — interactive plan with sessions
+// ─────────────────────────────────────────────
 function PlannerScreen({ profile, gs }) {
   const { state, addEvent, addMinutes } = gs;
   const subjs = Array.isArray(profile.selectedSubjects) ? profile.selectedSubjects : [];
@@ -4227,7 +4227,7 @@ Return ONLY valid JSON array, no markdown, no backticks:
   "date":"YYYY-MM-DD",
   "day":"Monday",
   "subject":"Biology",
-  "topic":"Cell Division ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Mitosis",
+  "topic":"Cell Division — Mitosis",
   "duration":60,
   "summary":"Today you'll master the stages of mitosis and be able to draw and label each phase for exam questions.",
   "tasks":["Read your textbook notes on the 4 stages of mitosis (PMAT)","Draw and label a diagram of each phase from memory","Complete 10 practice questions on mitosis vs meiosis","Make 5 flashcards: one for each stage with key characteristics"],
@@ -4266,7 +4266,7 @@ Rules:
       if (focusText.match(/sac|exam|test|assessment/)) {
         const matchedSubj = planSubjects.find(s => subjectFocus[s]?.toLowerCase().match(/sac|exam|test/));
         if (matchedSubj) {
-          addEvent({ title:`${matchedSubj} ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ${subjectFocus[matchedSubj]}`, subject:matchedSubj, date:planEnd, type:focusText.includes("sac")?"SAC":"EXAM", color:getColor(matchedSubj) });
+          addEvent({ title:`${matchedSubj} — ${subjectFocus[matchedSubj]}`, subject:matchedSubj, date:planEnd, type:focusText.includes("sac")?"SAC":"EXAM", color:getColor(matchedSubj) });
         }
       }
 
@@ -4274,7 +4274,7 @@ Rules:
       localStorage.setItem("ss_study_plan",JSON.stringify(parsed));
       localStorage.setItem("ss_done_tasks","{}");
       setStep("plan");
-    } catch(e) { setError("Couldn't generate: "+(e.message||"try again")); }
+    } catch(e) { alert("Couldn't generate: "+(e.message||"try again")); }
     setGenerating(false);
   };
 
@@ -4292,14 +4292,14 @@ Rules:
       <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 56px)",background:"var(--bg)"}}>
         {/* Header */}
         <div style={{padding:"14px 24px",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",display:"flex",alignItems:"center",gap:12}}>
-          <button className="btn btn-ghost btn-sm" onClick={()=>{setStep("plan");setTimerRunning(false);}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
-          <div style={{width:34,height:34,borderRadius:"var(--r)",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+          <button className="btn btn-ghost btn-sm" onClick={()=>{setStep("plan");setTimerRunning(false);}}>← Back</button>
+          <div style={{width:34,height:34,borderRadius:"var(--r)",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>📚</div>
           <div style={{flex:1}}>
             <div style={{fontWeight:800,fontSize:14,color:"var(--text)"}}>{day.topic}</div>
-            <div style={{fontSize:11,color:"var(--muted)"}}>{day.subject} ÃÂÃÂÃÂÃÂ· {day.day} {new Date(day.date+"T12:00:00").toLocaleDateString("en-AU",{day:"numeric",month:"short"})}</div>
+            <div style={{fontSize:11,color:"var(--muted)"}}>{day.subject} · {day.day} {new Date(day.date+"T12:00:00").toLocaleDateString("en-AU",{day:"numeric",month:"short"})}</div>
           </div>
           <a href={`https://www.youtube.com/results?search_query=${ytQuery}`} target="_blank" rel="noreferrer"
-            className="btn btn-secondary btn-sm">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ Find Video</a>
+            className="btn btn-secondary btn-sm">🎬 Find Video</a>
         </div>
 
         <div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>
@@ -4315,18 +4315,18 @@ Rules:
             <div style={{fontSize:12,color:"var(--muted)",marginBottom:12,textTransform:"uppercase",fontWeight:700,letterSpacing:".06em"}}>{timerMode==="work"?"Focus Time":"Break Time"}</div>
             <div style={{display:"flex",gap:10,justifyContent:"center"}}>
               <button className="btn btn-primary" onClick={()=>setTimerRunning(r=>!r)} style={{minWidth:100}}>
-                {timerRunning?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¸ Pause":"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¶ Start"}
+                {timerRunning?"⏸ Pause":"▶ Start"}
               </button>
-              <button className="btn btn-secondary btn-sm" onClick={()=>{setTimerRunning(false);setTimer(timerMode==="work"?25*60:5*60);}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂº Reset</button>
+              <button className="btn btn-secondary btn-sm" onClick={()=>{setTimerRunning(false);setTimer(timerMode==="work"?25*60:5*60);}}>↺ Reset</button>
               <button className="btn btn-ghost btn-sm" onClick={()=>{setTimerMode(m=>m==="work"?"break":"work");setTimerRunning(false);setTimer(timerMode==="work"?5*60:25*60);}}>
-                {timerMode==="work"?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Break":"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Focus"}
+                {timerMode==="work"?"→ Break":"→ Focus"}
               </button>
             </div>
           </div>
 
           {/* Tasks */}
           <div className="card">
-            <div className="card-head"><div className="card-title">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Today's Tasks</div><span style={{fontSize:12,color:"var(--muted)"}}>{tasks.filter((_,i)=>doneTasks[`${sessionDay}-${i}`]).length}/{tasks.length} done</span></div>
+            <div className="card-head"><div className="card-title">📋 Today's Tasks</div><span style={{fontSize:12,color:"var(--muted)"}}>{tasks.filter((_,i)=>doneTasks[`${sessionDay}-${i}`]).length}/{tasks.length} done</span></div>
             <div className="card-body" style={{display:"flex",flexDirection:"column",gap:10}}>
               {tasks.map((task,i)=>{
                 const done = doneTasks[`${sessionDay}-${i}`];
@@ -4334,11 +4334,11 @@ Rules:
                 return (
                   <div key={i} onClick={()=>markTask(sessionDay,i)} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"12px 14px",borderRadius:"var(--r)",border:`1.5px solid ${isCurrent?"var(--text)":done?"var(--success)":"var(--border-light)"}`,background:done?"var(--success-bg)":isCurrent?"var(--bg3)":"var(--bg2)",cursor:"pointer",transition:"all .15s"}}>
                     <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${done?"var(--success)":isCurrent?"var(--text)":"var(--border)"}`,background:done?"var(--success)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
-                      {done&&<span style={{color:"#fff",fontSize:12,fontWeight:800}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
+                      {done&&<span style={{color:"#fff",fontSize:12,fontWeight:800}}>✓</span>}
                     </div>
                     <div style={{flex:1}}>
                       <div style={{fontSize:13,fontWeight:isCurrent?700:500,color:done?"var(--muted)":"var(--text)",textDecoration:done?"line-through":"none",lineHeight:1.5}}>{task}</div>
-                      {isCurrent&&<div style={{fontSize:11,color:"var(--muted)",marginTop:3}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Current task</div>}
+                      {isCurrent&&<div style={{fontSize:11,color:"var(--muted)",marginTop:3}}>← Current task</div>}
                     </div>
                   </div>
                 );
@@ -4350,11 +4350,11 @@ Rules:
           <div style={{display:"flex",gap:10,marginTop:16}}>
             {sessionTaskIdx < tasks.length-1 && (
               <button className="btn btn-secondary btn-full" onClick={()=>{markTask(sessionDay,sessionTaskIdx);setSessionTaskIdx(i=>i+1);}}>
-                Next Task ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+                Next Task →
               </button>
             )}
             <button className="btn btn-primary btn-full" onClick={()=>{tasks.forEach((_,i)=>markTask(sessionDay,i));setStep("plan");}}>
-              ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Complete Session
+              ✅ Complete Session
             </button>
           </div>
         </div>
@@ -4374,13 +4374,13 @@ Rules:
           </div>
           <div style={{display:"flex",gap:8}}>
             <button className="btn btn-secondary btn-sm" onClick={()=>setShowAddEvent(v=>!v)}>+ Event</button>
-            <button className="btn btn-primary btn-sm" onClick={()=>setStep("setup")}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨ Create Study Plan</button>
+            <button className="btn btn-primary btn-sm" onClick={()=>setStep("setup")}>✨ Create Study Plan</button>
           </div>
         </div>
 
         {showAddEvent && (
           <div className="card" style={{marginBottom:16}}>
-            <div className="card-head"><div className="card-title">Add Event</div><button className="btn btn-ghost btn-sm" onClick={()=>setShowAddEvent(false)}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button></div>
+            <div className="card-head"><div className="card-title">Add Event</div><button className="btn btn-ghost btn-sm" onClick={()=>setShowAddEvent(false)}>✕</button></div>
             <div className="card-body" style={{display:"flex",flexDirection:"column",gap:10}}>
               <input className="input" placeholder="Title e.g. Chemistry SAC" value={newEvent.title} onChange={e=>setNewEvent(v=>({...v,title:e.target.value}))}/>
               <div className="g2" style={{gap:10}}>
@@ -4398,15 +4398,15 @@ Rules:
         )}
 
         <div style={{textAlign:"center",padding:"48px 24px",background:"var(--bg2)",borderRadius:"var(--r2)",border:"1.5px dashed var(--border-light)",marginBottom:20}}>
-          <div style={{fontSize:48,marginBottom:12}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+          <div style={{fontSize:48,marginBottom:12}}>📅</div>
           <div style={{fontWeight:800,fontSize:18,color:"var(--text)",marginBottom:8}}>No study plan yet</div>
           <div style={{fontSize:13,color:"var(--muted)",marginBottom:20,maxWidth:360,margin:"0 auto 20px"}}>Create a personalised day-by-day plan with specific tasks, topics, and YouTube video links for each session</div>
-          <button className="btn btn-primary" onClick={()=>setStep("setup")}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨ Create My Study Plan</button>
+          <button className="btn btn-primary" onClick={()=>setStep("setup")}>✨ Create My Study Plan</button>
         </div>
 
         {upcoming.length > 0 && (
           <div className="card">
-            <div className="card-head"><div className="card-title">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Upcoming</div></div>
+            <div className="card-head"><div className="card-title">📅 Upcoming</div></div>
             <div className="card-body">
               {upcoming.slice(0,5).map((ev,i)=>{
                 const days = Math.ceil((new Date(ev.date)-today)/(1000*60*60*24));
@@ -4415,7 +4415,7 @@ Rules:
                     <div style={{width:8,height:8,borderRadius:"50%",background:ev.color||getColor(ev.subject),flexShrink:0}}/>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:700,fontSize:13,color:"var(--text)"}}>{ev.title}</div>
-                      <div style={{fontSize:11,color:"var(--muted)",marginTop:1}}>{ev.subject} ÃÂÃÂÃÂÃÂ· {new Date(ev.date).toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"})}</div>
+                      <div style={{fontSize:11,color:"var(--muted)",marginTop:1}}>{ev.subject} · {new Date(ev.date).toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"})}</div>
                     </div>
                     <div style={{fontWeight:900,fontSize:14,color:days<=3?"var(--danger)":days<=7?"var(--gold)":"var(--muted)"}}>{days===0?"Today":days===1?"Tomorrow":`${days}d`}</div>
                   </div>
@@ -4433,12 +4433,12 @@ Rules:
     return (
       <div className="content fade-up">
         <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setStep("home")}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setStep("home")}>← Back</button>
           <div style={{fontWeight:900,fontSize:20,color:"var(--text)"}}>Create Study Plan</div>
         </div>
 
         <div className="card" style={{marginBottom:14}}>
-          <div className="card-head"><div className="card-title">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Date Range</div></div>
+          <div className="card-head"><div className="card-title">📅 Date Range</div></div>
           <div className="card-body">
             <div className="g2" style={{gap:12}}>
               <div>
@@ -4460,12 +4460,12 @@ Rules:
         </div>
 
         <div className="card" style={{marginBottom:14}}>
-          <div className="card-head"><div className="card-title">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Select Subjects</div></div>
+          <div className="card-head"><div className="card-title">📚 Select Subjects</div></div>
           <div className="card-body">
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
               {subjs.map(s=>(
                 <button key={s} onClick={()=>toggleSubjPlan(s)} style={{padding:"7px 14px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",border:"1.5px solid",transition:"all .15s",background:planSubjects.includes(s)?getColor(s):"var(--bg3)",color:planSubjects.includes(s)?"#fff":"var(--muted)",borderColor:planSubjects.includes(s)?getColor(s):"var(--border-light)"}}>
-                  {planSubjects.includes(s)?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ":""}{s}
+                  {planSubjects.includes(s)?"✓ ":""}{s}
                 </button>
               ))}
             </div>
@@ -4474,9 +4474,9 @@ Rules:
 
         {planSubjects.length > 0 && (
           <div className="card" style={{marginBottom:14}}>
-            <div className="card-head"><div className="card-title">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ What to Cover</div></div>
+            <div className="card-head"><div className="card-title">🎯 What to Cover</div></div>
             <div className="card-body" style={{display:"flex",flexDirection:"column",gap:12}}>
-              <div style={{fontSize:13,color:"var(--muted)",marginBottom:4}}>Tell us specifically what you need to study for each subject ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ topics, upcoming SACs, weak areas, etc.</div>
+              <div style={{fontSize:13,color:"var(--muted)",marginBottom:4}}>Tell us specifically what you need to study for each subject — topics, upcoming SACs, weak areas, etc.</div>
               {planSubjects.map(s=>(
                 <div key={s}>
                   <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
@@ -4493,7 +4493,7 @@ Rules:
 
         <button className="btn btn-primary btn-full" style={{padding:"14px"}} onClick={generatePlan}
           disabled={generating||!planStart||!planEnd||planSubjects.length===0}>
-          {generating?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨ Generating your plan...":"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨ Generate My Study Plan"}
+          {generating?"✨ Generating your plan...":"✨ Generate My Study Plan"}
         </button>
       </div>
     );
@@ -4530,13 +4530,13 @@ Rules:
           const color = isRest?"var(--muted2)":getColor(day.subject);
           const isExpanded = expanded===idx;
           const tasksDone = (day.tasks||[]).filter((_,ti)=>doneTasks[`${idx}-${ti}`]).length;
-          const actIcon = {"Study Notes":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ","Quiz Practice":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯","Flashcards":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ","Past Paper":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ","Revision":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ","Rest":"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´"}[day.activity]||"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ";
+          const actIcon = {"Study Notes":"📖","Quiz Practice":"🎯","Flashcards":"🃏","Past Paper":"📄","Revision":"🔄","Rest":"😴"}[day.activity]||"📚";
           const ytQuery = encodeURIComponent(`${day.subject} ${day.topic} ${profile.yearLevel?.toUpperCase()||""} tutorial`);
           const dateObj = new Date(day.date+"T12:00:00");
 
           return (
             <div key={idx} className="card" style={{border:`1.5px solid ${isToday?"var(--gold)":done?"var(--success)":isRest?"var(--border-light)":"var(--border)"}`,opacity:done&&!isToday?0.7:1,overflow:"visible"}}>
-              {/* Day header ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ always visible, click to expand */}
+              {/* Day header — always visible, click to expand */}
               <div onClick={()=>!isRest&&setExpanded(expanded===idx?null:idx)}
                 style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",cursor:isRest?"default":"pointer",userSelect:"none"}}>
                 {/* Date block */}
@@ -4547,21 +4547,21 @@ Rules:
                 </div>
                 {/* Content */}
                 {isRest ? (
-                  <div style={{flex:1,fontSize:14,fontWeight:600,color:"var(--muted)"}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´ Rest Day</div>
+                  <div style={{flex:1,fontSize:14,fontWeight:600,color:"var(--muted)"}}>😴 Rest Day</div>
                 ) : (
                   <>
                     <div style={{width:3,height:40,borderRadius:2,background:color,flexShrink:0}}/>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
                         <span style={{fontSize:10,fontWeight:800,color,textTransform:"uppercase",letterSpacing:".05em"}}>{day.subject}</span>
-                        <span style={{fontSize:10,color:"var(--muted)"}}>ÃÂÃÂÃÂÃÂ· {day.duration}min</span>
-                        {day.tasks?.length>0&&<span style={{fontSize:10,color:done?"var(--success)":"var(--muted)"}}>ÃÂÃÂÃÂÃÂ· {tasksDone}/{day.tasks.length} tasks</span>}
+                        <span style={{fontSize:10,color:"var(--muted)"}}>· {day.duration}min</span>
+                        {day.tasks?.length>0&&<span style={{fontSize:10,color:done?"var(--success)":"var(--muted)"}}>· {tasksDone}/{day.tasks.length} tasks</span>}
                       </div>
                       <div style={{fontSize:13,fontWeight:700,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{actIcon} {day.topic}</div>
                     </div>
                     <div style={{display:"flex",gap:6,flexShrink:0,alignItems:"center"}}>
-                      {done&&<span style={{fontSize:11,color:"var(--success)",fontWeight:800}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
-                      <span style={{fontSize:12,color:"var(--muted)",transform:isExpanded?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¾</span>
+                      {done&&<span style={{fontSize:11,color:"var(--success)",fontWeight:800}}>✓</span>}
+                      <span style={{fontSize:12,color:"var(--muted)",transform:isExpanded?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s"}}>▾</span>
                     </div>
                   </>
                 )}
@@ -4584,7 +4584,7 @@ Rules:
                         return (
                           <div key={ti} onClick={()=>markTask(idx,ti)} style={{display:"flex",gap:10,alignItems:"flex-start",cursor:"pointer",padding:"8px 10px",borderRadius:"var(--r)",background:taskDone?"var(--success-bg)":"var(--bg2)",border:`1px solid ${taskDone?"var(--success)":"var(--border-light)"}`,transition:"all .15s"}}>
                             <div style={{width:18,height:18,borderRadius:"50%",border:`2px solid ${taskDone?"var(--success)":"var(--border)"}`,background:taskDone?"var(--success)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
-                              {taskDone&&<span style={{color:"#fff",fontSize:10,fontWeight:800}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>}
+                              {taskDone&&<span style={{color:"#fff",fontSize:10,fontWeight:800}}>✓</span>}
                             </div>
                             <div style={{fontSize:13,color:taskDone?"var(--muted)":"var(--text)",textDecoration:taskDone?"line-through":"none",lineHeight:1.5}}>{task}</div>
                           </div>
@@ -4596,12 +4596,12 @@ Rules:
                   <div style={{display:"flex",gap:8}}>
                     {isToday&&(
                       <button className="btn btn-primary btn-sm" style={{flex:1}} onClick={()=>{setSessionDay(idx);setSessionTaskIdx(0);setTimer(25*60);setTimerRunning(false);setStep("session");}}>
-                        ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¶ Start Today's Session
+                        ▶ Start Today's Session
                       </button>
                     )}
                     <a href={`https://www.youtube.com/results?search_query=${ytQuery}`} target="_blank" rel="noreferrer"
                       className="btn btn-secondary btn-sm" style={{textDecoration:"none",flex:isToday?0:1,justifyContent:"center",display:"inline-flex",alignItems:"center"}}>
-                      ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ Find Video
+                      🎬 Find Video
                     </a>
                   </div>
                 </div>
@@ -4672,11 +4672,11 @@ function AnalyticsScreen({ profile, gs }) {
         <div className="stat" style={{background:"rgba(124,106,247,.08)",border:"1px solid rgba(124,106,247,.2)"}}>
           <div className="sv" style={{color:"#7C6AF7",fontSize:26}}>{predicted}</div>
           <div className="sl">{isIB?"Predicted IB Score":"Predicted ATAR"}</div>
-          <div className="sc up">{gap!==null&&gap>0?`${gap} below target`:"On track for goal! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯"}</div>
+          <div className="sc up">{gap!==null&&gap>0?`${gap} below target`:"On track for goal! 🎯"}</div>
         </div>
         <div className="stat">
           <div className="sv" style={{color:"#5CE0C6",fontSize:26}}>{state.xp?.toLocaleString()||0}</div>
-          <div className="sl">Total XP ÃÂÃÂÃÂÃÂ· Lv {state.level||1}</div>
+          <div className="sl">Total XP · Lv {state.level||1}</div>
           <div className="sc up">{totalQuizzes} quizzes completed</div>
         </div>
         <div className="stat">
@@ -4685,7 +4685,7 @@ function AnalyticsScreen({ profile, gs }) {
           <div className="sc up">{totalQuizzes>0?`From ${totalQuizzes} quizzes`:"Take a quiz to start!"}</div>
         </div>
         <div className="stat">
-          <div className="sv" style={{color:"#FF6B6B",fontSize:26}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥{state.streak||0}</div>
+          <div className="sv" style={{color:"#FF6B6B",fontSize:26}}>🔥{state.streak||0}</div>
           <div className="sl">Current Streak</div>
           <div className="sc up">Best: {state.bestStreak||0} days</div>
         </div>
@@ -4695,7 +4695,7 @@ function AnalyticsScreen({ profile, gs }) {
       {!isIB && (
         <div className="card" style={{marginBottom:18}}>
           <div className="ch">
-            <div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ ATAR Goal Tracker</div>
+            <div className="ct">🎯 ATAR Goal Tracker</div>
             <span className="tag tag-a">{profile.futurePath||"No goal set"}</span>
           </div>
           <div className="cb">
@@ -4713,7 +4713,7 @@ function AnalyticsScreen({ profile, gs }) {
                   <div style={{position:"absolute",top:0,height:"100%",left:`${(targetATAR/99.95)*100}%`,width:2,background:"var(--gold)"}}/>
                 </div>
                 <div style={{fontSize:11,color:"var(--muted)",marginTop:4}}>
-                  {gap>0?`ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ${gap} ATAR points to reach your ${profile.futurePath} goal`:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ You're on track for your goal!"}
+                  {gap>0?`📈 ${gap} ATAR points to reach your ${profile.futurePath} goal`:"🎉 You're on track for your goal!"}
                 </div>
               </div>
               <div style={{textAlign:"center"}}>
@@ -4722,7 +4722,7 @@ function AnalyticsScreen({ profile, gs }) {
               </div>
             </div>
             <div style={{fontSize:12,color:"var(--muted)",background:"var(--bg3)",borderRadius:8,padding:"10px 14px",marginBottom:12}}>
-              ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ Your ATAR prediction improves as you complete quizzes and raise your subject mastery scores.
+              💡 Your ATAR prediction improves as you complete quizzes and raise your subject mastery scores.
             </div>
             <div>
               <div style={{display:"flex",justifyContent:"space-between",fontSize:12,fontWeight:700,color:"var(--muted)",marginBottom:6}}>
@@ -4742,7 +4742,7 @@ function AnalyticsScreen({ profile, gs }) {
 
       {/* Activity chart */}
       <div className="card" style={{marginBottom:18}}>
-        <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Study Sessions ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Last 12 Weeks</div></div>
+        <div className="ch"><div className="ct">📈 Study Sessions — Last 12 Weeks</div></div>
         <div className="cb">
           <div style={{display:"flex",alignItems:"flex-end",gap:6,height:120}}>
             {weeks.map((w,i)=>(
@@ -4759,7 +4759,7 @@ function AnalyticsScreen({ profile, gs }) {
 
       <div className="g2">
         <div className="card">
-          <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Subject Mastery</div></div>
+          <div className="ch"><div className="ct">📚 Subject Mastery</div></div>
           <div className="cb">
             {subjMastery.length===0 ? (
               <div style={{color:"var(--muted)",fontSize:13}}>Take quizzes to build your mastery scores!</div>
@@ -4779,7 +4779,7 @@ function AnalyticsScreen({ profile, gs }) {
 
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div className="card">
-            <div className="ch"><div className="ct">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Focus Areas</div></div>
+            <div className="ch"><div className="ct">⚠️ Focus Areas</div></div>
             <div className="cb">
               {subjMastery.length === 0 ? (
                 <div style={{color:"var(--muted)",fontSize:13}}>Take quizzes to identify your weak areas!</div>
@@ -4796,7 +4796,7 @@ function AnalyticsScreen({ profile, gs }) {
           </div>
 
           <div className="card">
-            <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Quiz History</div></div>
+            <div className="ch"><div className="ct">📋 Quiz History</div></div>
             <div style={{padding:"0 16px"}}>
               {(state.quizHistory||[]).length===0 ? (
                 <div style={{padding:"14px 0",color:"var(--muted)",fontSize:13,textAlign:"center"}}>No quizzes yet!</div>
@@ -4805,7 +4805,7 @@ function AnalyticsScreen({ profile, gs }) {
                   <div style={{width:34,height:34,borderRadius:7,background:q.pct>=75?"var(--success-bg)":q.pct>=50?"var(--gold-light)":"var(--danger-bg)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:q.pct>=75?"var(--success)":q.pct>=50?"var(--gold)":"var(--danger)",flexShrink:0}}>{q.pct}%</div>
                   <div style={{flex:1}}>
                     <div style={{fontSize:12,fontWeight:600}}>{q.subject}</div>
-                    <div style={{fontSize:10,color:"var(--muted)"}}>{q.score}/{q.total} ÃÂÃÂÃÂÃÂ· {new Date(q.date).toLocaleDateString("en-AU",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
+                    <div style={{fontSize:10,color:"var(--muted)"}}>{q.score}/{q.total} · {new Date(q.date).toLocaleDateString("en-AU",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
                   </div>
                 </div>
               ))}
@@ -4817,15 +4817,15 @@ function AnalyticsScreen({ profile, gs }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // SETTINGS SCREEN
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function NotifToggles() {
   const NOTIFS = [
-    {label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ SAC & Exam Countdowns",desc:"7, 3 and 1 day reminders",key:"sac"},
-    {label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥ Daily Streak Reminder",desc:"Keep your streak alive",key:"streak"},
-    {label:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡ XP Milestones",desc:"Level up and achievement alerts",key:"xp"},
-    {label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Weekly Summary",desc:"Sunday progress report",key:"weekly"},
+    {label:"📅 SAC & Exam Countdowns",desc:"7, 3 and 1 day reminders",key:"sac"},
+    {label:"🔥 Daily Streak Reminder",desc:"Keep your streak alive",key:"streak"},
+    {label:"⚡ XP Milestones",desc:"Level up and achievement alerts",key:"xp"},
+    {label:"📊 Weekly Summary",desc:"Sunday progress report",key:"weekly"},
   ];
   const [vals, setVals] = useState(() =>
     Object.fromEntries(NOTIFS.map(n => [n.key, JSON.parse(localStorage.getItem(`notif_${n.key}`) ?? "true")]))
@@ -4864,9 +4864,9 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
 
   const YEAR_LEVELS = [{id:"year9",label:"Year 9"},{id:"year10",label:"Year 10"},{id:"vce",label:"VCE"},{id:"ib",label:"IB Diploma"}];
   const FUTURE_PATHS = [
-    {id:"medicine",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ©ÃÂÃÂº Medicine / Health"},{id:"law",label:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Law"},{id:"engineering",label:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Engineering"},
-    {id:"cs",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ» Computer Science"},{id:"business",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¼ Business"},{id:"science",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ Science"},
-    {id:"arts_hum",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨ Arts / Humanities"},{id:"education",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Education"},{id:"trades",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ§ Trades"},
+    {id:"medicine",label:"🩺 Medicine / Health"},{id:"law",label:"⚖️ Law"},{id:"engineering",label:"⚙️ Engineering"},
+    {id:"cs",label:"💻 Computer Science"},{id:"business",label:"💼 Business"},{id:"science",label:"🔬 Science"},
+    {id:"arts_hum",label:"🎨 Arts / Humanities"},{id:"education",label:"📖 Education"},{id:"trades",label:"🔧 Trades"},
   ];
   const HOURS = [{id:"light",label:"Light (1-2h/day)"},{id:"moderate",label:"Moderate (2-3h/day)"},{id:"intensive",label:"Intensive (3-5h/day)"},{id:"extreme",label:"Extreme (5h+/day)"}];
 
@@ -4882,7 +4882,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
     setTimeout(()=>setSaved(false),2000);
   };
 
-  const TABS = [{id:"profile",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ Profile"},{id:"subjects",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Subjects"},{id:"notifications",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Alerts"},{id:"about",label:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¹ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ About"}];
+  const TABS = [{id:"profile",label:"👤 Profile"},{id:"subjects",label:"📚 Subjects"},{id:"notifications",label:"🔔 Alerts"},{id:"about",label:"ℹ️ About"}];
 
   return (
     <div className="content fade-up">
@@ -4894,7 +4894,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
       {tab==="profile"&&(
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div className="card">
-            <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ Your Profile</div><button className="btn btn-s btn-sm" onClick={()=>setEditing(e=>!e)}>{editing?"Cancel":"Edit"}</button></div>
+            <div className="ch"><div className="ct">👤 Your Profile</div><button className="btn btn-s btn-sm" onClick={()=>setEditing(e=>!e)}>{editing?"Cancel":"Edit"}</button></div>
             <div className="cb">
               <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:20}}>
                 <div style={{width:64,height:64,borderRadius:"50%",background:"linear-gradient(135deg,#7C6AF7,#5CE0C6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,fontWeight:900,color:"#fff",flexShrink:0}}>
@@ -4903,7 +4903,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                 <div>
                   <div style={{fontWeight:800,fontSize:18}}>{profile.userName}</div>
                   <div style={{fontSize:13,color:"var(--muted)"}}>{profile.email}</div>
-                  <div style={{fontSize:12,color:"var(--muted)",marginTop:4}}>{ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel} ÃÂÃÂÃÂÃÂ· {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length||0} subjects</div>
+                  <div style={{fontSize:12,color:"var(--muted)",marginTop:4}}>{ALL_SUBJECTS[profile.yearLevel]?.label||profile.yearLevel} · {(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).length||0} subjects</div>
                 </div>
               </div>
               {!editing?(
@@ -4940,7 +4940,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                       {HOURS.map(h=><button key={h.id} onClick={()=>setHoursPerWeek(h.id)} className={`btn btn-sm ${hoursPerWeek===h.id?"btn-p":"btn-g"}`}>{h.label}</button>)}
                     </div>
                   </div>
-                  <button className="btn btn-p" onClick={save} style={{padding:"12px"}}>{saved?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Saved!":"Save Changes"}</button>
+                  <button className="btn btn-p" onClick={save} style={{padding:"12px"}}>{saved?"✅ Saved!":"Save Changes"}</button>
                 </div>
               )}
             </div>
@@ -4956,7 +4956,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
 
       {tab==="subjects"&&(
         <div className="card">
-          <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ My Subjects</div><span style={{fontSize:12,color:"var(--muted)"}}>{selectedSubjects.length}/12</span></div>
+          <div className="ch"><div className="ct">📚 My Subjects</div><span style={{fontSize:12,color:"var(--muted)"}}>{selectedSubjects.length}/12</span></div>
           <div className="cb">
             <div style={{fontSize:13,color:"var(--muted)",marginBottom:14}}>Tap to add or remove. Changes save immediately.</div>
             {Object.entries(subjectGroups).map(([group,subjects])=>(
@@ -4972,7 +4972,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
                         onUpdateProfile({...profile,selectedSubjects:updated});
                       }}
                         style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,cursor:"pointer",background:sel?getColor(s):"var(--bg3)",color:sel?"#fff":"var(--muted)",border:`1px solid ${sel?getColor(s):"var(--border)"}`,transition:"all .15s"}}>
-                        {sel&&"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ "}{s}
+                        {sel&&"✓ "}{s}
                       </button>
                     );
                   })}
@@ -4985,7 +4985,7 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
 
       {tab==="notifications"&&(
         <div className="card">
-          <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Notification Preferences</div></div>
+          <div className="ch"><div className="ct">🔔 Notification Preferences</div></div>
           <div className="cb">
             <NotifToggles/>
           </div>
@@ -4998,12 +4998,12 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
             <div className="cb" style={{textAlign:"center",padding:"24px"}}>
               <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Ace" style={{width:80,height:80,borderRadius:18,marginBottom:12}}/>
               <div style={{fontWeight:900,fontSize:22,marginBottom:4}}>Study Ace</div>
-              <div style={{color:"var(--muted)",fontSize:13,marginBottom:4}}>Victorian Education Platform ÃÂÃÂÃÂÃÂ· Years 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ12</div>
+              <div style={{color:"var(--muted)",fontSize:13,marginBottom:4}}>Victorian Education Platform · Years 9–12</div>
               <div style={{fontSize:12,color:"var(--muted)"}}>Version 1.0.0</div>
             </div>
           </div>
           <div className="card">
-            <div className="ch"><div className="ct">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Platform Info</div></div>
+            <div className="ch"><div className="ct">📋 Platform Info</div></div>
             <div className="cb">
               {[
                 {label:"AI Model",value:"Google Gemini 2.0 Flash (OpenRouter)"},
@@ -5025,9 +5025,9 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // SEARCH SCREEN
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 function SearchScreen({ profile, setScreen }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -5047,18 +5047,18 @@ function SearchScreen({ profile, setScreen }) {
           found.push({type:"topic",title:area.name,subtitle:sub,color:getColor(sub),action:"subjects"});
         area.dotPoints?.forEach(dp=>{
           if(dp.toLowerCase().includes(q))
-            found.push({type:"dotpoint",title:dp.slice(0,55)+(dp.length>55?"...":""),subtitle:`${sub} ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ${area.name}`,color:getColor(sub),action:"subjects"});
+            found.push({type:"dotpoint",title:dp.slice(0,55)+(dp.length>55?"...":""),subtitle:`${sub} → ${area.name}`,color:getColor(sub),action:"subjects"});
         });
       });
     });
     const screens=[
-      {name:"dashboard",label:"Dashboard",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ"},
-      {name:"planner",label:"Study Planner",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"},
-      {name:"analytics",label:"Analytics",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"},
-      {name:"ai",label:"AI Tutor",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨"},
-      {name:"groups",label:"Study Groups",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥"},
-      {name:"tutors",label:"Tutor Marketplace",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"},
-      {name:"settings",label:"Settings",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ"},
+      {name:"dashboard",label:"Dashboard",icon:"⊞"},
+      {name:"planner",label:"Study Planner",icon:"📅"},
+      {name:"analytics",label:"Analytics",icon:"📊"},
+      {name:"ai",label:"AI Tutor",icon:"✨"},
+      {name:"groups",label:"Study Groups",icon:"👥"},
+      {name:"tutors",label:"Tutor Marketplace",icon:"🎓"},
+      {name:"settings",label:"Settings",icon:"⚙️"},
     ];
     screens.forEach(s=>{
       if(s.label.toLowerCase().includes(q))
@@ -5068,23 +5068,23 @@ function SearchScreen({ profile, setScreen }) {
   },[query]);
 
   const QUICK=[
-    {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"My Subjects",screen:"subjects"},
-    {icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨",label:"AI Tutor",screen:"ai"},
-    {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Study Planner",screen:"planner"},
-    {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Analytics",screen:"analytics"},
-    {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",label:"Study Groups",screen:"groups"},
-    {icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Tutor Marketplace",screen:"tutors"},
+    {icon:"📚",label:"My Subjects",screen:"subjects"},
+    {icon:"✨",label:"AI Tutor",screen:"ai"},
+    {icon:"📅",label:"Study Planner",screen:"planner"},
+    {icon:"📊",label:"Analytics",screen:"analytics"},
+    {icon:"👥",label:"Study Groups",screen:"groups"},
+    {icon:"🎓",label:"Tutor Marketplace",screen:"tutors"},
   ];
 
   return(
     <div className="content fade-up">
       <div style={{fontWeight:900,fontSize:22,marginBottom:20}}>Search</div>
       <div style={{position:"relative",marginBottom:20}}>
-        <div style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:16,color:"var(--muted)"}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+        <div style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:16,color:"var(--muted)"}}>🔍</div>
         <input autoFocus value={query} onChange={e=>setQuery(e.target.value)}
           placeholder="Search subjects, topics, curriculum points..."
           style={{width:"100%",background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 14px 14px 44px",color:"var(--text)",fontSize:15,outline:"none",fontFamily:"var(--ff)",boxSizing:"border-box"}}/>
-        {query&&<button onClick={()=>setQuery("")} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:18}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>}
+        {query&&<button onClick={()=>setQuery("")} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:18}}>✕</button>}
       </div>
       {!query&&(
         <div>
@@ -5101,7 +5101,7 @@ function SearchScreen({ profile, setScreen }) {
       )}
       {query&&results.length===0&&(
         <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>
-          <div style={{fontSize:32,marginBottom:8}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+          <div style={{fontSize:32,marginBottom:8}}>🔍</div>
           <div>No results for "{query}"</div>
         </div>
       )}
@@ -5111,13 +5111,13 @@ function SearchScreen({ profile, setScreen }) {
           {results.map((r,i)=>(
             <button key={i} onClick={()=>setScreen(r.action)} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:12,width:"100%"}}>
               <div style={{width:36,height:36,borderRadius:8,background:`${r.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>
-                {{subject:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",topic:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",dotpoint:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢",screen:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ"}[r.type]}
+                {{subject:"📚",topic:"📖",dotpoint:"•",screen:"🔗"}[r.type]}
               </div>
               <div style={{flex:1}}>
                 <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{r.title}</div>
                 <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{r.subtitle}</div>
               </div>
-              <div style={{fontSize:12,color:r.color,fontWeight:700}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div>
+              <div style={{fontSize:12,color:r.color,fontWeight:700}}>→</div>
             </button>
           ))}
         </div>
@@ -5126,10 +5126,10 @@ function SearchScreen({ profile, setScreen }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// STUDY GROUPS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ full rebuild with persistence,
+// ─────────────────────────────────────────────
+// STUDY GROUPS — full rebuild with persistence,
 // image upload, reliable chat, leaderboard
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 const SB = (import.meta.env.VITE_SUPABASE_URL || "https://ybxfjndeckyynhgsgqma.supabase.co") + "/rest/v1";
 const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlieGZqbmRlY2t5eW5oZ3NncW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTcxNTYsImV4cCI6MjA5Mzg5MzE1Nn0.CaPL1ydby2DsPMbM_IsDovZiGWxz7PF0j_cTuLVw4dk";
 const sh = (token, extra={}) => ({ "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"return=representation", ...extra });
@@ -5193,7 +5193,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
       localStorage.setItem("ss_my_groups", JSON.stringify([...newIds]));
       setAllGroups(prev => prev.map(g => g.id===group.id ? {...g, member_count:(g.member_count||1)+1} : g));
       setActiveGroup(group);
-    } catch(e) { setError("Couldn't join: "+(e.message||"try again")); }
+    } catch(e) { alert("Couldn't join: "+(e.message||"try again")); }
   };
 
   const joinByCode = async () => {
@@ -5215,7 +5215,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
 
   const createGroup = async () => {
     if (!newName.trim()) return;
-    if (!token) { setError("Not logged in ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ please sign out and sign back in."); return; }
+    if (!token) { setError("Not logged in — please sign out and sign back in."); return; }
     setCreating(true); setError("");
     try {
       const code = "ACE-"+Math.random().toString(36).slice(2,6).toUpperCase();
@@ -5269,7 +5269,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
     <div className="content fade-up">
       <div style={{marginBottom:20}}>
         <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",color:"var(--text)"}}>Study Groups</div>
-        <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Group chat ÃÂÃÂÃÂÃÂ· XP leaderboard ÃÂÃÂÃÂÃÂ· Invite friends with a code</div>
+        <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Group chat · XP leaderboard · Invite friends with a code</div>
       </div>
 
       <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
@@ -5283,7 +5283,7 @@ function StudyGroupsScreen({ profile, user, gs }) {
         loading ? <div style={{textAlign:"center",padding:40,color:"var(--muted)"}}>Loading your groups...</div>
         : myGroups.length===0 ? (
           <div style={{textAlign:"center",padding:"60px 24px"}}>
-            <div style={{fontSize:48,marginBottom:16}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥</div>
+            <div style={{fontSize:48,marginBottom:16}}>👥</div>
             <div style={{fontWeight:700,fontSize:18,color:"var(--text)",marginBottom:8}}>No groups yet</div>
             <div style={{fontSize:13,color:"var(--muted)",marginBottom:20}}>Create a group and invite friends, or join with a code</div>
             <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
@@ -5377,7 +5377,7 @@ function SGroupCard({ group, isMember, onOpen, onJoin }) {
             <div style={{fontWeight:800,fontSize:15,color:"var(--text)",letterSpacing:"-.01em"}}>{group.name}</div>
             <div style={{display:"flex",alignItems:"center",gap:6,marginTop:2}}>
               <div style={{fontSize:12,fontWeight:700,color}}>{group.subject}</div>
-              {group.is_public===false && <span style={{fontSize:10,background:"var(--bg4)",color:"var(--muted)",borderRadius:20,padding:"1px 7px",fontWeight:700,border:"1px solid var(--border-light)"}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Private</span>}
+              {group.is_public===false && <span style={{fontSize:10,background:"var(--bg4)",color:"var(--muted)",borderRadius:20,padding:"1px 7px",fontWeight:700,border:"1px solid var(--border-light)"}}>🔒 Private</span>}
             </div>
           </div>
           <span style={{fontSize:11,color:"var(--muted)",background:"var(--bg3)",border:"1px solid var(--border-light)",borderRadius:20,padding:"3px 10px",fontWeight:600,flexShrink:0,marginLeft:8}}>
@@ -5480,9 +5480,9 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
     if (group.code) { navigator.clipboard.writeText(group.code); setCopied(true); setTimeout(()=>setCopied(false),2000); }
   };
 
-  const rankIcon = i => i===0?"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ":i===1?"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ":i===2?"ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ":`#${i+1}`;
+  const rankIcon = i => i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;
 
-  // Render message content ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ handles images embedded as [IMG:...]
+  // Render message content — handles images embedded as [IMG:...]
   const renderContent = (content) => {
     if (!content) return null;
     if (content.startsWith("[IMG:")) {
@@ -5506,8 +5506,8 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
     <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 56px)"}}>
       {/* Header */}
       <div style={{padding:"10px 20px",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-        <button className="btn btn-ghost btn-sm" onClick={onBack}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back</button>
-        <div style={{width:34,height:34,borderRadius:"var(--r)",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+        <button className="btn btn-ghost btn-sm" onClick={onBack}>← Back</button>
+        <div style={{width:34,height:34,borderRadius:"var(--r)",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>📚</div>
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontWeight:800,fontSize:14,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{group.name}</div>
           <div style={{fontSize:11,color:"var(--muted)"}}>{group.subject}</div>
@@ -5522,7 +5522,7 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
 
       {/* Tab bar */}
       <div style={{display:"flex",borderBottom:"1.5px solid var(--border)",background:"var(--bg2)",flexShrink:0}}>
-        {[{id:"chat",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ Chat"},{id:"leaderboard",label:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Rankings"},{id:"info",label:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¹ Info"}].map(t=>(
+        {[{id:"chat",label:"💬 Chat"},{id:"leaderboard",label:"🏆 Rankings"},{id:"info",label:"ℹ Info"}].map(t=>(
           <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="leaderboard")syncLeaderboard();}}
             style={{flex:1,padding:"10px 4px",border:"none",borderBottom:tab===t.id?"2.5px solid var(--text)":"2.5px solid transparent",background:"transparent",color:tab===t.id?"var(--text)":"var(--muted)",fontWeight:tab===t.id?800:600,fontSize:12,cursor:"pointer",fontFamily:"var(--ff)",transition:"all .15s"}}>
             {t.label}
@@ -5542,7 +5542,7 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
             <div style={{textAlign:"center",color:"var(--muted)",marginTop:40}}>Loading messages...</div>
           ) : messages.length===0 ? (
             <div style={{textAlign:"center",padding:"40px 24px"}}>
-              <div style={{fontSize:32,marginBottom:8}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬</div>
+              <div style={{fontSize:32,marginBottom:8}}>💬</div>
               <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>No messages yet</div>
               <div style={{fontSize:13,color:"var(--muted)"}}>Be the first to say something!</div>
             </div>
@@ -5572,12 +5572,12 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
             {imgPreview && (
               <div style={{marginBottom:8,position:"relative",display:"inline-block"}}>
                 <img src={imgPreview.dataUrl} alt="preview" style={{height:60,borderRadius:"var(--r)",border:"1.5px solid var(--border)",objectFit:"cover"}}/>
-                <button onClick={()=>setImgPreview(null)} style={{position:"absolute",top:-6,right:-6,width:18,height:18,borderRadius:"50%",background:"var(--danger)",color:"#fff",border:"none",cursor:"pointer",fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center"}}>ÃÂÃÂÃÂÃÂ</button>
+                <button onClick={()=>setImgPreview(null)} style={{position:"absolute",top:-6,right:-6,width:18,height:18,borderRadius:"50%",background:"var(--danger)",color:"#fff",border:"none",cursor:"pointer",fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
               </div>
             )}
             <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{if(e.target.files[0])handleImageSelect(e.target.files[0]);e.target.value="";}}/>
             <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
-              <button onClick={()=>fileRef.current?.click()} style={{width:38,height:38,borderRadius:"var(--r)",border:"1.5px solid var(--border-light)",background:"var(--bg3)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ·</button>
+              <button onClick={()=>fileRef.current?.click()} style={{width:38,height:38,borderRadius:"var(--r)",border:"1.5px solid var(--border-light)",background:"var(--bg3)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>📷</button>
               <input className="input" value={input} onChange={e=>setInput(e.target.value)}
                 onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}
                 placeholder={`Message ${group.name}...`} style={{flex:1}}/>
@@ -5592,7 +5592,7 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
       {/* LEADERBOARD */}
       {tab==="leaderboard" && (
         <div style={{flex:1,overflowY:"auto",padding:"20px"}}>
-          <div style={{fontWeight:800,fontSize:16,color:"var(--text)",marginBottom:16}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {group.name} Rankings</div>
+          <div style={{fontWeight:800,fontSize:16,color:"var(--text)",marginBottom:16}}>🏆 {group.name} Rankings</div>
           {members.length===0 ? (
             <div style={{textAlign:"center",padding:"40px 24px",color:"var(--muted)"}}>
               <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>No rankings yet</div>
@@ -5610,7 +5610,7 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
                         {m.display_name}
                         {m.user_id===userId&&<span style={{fontSize:9,background:"var(--text)",color:"var(--bg2)",borderRadius:20,padding:"1px 6px",fontWeight:800}}>You</span>}
                       </div>
-                      <div style={{fontSize:11,color:"var(--muted)"}}>Level {m.level||1} ÃÂÃÂÃÂÃÂ· {m.streak||0} streak</div>
+                      <div style={{fontSize:11,color:"var(--muted)"}}>Level {m.level||1} · {m.streak||0} streak</div>
                     </div>
                     <div style={{textAlign:"right"}}>
                       <div style={{fontWeight:800,fontSize:14,color:"var(--text)"}}>{(m.xp||0).toLocaleString()}</div>
@@ -5640,22 +5640,22 @@ function GroupView({ group, profile, user, gs, isMember, onBack, onJoin }) {
           </div>
           {group.code && (
             <div className="card" style={{borderColor:"var(--gold)"}}>
-              <div className="card-head"><div className="card-title">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨ Invite Friends</div></div>
+              <div className="card-head"><div className="card-title">📨 Invite Friends</div></div>
               <div className="card-body" style={{textAlign:"center"}}>
                 <div style={{fontSize:34,fontWeight:900,letterSpacing:".12em",color:"var(--gold)",marginBottom:8}}>{group.code}</div>
-                <div style={{fontSize:13,color:"var(--muted)",marginBottom:14,lineHeight:1.6}}>Share this code with friends ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ they enter it under "Join with Code" to instantly join</div>
-                <button className="btn btn-primary btn-sm" onClick={copyCode}>{copied?"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Copied!":"Copy Invite Code"}</button>
+                <div style={{fontSize:13,color:"var(--muted)",marginBottom:14,lineHeight:1.6}}>Share this code with friends — they enter it under "Join with Code" to instantly join</div>
+                <button className="btn btn-primary btn-sm" onClick={copyCode}>{copied?"✓ Copied!":"Copy Invite Code"}</button>
               </div>
             </div>
           )}
           {group.created_by === userId && (
             <div className="card" style={{marginTop:14}}>
-              <div className="card-head"><div className="card-title">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Owner Settings</div></div>
+              <div className="card-head"><div className="card-title">👑 Owner Settings</div></div>
               <div className="card-body">
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                   <div>
                     <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>Public Group</div>
-                    <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{group.is_public!==false?"Visible in Discover":"Hidden ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ invite code only"}</div>
+                    <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{group.is_public!==false?"Visible in Discover":"Hidden — invite code only"}</div>
                   </div>
                   <div className={`switch ${group.is_public!==false?"on":""}`} onClick={async()=>{
                     const newVal = group.is_public===false;
@@ -5707,7 +5707,7 @@ function TutorMarketplaceScreen({ profile, user }) {
     <div className="content fade-up">
       <div style={{marginBottom:20}}>
         <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",color:"var(--text)"}}>Tutor Marketplace</div>
-        <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Expert tutors for your subjects ÃÂÃÂÃÂÃÂ· Sessions from $60/hr</div>
+        <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Expert tutors for your subjects · Sessions from $60/hr</div>
       </div>
 
       <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
@@ -5739,8 +5739,8 @@ function TutorMarketplaceScreen({ profile, user }) {
                       <div style={{flex:1}}>
                         <div style={{fontWeight:800,fontSize:15,color:"var(--text)",letterSpacing:"-.01em",marginBottom:3}}>{tutor.name}</div>
                         <div style={{display:"flex",alignItems:"center",gap:8}}>
-                          <span style={{color:"var(--gold)",fontSize:12}}>{"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ".repeat(Math.round(tutor.rating||5))}</span>
-                          <span style={{fontSize:12,color:"var(--muted)",fontWeight:600}}>{tutor.rating||5} ÃÂÃÂÃÂÃÂ· {tutor.review_count||0} reviews</span>
+                          <span style={{color:"var(--gold)",fontSize:12}}>{"★".repeat(Math.round(tutor.rating||5))}</span>
+                          <span style={{fontSize:12,color:"var(--muted)",fontWeight:600}}>{tutor.rating||5} · {tutor.review_count||0} reviews</span>
                           <span style={{fontSize:12,fontWeight:800,color:"var(--text)"}}>${tutor.price_per_hour||60}/hr</span>
                           {!tutor.available && <span style={{fontSize:10,background:"var(--danger-bg)",color:"var(--danger)",borderRadius:20,padding:"2px 8px",fontWeight:700,border:"1px solid var(--danger)"}}>Unavailable</span>}
                         </div>
@@ -5778,7 +5778,7 @@ function TutorMarketplaceScreen({ profile, user }) {
               <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>
                 {(myProfile.subjects||[]).map(s=><span key={s} style={{fontSize:11,background:getColor(s)+"18",color:getColor(s),border:`1px solid ${getColor(s)}44`,borderRadius:20,padding:"3px 10px",fontWeight:700}}>{s}</span>)}
               </div>
-              <div style={{fontSize:13,color:"var(--muted)"}}>${myProfile.price_per_hour}/hr ÃÂÃÂÃÂÃÂ· {myProfile.contact_email}</div>
+              <div style={{fontSize:13,color:"var(--muted)"}}>${myProfile.price_per_hour}/hr · {myProfile.contact_email}</div>
             </div>
           </div>
         ) : (
@@ -5814,28 +5814,28 @@ function TutorDetailView({ tutor, profile, user, onBack, onReviewed }) {
       const r = await supabase.getReviews(tutor.id,token);
       if(Array.isArray(r)) setReviews(r);
       onReviewed();
-    } catch(e) { setError("Couldn't submit: "+(e.message||"")); }
+    } catch(e) { alert("Couldn't submit: "+(e.message||"")); }
     setSubmitting(false);
   };
 
   return (
     <div className="content fade-up">
-      <button className="btn btn-ghost btn-sm" onClick={onBack} style={{marginBottom:20}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back to tutors</button>
+      <button className="btn btn-ghost btn-sm" onClick={onBack} style={{marginBottom:20}}>← Back to tutors</button>
       <div className="card" style={{marginBottom:16}}>
         <div className="card-body">
           <div style={{display:"flex",gap:16,marginBottom:14}}>
             <div className="av" style={{width:60,height:60,fontSize:22,flexShrink:0,borderRadius:"var(--r)"}}>{tutor.name?.[0]?.toUpperCase()}</div>
             <div style={{flex:1}}>
               <div style={{fontWeight:900,fontSize:20,color:"var(--text)",letterSpacing:"-.02em",marginBottom:3}}>{tutor.name}</div>
-              <div style={{color:"var(--gold)",fontSize:14}}>{"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ".repeat(Math.round(tutor.rating||5))}</div>
-              <div style={{fontSize:12,color:"var(--muted)",marginTop:2}}>{tutor.rating||5}/5 ÃÂÃÂÃÂÃÂ· {tutor.review_count||0} reviews ÃÂÃÂÃÂÃÂ· ${tutor.price_per_hour||60}/hr</div>
+              <div style={{color:"var(--gold)",fontSize:14}}>{"★".repeat(Math.round(tutor.rating||5))}</div>
+              <div style={{fontSize:12,color:"var(--muted)",marginTop:2}}>{tutor.rating||5}/5 · {tutor.review_count||0} reviews · ${tutor.price_per_hour||60}/hr</div>
             </div>
           </div>
           {tutor.bio && <div style={{fontSize:14,color:"var(--text2)",lineHeight:1.7,marginBottom:12}}>{tutor.bio}</div>}
           {tutor.qualifications && <div style={{background:"var(--bg3)",borderRadius:"var(--r)",padding:"10px 14px",marginBottom:12,fontSize:13,color:"var(--muted)"}}><strong style={{color:"var(--text)"}}>Qualifications: </strong>{tutor.qualifications}</div>}
           <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:14}}>{(tutor.subjects||[]).map(s=><span key={s} style={{fontSize:11,background:getColor(s)+"18",color:getColor(s),border:`1px solid ${getColor(s)}44`,borderRadius:20,padding:"3px 10px",fontWeight:700}}>{s}</span>)}</div>
           {tutor.contact_email && tutor.available && (
-            <a href={`mailto:${tutor.contact_email}?subject=Tutoring Enquiry ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Study Ace&body=Hi ${tutor.name},%0A%0AI found your profile on Study Ace and would like to enquire about tutoring.%0A%0AYear level: ${profile.yearLevel?.toUpperCase()}%0ASubjects: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).join(", ")}%0A%0AThanks,%0A${profile.userName}`}
+            <a href={`mailto:${tutor.contact_email}?subject=Tutoring Enquiry — Study Ace&body=Hi ${tutor.name},%0A%0AI found your profile on Study Ace and would like to enquire about tutoring.%0A%0AYear level: ${profile.yearLevel?.toUpperCase()}%0ASubjects: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).join(", ")}%0A%0AThanks,%0A${profile.userName}`}
               className="btn btn-primary" style={{display:"inline-flex"}}>Contact {tutor.name?.split(" ")[0]}</a>
           )}
           {!tutor.available && <span style={{fontSize:13,color:"var(--muted)",fontWeight:600}}>Currently unavailable</span>}
@@ -5849,18 +5849,18 @@ function TutorDetailView({ tutor, profile, user, onBack, onReviewed }) {
         <div className="card-body">
           {showReview && (
             <div style={{background:"var(--bg3)",borderRadius:"var(--r)",padding:"14px",marginBottom:14,border:"1.5px solid var(--border-light)"}}>
-              <div style={{display:"flex",gap:4,marginBottom:10}}>{[1,2,3,4,5].map(n=><button key={n} onClick={()=>setRating(n)} style={{fontSize:22,background:"none",border:"none",cursor:"pointer",color:n<=rating?"var(--gold)":"var(--muted2)"}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>)}</div>
+              <div style={{display:"flex",gap:4,marginBottom:10}}>{[1,2,3,4,5].map(n=><button key={n} onClick={()=>setRating(n)} style={{fontSize:22,background:"none",border:"none",cursor:"pointer",color:n<=rating?"var(--gold)":"var(--muted2)"}}>★</button>)}</div>
               <textarea className="input" value={comment} onChange={e=>setComment(e.target.value)} placeholder="Share your experience..." style={{marginBottom:10}}/>
               <button className="btn btn-primary btn-sm" onClick={submitReview} disabled={submitting||!comment.trim()}>{submitting?"Submitting...":"Submit Review"}</button>
             </div>
           )}
           {reviews.length===0 ? (
-            <div style={{color:"var(--muted)",fontSize:13,textAlign:"center",padding:"16px 0"}}>No reviews yet ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ be the first!</div>
+            <div style={{color:"var(--muted)",fontSize:13,textAlign:"center",padding:"16px 0"}}>No reviews yet — be the first!</div>
           ) : reviews.map((r,i)=>(
             <div key={r.id} style={{padding:"10px 0",borderBottom:i<reviews.length-1?"1px solid var(--border-light)":"none"}}>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                 <div className="av" style={{width:26,height:26,fontSize:10}}>{r.reviewer_name?.[0]||"?"}</div>
-                <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700,color:"var(--text)"}}>{r.reviewer_name}</div><div style={{color:"var(--gold)",fontSize:11}}>{"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ".repeat(r.rating)}</div></div>
+                <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700,color:"var(--text)"}}>{r.reviewer_name}</div><div style={{color:"var(--gold)",fontSize:11}}>{"★".repeat(r.rating)}</div></div>
                 <div style={{fontSize:10,color:"var(--muted)"}}>{new Date(r.created_at).toLocaleDateString("en-AU",{month:"short",year:"numeric"})}</div>
               </div>
               {r.comment && <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.6,paddingLeft:34}}>{r.comment}</div>}
@@ -5933,19 +5933,19 @@ function NotificationsPanel({ profile, gs, onClose }) {
   const notifications=[];
   (state.calendarEvents||[]).filter(e=>new Date(e.date)>=new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3).forEach(e=>{
     const days=Math.ceil((new Date(e.date)-new Date())/(1000*60*60*24));
-    notifications.push({icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",title:`${e.title} in ${days} day${days!==1?"s":""}`,subtitle:`${e.subject} ÃÂÃÂÃÂÃÂ· ${new Date(e.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}`,color:days<=3?"var(--danger)":days<=7?"var(--gold)":"var(--success)",time:"Upcoming"});
+    notifications.push({icon:"📅",title:`${e.title} in ${days} day${days!==1?"s":""}`,subtitle:`${e.subject} · ${new Date(e.date).toLocaleDateString("en-AU",{month:"short",day:"numeric"})}`,color:days<=3?"var(--danger)":days<=7?"var(--gold)":"var(--success)",time:"Upcoming"});
   });
-  if(state.streak>0) notifications.push({icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",title:`${state.streak} day streak! Keep it up!`,subtitle:"Study today to maintain your streak",color:"#FF6B6B",time:"Today"});
-  if(state.xp>=100) notifications.push({icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡",title:`Level ${state.level} ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ${500-(state.xp%500)} XP to next level`,subtitle:"Keep studying to level up",color:"var(--accent)",time:"Progress"});
+  if(state.streak>0) notifications.push({icon:"🔥",title:`${state.streak} day streak! Keep it up!`,subtitle:"Study today to maintain your streak",color:"#FF6B6B",time:"Today"});
+  if(state.xp>=100) notifications.push({icon:"⚡",title:`Level ${state.level} — ${500-(state.xp%500)} XP to next level`,subtitle:"Keep studying to level up",color:"var(--accent)",time:"Progress"});
   const weakSubjects=(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).filter(s=>(state.masteryMap?.[s]||50)<60);
-  if(weakSubjects?.length>0) notifications.push({icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",title:`${weakSubjects[0]} needs attention`,subtitle:`Mastery at ${state.masteryMap?.[weakSubjects[0]]||50}% ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ take a quiz`,color:"var(--gold)",time:"Study tip"});
-  if(notifications.length===0) notifications.push({icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",title:"You're all caught up!",subtitle:"No new notifications",color:"var(--success)",time:"Now"});
+  if(weakSubjects?.length>0) notifications.push({icon:"⚠️",title:`${weakSubjects[0]} needs attention`,subtitle:`Mastery at ${state.masteryMap?.[weakSubjects[0]]||50}% — take a quiz`,color:"var(--gold)",time:"Study tip"});
+  if(notifications.length===0) notifications.push({icon:"✅",title:"You're all caught up!",subtitle:"No new notifications",color:"var(--success)",time:"Now"});
 
   return(
     <div style={{position:"absolute",top:65,right:16,width:320,background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:16,boxShadow:"0 8px 32px rgba(0,0,0,.4)",zIndex:1000,overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
       <div style={{padding:"14px 16px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{fontWeight:800,fontSize:15}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Notifications</div>
-        <button onClick={onClose} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:16}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+        <div style={{fontWeight:800,fontSize:15}}>🔔 Notifications</div>
+        <button onClick={onClose} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:16}}>✕</button>
       </div>
       <div style={{maxHeight:380,overflowY:"auto"}}>
         {notifications.map((n,i)=>(
@@ -5963,9 +5963,9 @@ function NotificationsPanel({ profile, gs, onClose }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 // MAIN APP
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────
 export default function App() {
   const [stage, setStage] = useState("loading");
   const [user, setUser] = useState(null);
@@ -5985,7 +5985,7 @@ export default function App() {
   const gs = useGameState(profile || {});
   const xpPct = profile ? ((gs.state.xp % 500) / 500) * 100 : 0;
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ On mount: check for existing session or OAuth callback ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── On mount: check for existing session or OAuth callback ──
   useEffect(() => {
     const init = async () => {
       try {
@@ -6060,7 +6060,7 @@ export default function App() {
 
   const handleAuth = async (u) => {
     setUser(u);
-    // Check localStorage first ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ instant
+    // Check localStorage first — instant
     const localProfile = (() => {
       try { return JSON.parse(localStorage.getItem("ss_profile") || "null"); } catch { return null; }
     })();
@@ -6097,7 +6097,7 @@ export default function App() {
   const handleOnboard = async (data) => {
     const fullProfile = { ...data, userName: user.name, email: user.email, provider: user.provider };
     setProfile(fullProfile);
-    // Save to localStorage immediately ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ fastest
+    // Save to localStorage immediately — fastest
     localStorage.setItem("ss_profile", JSON.stringify(fullProfile));
     // Save to Supabase if we have a real session
     if (user.userId && user.session?.access_token) {
@@ -6143,15 +6143,15 @@ export default function App() {
   const [searchTarget, setSearchTarget] = useState(null);
 
   const NAV = [
-    {id:"dashboard",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",label:"Dashboard",section:"learn"},
-    {id:"subjects",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Subjects",section:"learn"},
-    {id:"ai",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨",label:"AI Tutor",badge:"FREE",section:"learn"},
-    {id:"planner",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Study Planner",section:"track"},
-    {id:"analytics",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Analytics",section:"track"},
-    {id:"groups",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",label:"Study Groups",section:"community"},
-    {id:"tutors",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Tutor Marketplace",section:"community"},
-    {id:"search",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Search",section:"hidden"},
-    {id:"settings",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",label:"Settings",section:"hidden"},
+    {id:"dashboard",icon:"⊞",label:"Dashboard",section:"learn"},
+    {id:"subjects",icon:"📚",label:"Subjects",section:"learn"},
+    {id:"ai",icon:"✨",label:"AI Tutor",badge:"FREE",section:"learn"},
+    {id:"planner",icon:"📅",label:"Study Planner",section:"track"},
+    {id:"analytics",icon:"📊",label:"Analytics",section:"track"},
+    {id:"groups",icon:"👥",label:"Study Groups",section:"community"},
+    {id:"tutors",icon:"🎓",label:"Tutor Marketplace",section:"community"},
+    {id:"search",icon:"🔍",label:"Search",section:"hidden"},
+    {id:"settings",icon:"⚙️",label:"Settings",section:"hidden"},
   ];
 
   const TITLES = {
@@ -6161,7 +6161,7 @@ export default function App() {
     tutors:"Tutor Marketplace",search:"Search",settings:"Settings"
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Loading screen ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── Loading screen ──
   if (stage === "loading") return (
     <>
       <style>{css}</style>
@@ -6205,13 +6205,13 @@ export default function App() {
     <>
       <style>{css}</style>
       <div className="app">
-        {/* SIDEBAR ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ desktop only */}
+        {/* SIDEBAR — desktop only */}
         <div className="sidebar">
           <div className="logo">
             <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Ace" style={{width:34,height:34,objectFit:"contain",borderRadius:"var(--r)",flexShrink:0,border:"1.5px solid var(--border)"}}/>
             <div>
               <div className="logo-text">Study Ace</div>
-              <span className="logo-sub">VCE ÃÂÃÂÃÂÃÂ· IB ÃÂÃÂÃÂÃÂ· Years 9ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ12</span>
+              <span className="logo-sub">VCE · IB · Years 9–12</span>
             </div>
           </div>
 
@@ -6245,16 +6245,16 @@ export default function App() {
 
           <div className="sb-bottom">
             <div className="xp-row">
-              <div className="xp-lbl"><span>Level {gs.state.level||1} ÃÂÃÂÃÂÃÂ· {(gs.state.xp||0).toLocaleString()} XP</span><span>{500-((gs.state.xp||0)%500)} to next</span></div>
+              <div className="xp-lbl"><span>Level {gs.state.level||1} · {(gs.state.xp||0).toLocaleString()} XP</span><span>{500-((gs.state.xp||0)%500)} to next</span></div>
               <div className="xp-track"><div className="xp-fill" style={{width:`${xpPct}%`}}/></div>
             </div>
             <button className="user-row" onClick={()=>setScreen("settings")} style={{width:"100%",background:"none",border:"1.5px solid transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:9,padding:8,borderRadius:"var(--r)",transition:"all .15s",fontFamily:"var(--ff)"}}>
               <div className="av">{(profile?.userName||user?.name||"Y")[0].toUpperCase()}</div>
               <div style={{flex:1,minWidth:0,textAlign:"left"}}>
                 <div className="u-name">{profile?.userName || user?.name || "Student"}</div>
-                <div className="u-sub">{yearLabel} ÃÂÃÂÃÂÃÂ· {user?.provider === "google" ? "Google" : "Email"}</div>
+                <div className="u-sub">{yearLabel} · {user?.provider === "google" ? "Google" : "Email"}</div>
               </div>
-              <span style={{color:"var(--muted)",fontSize:14}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span>
+              <span style={{color:"var(--muted)",fontSize:14}}>⚙</span>
             </button>
           </div>
         </div>
@@ -6264,16 +6264,16 @@ export default function App() {
           <div className="topbar">
             <div className="topbar-title">{TITLES[screen]||"Study Ace"}</div>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
-              <div className="chip chip-fire">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥ {gs.state.streak||0}</div>
-              <div className="chip chip-xp">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡ {(gs.state.xp||0).toLocaleString()}</div>
+              <div className="chip chip-fire">🔥 {gs.state.streak||0}</div>
+              <div className="chip chip-xp">⚡ {(gs.state.xp||0).toLocaleString()}</div>
               <button className="icon-btn" onClick={toggleTheme} title="Toggle theme" style={{fontSize:15,background:"none",border:"1.5px solid var(--border-light)",fontFamily:"var(--ff)",cursor:"pointer"}}>
-                {theme==="light"?"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ":"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ"}
+                {theme==="light"?"🌙":"☀️"}
               </button>
               <button className="icon-btn" onClick={e=>{e.stopPropagation();setShowNotifications(n=>!n)}} style={{background:"none",border:"1.5px solid var(--border-light)",cursor:"pointer",fontFamily:"var(--ff)",fontSize:15,position:"relative"}}>
-                ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ
+                🔔
                 {notifCount>0&&<div style={{position:"absolute",top:-3,right:-3,width:14,height:14,background:"var(--danger)",borderRadius:"50%",fontSize:8,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:800,border:"1.5px solid var(--bg2)"}}>{notifCount}</div>}
               </button>
-              <button className="icon-btn" onClick={()=>setScreen("search")} style={{background:"none",border:"1.5px solid var(--border-light)",cursor:"pointer",fontFamily:"var(--ff)",fontSize:15}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</button>
+              <button className="icon-btn" onClick={()=>setScreen("search")} style={{background:"none",border:"1.5px solid var(--border-light)",cursor:"pointer",fontFamily:"var(--ff)",fontSize:15}}>🔍</button>
             </div>
           </div>
           {showNotifications && (
@@ -6285,11 +6285,11 @@ export default function App() {
         {/* MOBILE BOTTOM NAV */}
         <nav className="mobile-nav">
           {[
-            {id:"dashboard",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",label:"Home"},
-            {id:"subjects",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",label:"Subjects"},
-            {id:"ai",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦",label:"AI Tutor"},
-            {id:"groups",icon:"ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¥",label:"Groups"},
-            {id:"settings",icon:"ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ",label:"Settings"},
+            {id:"dashboard",icon:"⊞",label:"Home"},
+            {id:"subjects",icon:"📚",label:"Subjects"},
+            {id:"ai",icon:"✦",label:"AI Tutor"},
+            {id:"groups",icon:"👥",label:"Groups"},
+            {id:"settings",icon:"⚙",label:"Settings"},
           ].map(n=>(
             <button key={n.id} className={`mobile-nav-item${screen===n.id?" active":""}`} onClick={()=>setScreen(n.id)}>
               <div className="mobile-nav-icon-wrap">
