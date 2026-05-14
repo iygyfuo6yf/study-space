@@ -2715,6 +2715,7 @@ const SUBTOPICS = {
 // SUBTOPIC BOOKMARKS COMPONENT
 // ─────────────────────────────────────────────
 function SubtopicBookmarks({ selTopic, subject, curriculum, staticSubtopics, gs }) {
+  const [slowMsg, setSlowMsg] = React.useState(false);
   const [aiSubtopics, setAiSubtopics] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
@@ -2732,7 +2733,7 @@ function SubtopicBookmarks({ selTopic, subject, curriculum, staticSubtopics, gs 
       const cached = localStorage.getItem(cacheKey);
       if (cached) { setAiSubtopics(JSON.parse(cached)); return; }
     } catch {}
-    setLoadingAI(true);
+    setLoadingAI(true); setSlowMsg(false); const slowTimer = setTimeout(() => setSlowMsg(true), 8000);
     try {
       const subjData = VCAA_CURRICULUM[subject];
       const area = subjData?.areas?.find(a => a.name === selTopic);
@@ -2758,7 +2759,7 @@ Write ALL maths in plain text — use ², √, ×, ÷, π — NEVER LaTeX.`;
       localStorage.setItem(cacheKey, JSON.stringify(parsed));
       setAiSubtopics(parsed);
     } catch { setAiSubtopics([]); }
-    setLoadingAI(false);
+    setLoadingAI(false); clearTimeout(slowTimer); setSlowMsg(false);
   };
 
   const subtopics = staticSubtopics || aiSubtopics || [];
@@ -4500,6 +4501,7 @@ Rules:
   }
 
   // Plan view
+  if (!studyPlan) { setStep("home"); return null; }
   const todayStr = today.toISOString().split("T")[0];
   const completedCount = studyPlan.filter((d,i)=>isDayDone(i,d)).length;
   const studyDays = studyPlan.filter(d=>d.subject!=="Rest").length;
