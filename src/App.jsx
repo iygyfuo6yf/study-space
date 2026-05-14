@@ -2,6 +2,61 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const SUBJ_ALIASES = {"History":"History (Year 9-10)","Geography":"Geography (Year 9-10)","Arts":"Visual Arts (Year 9-10)","Visual Arts":"Visual Arts (Year 9-10)","Drama":"Drama (Year 9-10)","Music":"Music (Year 9-10)","Food Technology":"Food Technology (Year 9-10)","Digital Technologies":"Digital Technologies (Year 9-10)","Physical Education":"Health & PE (Year 9-10)","Media Studies":"Media Studies (Year 9-10)","Japanese":"Japanese (Year 9-10)","French":"French (Year 9-10)","Design & Technology":"Design & Technology (Year 9-10)"};
 const getCurriculum = (s) => VCAA_CURRICULUM[s] || VCAA_CURRICULUM[SUBJ_ALIASES[s]];
 
+// Renders AI markdown text cleanly — no # symbols, proper bold, headers as styled text
+function RenderMD({ text, style={} }) {
+  if (!text) return null;
+  const lines = text.split('\n');
+  const elements = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    // H1/H2/H3 — render as bold section header
+    if (line.startsWith('### ')) {
+      elements.push(<div key={i} style={{fontWeight:800,fontSize:14,color:'var(--text)',marginTop:16,marginBottom:4}}>{line.slice(4)}</div>);
+    } else if (line.startsWith('## ')) {
+      elements.push(<div key={i} style={{fontWeight:900,fontSize:15,color:'var(--text)',marginTop:20,marginBottom:6,borderBottom:'1.5px solid var(--border-light)',paddingBottom:4}}>{line.slice(3)}</div>);
+    } else if (line.startsWith('# ')) {
+      elements.push(<div key={i} style={{fontWeight:900,fontSize:17,color:'var(--text)',marginTop:20,marginBottom:8}}>{line.slice(2)}</div>);
+    // Bullet points
+    } else if (line.startsWith('- ') || line.startsWith('• ')) {
+      const content = renderInline(line.slice(2));
+      elements.push(<div key={i} style={{display:'flex',gap:8,marginBottom:3,fontSize:13,lineHeight:1.6}}><span style={{color:'var(--gold)',flexShrink:0,marginTop:1}}>•</span><span>{content}</span></div>);
+    } else if (line.match(/^\d+\. /)) {
+      const num = line.match(/^(\d+)\. /)[1];
+      const content = renderInline(line.replace(/^\d+\. /, ''));
+      elements.push(<div key={i} style={{display:'flex',gap:8,marginBottom:3,fontSize:13,lineHeight:1.6}}><span style={{color:'var(--gold)',flexShrink:0,fontWeight:700,minWidth:16}}>{num}.</span><span>{content}</span></div>);
+    // Empty line = spacing
+    } else if (line.trim() === '') {
+      elements.push(<div key={i} style={{height:6}}/>);
+    // Regular paragraph
+    } else {
+      elements.push(<div key={i} style={{fontSize:13,lineHeight:1.7,marginBottom:3}}>{renderInline(line)}</div>);
+    }
+    i++;
+  }
+  return <div style={{...style}}>{elements}</div>;
+}
+
+function renderInline(text) {
+  // Handle **bold** and *italic*
+  const parts = [];
+  let remaining = text;
+  let key = 0;
+  while (remaining.length > 0) {
+    const boldIdx = remaining.indexOf('**');
+    const italicIdx = remaining.indexOf('*');
+    if (boldIdx !== -1 && (italicIdx === -1 || boldIdx <= italicIdx)) {
+      if (boldIdx > 0) parts.push(<span key={key++}>{remaining.slice(0, boldIdx)}</span>);
+      const endIdx = remaining.indexOf('**', boldIdx + 2);
+      if (endIdx !== -1) {
+        parts.push(<strong key={key++} style={{fontWeight:800,color:'var(--text)'}}>{remaining.slice(boldIdx+2, endIdx)}</strong>);
+        remaining = remaining.slice(endIdx + 2);
+      } else { parts.push(<span key={key++}>{remaining}</span>); break; }
+    } else { parts.push(<span key={key++}>{remaining}</span>); break; }
+  }
+  return parts.length === 1 && typeof parts[0] === 'string' ? parts[0] : parts;
+}
+
 
 // ─────────────────────────────────────────────
 // COMPLETE SUBJECT DATABASE — Years 9–12 VCE + IB
@@ -2330,128 +2385,7 @@ function convertLatex(math) {
 
 
 function MarkdownRenderer({ content }) {
-  const render = (text) => {
-    if (!text) return null;
-    const lines = text.split('\n');
-    const elements = [];
-    let i = 0;
-
-    while (i < lines.length) {
-      const line = lines[i];
-
-      // H1
-      if (line.startsWith('# ')) {
-        elements.push(<h2 key={i} style={{fontFamily:"var(--ff)",fontSize:20,fontWeight:900,color:"var(--text)",margin:"20px 0 12px",borderBottom:"1px solid var(--border)",paddingBottom:8}}>{renderInline(line.slice(2))}</h2>);
-      }
-      // H2
-      else if (line.startsWith('## ')) {
-        elements.push(<h3 key={i} style={{fontFamily:"var(--ff)",fontSize:16,fontWeight:800,color:"var(--accent)",margin:"18px 0 8px"}}>{renderInline(line.slice(3))}</h3>);
-      }
-      // H3
-      else if (line.startsWith('### ')) {
-        elements.push(<h4 key={i} style={{fontFamily:"var(--ff)",fontSize:14,fontWeight:700,color:"var(--a2)",margin:"14px 0 6px"}}>{renderInline(line.slice(4))}</h4>);
-      }
-      // Horizontal rule
-      else if (line.trim() === '---' || line.trim() === '***') {
-        elements.push(<hr key={i} style={{border:"none",borderTop:"1px solid var(--border)",margin:"16px 0"}}/>);
-      }
-      // Bullet point
-      else if (line.match(/^[\s]*[-*•]\s+/)) {
-        const indent = line.match(/^(\s*)/)[1].length;
-        const text = line.replace(/^[\s]*[-*•]\s+/, '');
-        elements.push(
-          <div key={i} style={{display:"flex",gap:8,marginBottom:4,paddingLeft:indent*8}}>
-            <span style={{color:"var(--accent)",flexShrink:0,marginTop:2}}>•</span>
-            <span style={{fontSize:14,lineHeight:1.7,color:"#d0d0e8"}}>{renderInline(text)}</span>
-          </div>
-        );
-      }
-      // Numbered list
-      else if (line.match(/^\d+\.\s+/)) {
-        const num = line.match(/^(\d+)\./)[1];
-        const text = line.replace(/^\d+\.\s+/, '');
-        elements.push(
-          <div key={i} style={{display:"flex",gap:10,marginBottom:4}}>
-            <span style={{color:"var(--accent)",fontWeight:700,flexShrink:0,minWidth:20,fontFamily:"var(--ff)"}}>{num}.</span>
-            <span style={{fontSize:14,lineHeight:1.7,color:"#d0d0e8"}}>{renderInline(text)}</span>
-          </div>
-        );
-      }
-      // Empty line
-      else if (line.trim() === '') {
-        elements.push(<div key={i} style={{height:8}}/>);
-      }
-      // Regular paragraph
-      else if (line.trim()) {
-        elements.push(<p key={i} style={{fontSize:14,lineHeight:1.8,color:"#d0d0e8",margin:"4px 0"}}>{renderInline(line)}</p>);
-      }
-      i++;
-    }
-    return elements;
-  };
-
-  const renderInline = (text) => {
-    // Process inline formatting
-    const parts = [];
-    let remaining = text;
-    let key = 0;
-
-    // Replace LaTeX-style math with readable format
-    remaining = remaining
-      .replace(/\$([^$]+)\$/g, (_, math) => {
-        return math
-          .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
-          .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
-          .replace(/\\times/g, '×')
-          .replace(/\\div/g, '÷')
-          .replace(/\\pm/g, '±')
-          .replace(/\\leq/g, '≤')
-          .replace(/\\geq/g, '≥')
-          .replace(/\\neq/g, '≠')
-          .replace(/\\approx/g, '≈')
-          .replace(/\\pi/g, 'π')
-          .replace(/\\alpha/g, 'α')
-          .replace(/\\beta/g, 'β')
-          .replace(/\\Delta/g, 'Δ')
-          .replace(/\\delta/g, 'δ')
-          .replace(/\\theta/g, 'θ')
-          .replace(/\\infty/g, '∞')
-          .replace(/\^2/g, '²')
-          .replace(/\^3/g, '³')
-          .replace(/\^n/g, 'ⁿ')
-          .replace(/\^/g, '^')
-          .replace(/_/g, '_');
-      })
-      // Also handle ^2 ^3 outside of LaTeX
-      .replace(/\^2(?!\d)/g, '²')
-      .replace(/\^3(?!\d)/g, '³');
-
-    // Split by bold (**text**) and code (`text`)
-    const regex = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;
-    let lastIndex = 0;
-    let match;
-
-    while ((match = regex.exec(remaining)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push(<span key={key++}>{remaining.slice(lastIndex, match.index)}</span>);
-      }
-      const m = match[0];
-      if (m.startsWith('**')) {
-        parts.push(<strong key={key++} style={{color:"var(--text)",fontWeight:700}}>{m.slice(2,-2)}</strong>);
-      } else if (m.startsWith('`')) {
-        parts.push(<code key={key++} style={{background:"var(--bg3)",padding:"1px 6px",borderRadius:4,fontSize:13,color:"var(--a2)",fontFamily:"monospace"}}>{m.slice(1,-1)}</code>);
-      } else if (m.startsWith('*')) {
-        parts.push(<em key={key++} style={{color:"var(--muted2)"}}>{m.slice(1,-1)}</em>);
-      }
-      lastIndex = match.index + m.length;
-    }
-    if (lastIndex < remaining.length) {
-      parts.push(<span key={key++}>{remaining.slice(lastIndex)}</span>);
-    }
-    return parts.length > 0 ? parts : remaining;
-  };
-
-  return <div style={{fontSize:14,lineHeight:1.8}}>{render(content)}</div>;
+  return <RenderMD text={content} style={{fontSize:14,lineHeight:1.8}}/>;
 }
 
 // ─────────────────────────────────────────────
@@ -3201,7 +3135,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
     };
 
     try {
-      const tokenLimits = { study: 8000, quiz: 2000, flashcards: 2000, notes: 3000 };
+      const tokenLimits = { study: 6000, quiz: 1500, flashcards: 1500, notes: 2000 };
       const raw = await callGemini(prompts[type], tokenLimits[type] || 4000);
       if (!raw || !raw.trim()) {
         setContent("⚠️ No response received. Try again.");
@@ -4117,7 +4051,7 @@ Rules: Australian English. Warm and direct. Plain text maths (², √, ×). Bold
                   ))}
                 </div>
               )}
-              <div style={{whiteSpace:"pre-wrap",lineHeight:1.7}}>{m.text}</div>
+              <div style={{whiteSpace:"pre-wrap",lineHeight:1.7}}>{m.role==="ai"?<RenderMD text={m.text}/>:m.text}</div>
             </div>
           </div>
         ))}
@@ -4327,7 +4261,7 @@ Write a practical 7-day plan with specific daily tasks. Keep it concise, motivat
       {aiPlan && (
         <div className="card" style={{marginBottom:18,borderColor:"rgba(124,106,247,.3)"}}>
           <div className="ch"><div className="ct">✨ Your AI Study Plan</div><button className="btn btn-g btn-sm" onClick={()=>setAiPlan("")}>✕</button></div>
-          <div className="cb" style={{whiteSpace:"pre-wrap",fontSize:13,lineHeight:1.7,color:"#c0c0d8"}}>{aiPlan}</div>
+          <div className="cb"><RenderMD text={aiPlan} style={{color:"var(--text2)"}}/></div>
         </div>
       )}
 
@@ -4613,27 +4547,27 @@ function AnalyticsScreen({ profile, gs }) {
                 </div>
               ))}
               <button className="btn btn-primary btn-sm btn-full" style={{marginTop:4}}
+                disabled={genPlan}
                 onClick={async()=>{
                   const weak = subjMastery.sort((a,b)=>a.mastery-b.mastery).slice(0,3).map(s=>s.name);
                   if(!weak.length){alert("Take some quizzes first to identify your weak areas!");return;}
-                  const btn = document.activeElement;
-                  btn.textContent="Generating..."; btn.disabled=true;
+                  setGenPlan(true); setAiPlan("");
                   try {
                     const curriculum = profile.yearLevel==="ib"?"IB Diploma":profile.yearLevel==="vce"?"VCE":ALL_SUBJECTS[profile.yearLevel]?.label||"Year 9";
-                    const prompt = `Create a targeted study plan for a ${curriculum} student who needs to improve in: ${weak.join(", ")}.
+                    const prompt = `Create a targeted 1-week study plan for a ${curriculum} student who needs to improve in: ${weak.join(", ")}.
 
-For each weak subject, provide:
+For each weak subject provide:
 1. The 2-3 most important concepts to review
-2. Specific study strategies for that subject
-3. A 3-day focused action plan
+2. Specific study strategies
+3. Daily action steps
 
-Keep it practical, motivating and specific to the Australian ${curriculum} curriculum.`;
-                    const res = await callGemini(prompt);
+Keep it practical and specific to ${curriculum}.`;
+                    const res = await callGemini(prompt, 2000);
                     setAiPlan(res);
                   } catch(e) { setAiPlan("Couldn't generate plan — try again."); }
-                  btn.textContent="✨ AI Study Plan for Weak Areas"; btn.disabled=false;
+                  setGenPlan(false);
                 }}>
-                ✨ AI Study Plan for Weak Areas
+                {genPlan ? "✨ Generating..." : "✨ AI Study Plan for Weak Areas"}
               </button>
             </div>
           </div>
