@@ -4565,12 +4565,25 @@ For each weak subject provide:
 
 Keep it practical and specific to ${curriculum}.`;
                     const res = await callGemini(prompt, 2000);
-                    setAiPlan(res);
-                  } catch(e) { setAiPlan("Couldn't generate plan — try again."); }
+                    if (res && res.trim()) {
+                      setAiPlan(res);
+                    } else {
+                      setAiPlan("The AI didn't return a response — try again in a moment.");
+                    }
+                  } catch(e) { setAiPlan("Couldn't generate plan: " + (e.message || "try again")); }
                   setGenPlan(false);
                 }}>
                 {genPlan ? "✨ Generating..." : "✨ AI Study Plan for Weak Areas"}
               </button>
+              {aiPlan && (
+                <div style={{marginTop:14,padding:14,background:"var(--bg3)",borderRadius:"var(--r)",border:"1.5px solid var(--border-light)"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                    <div style={{fontSize:12,fontWeight:800,color:"var(--text)"}}>✨ Your Study Plan</div>
+                    <button className="btn btn-ghost btn-sm" onClick={()=>setAiPlan("")}>✕</button>
+                  </div>
+                  <RenderMD text={aiPlan}/>
+                </div>
+              )}
             </div>
           </div>
 
