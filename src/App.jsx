@@ -3421,7 +3421,7 @@ Use ## headings, - bullet points, **bold** for key terms. Keep it punchy and exa
             {ss.map(s=>{
               const mastery = gs?.state?.masteryMap?.[s]||50;
               const myTopic = currentTopic[s];
-              const hasVCAA = !!VCAA_CURRICULUM[s];
+              const hasVCAA = !!(VCAA_CURRICULUM[s] || getCurriculum(s));
               return (
                 <div key={s} className="subj-card" onClick={()=>loadTopics(s)} style={{paddingTop:16}}>
                   <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:getColor(s)}}/>
@@ -3503,7 +3503,7 @@ function InlineQuiz({ questions, subject, gs }) {
           );
         })}
         {answered&&<div className="qexp fade-up"><strong style={{color:"var(--success)"}}>💡 </strong>{cleanMath(q.explanation)}</div>}
-        {answered&&<button className="btn btn-p" style={{marginTop:14}} onClick={next}>{qi<questions.length-1?"Next →":"Finish"}</button>}
+        {answered&&<button className="btn btn-p" style={{marginTop:14}} onClick={e=>{e.stopPropagation();next();}}>{qi<questions.length-1?"Next →":"Finish"}</button>}
       </div>
     </div>
   );
