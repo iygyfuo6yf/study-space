@@ -4365,7 +4365,7 @@ Rules:
   }
 
   // Home view
-  if (step==="home" || !studyPlan) {
+  if (step==="home") {
     const upcoming = (state.calendarEvents||[]).filter(e=>new Date(e.date)>=today).sort((a,b)=>new Date(a.date)-new Date(b.date));
     return (
       <div className="content fade-up">
@@ -4502,7 +4502,7 @@ Rules:
   }
 
   // Plan view
-  if (!studyPlan) { setStep("home"); return null; }
+  if (!studyPlan) return null;
   const todayStr = today.toISOString().split("T")[0];
   const completedCount = studyPlan.filter((d,i)=>isDayDone(i,d)).length;
   const studyDays = studyPlan.filter(d=>d.subject!=="Rest").length;
