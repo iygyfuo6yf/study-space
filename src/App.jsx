@@ -2715,7 +2715,7 @@ const SUBTOPICS = {
 // SUBTOPIC BOOKMARKS COMPONENT
 // ─────────────────────────────────────────────
 function SubtopicBookmarks({ selTopic, subject, curriculum, staticSubtopics, gs }) {
-  const [slowMsg, setSlowMsg] = React.useState(false);
+  const [slowMsg, setSlowMsg] = useState(false);
   const [aiSubtopics, setAiSubtopics] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
