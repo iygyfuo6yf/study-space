@@ -5273,7 +5273,39 @@ function StudyGroupsScreen({ profile, user, gs }) {
       });
       if (!res.ok) {
         let errMsg = `HTTP ${res.status}`;
-        try { const errData = await res.json(); errMsg = errData?.message || errData?.error || errMsg; } catch {}
+        let errData = {};
+        try { errData = await res.json(); errMsg = errData?.message || errData?.error || errMsg; } catch {}
+        // If JWT expired, force refresh and retry once
+        if (res.status === 401 || (errMsg && errMsg.toLowerCase().includes('jwt'))) {
+          const refreshed = await supabase.auth.refreshSession();
+          if (refreshed?.access_token) {
+            setUser(u => ({ ...u, session: refreshed }));
+            const res2 = await fetch(`${SB}/study_groups`, {
+              method: "POST",
+              headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${refreshed.access_token}`, Prefer:"return=minimal" },
+              body: JSON.stringify({ name:newName.trim(), subject:newSubject, description:newDesc.trim(), created_by:userId, member_count:1, code, is_public:newPublic })
+            });
+            if (res2.ok) { errMsg = null; }
+            else { try { const d2 = await res2.json(); errMsg = d2?.message || d2?.error || `HTTP ${res2.status}`; } catch {} }
+            if (!errMsg) {
+              // Success on retry — continue flow
+              const created = await sg(`/study_groups?code=eq.${code}&select=*`, refreshed.access_token);
+              if (Array.isArray(created) && created[0]) {
+                const g = created[0];
+                await fetch(`${SB}/group_members`, { method:"POST", headers:{...sh(refreshed.access_token), Prefer:"resolution=merge-duplicates,return=minimal"}, body:JSON.stringify({group_id:g.id,user_id:userId,display_name:profile.userName,role:"owner"}) });
+                setMyGroupIds(ids => new Set([...ids, g.id]));
+                localStorage.setItem("ss_my_groups", JSON.stringify([...new Set([...myGroupIds, g.id])]));
+                setAllGroups(prev => [g, ...prev]);
+                setActiveGroup(g);
+                setNewName(""); setNewDesc(""); setTab("my");
+              }
+              setCreating(false);
+              return;
+            }
+          } else {
+            errMsg = "Session expired — please sign out and sign back in.";
+          }
+        }
         throw new Error(errMsg);
       }
       // Fetch the group we just created by code
