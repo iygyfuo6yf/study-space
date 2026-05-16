@@ -627,6 +627,24 @@ const supabase = (() => {
       signOut: () => {
         setSession(null);
         window.location.reload();
+      },
+
+      // Refresh access token using refresh_token
+      refreshSession: async () => {
+        const session = getSession();
+        if (!session?.refresh_token) return null;
+        try {
+          const r = await fetch(`${base}/auth/v1/token?grant_type=refresh_token`, {
+            method: "POST", headers,
+            body: JSON.stringify({ refresh_token: session.refresh_token })
+          });
+          const d = await r.json();
+          if (d.access_token) {
+            setSession(d);
+            return d;
+          }
+        } catch {}
+        return null;
       }
     },
 
@@ -5162,6 +5180,24 @@ function StudyGroupsScreen({ profile, user, gs }) {
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState("");
   const token = user?.session?.access_token;
+  // Auto-refresh token if expired
+  const getValidToken = async () => {
+    if (!token) return null;
+    // Check if token is expired (JWT exp claim)
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expired = payload.exp && payload.exp * 1000 < Date.now() + 60000; // 1 min buffer
+      if (expired) {
+        const refreshed = await supabase.auth.refreshSession();
+        if (refreshed?.access_token) {
+          // Update user session in app state
+          setUser(u => ({ ...u, session: refreshed }));
+          return refreshed.access_token;
+        }
+      }
+    } catch {}
+    return token;
+  };
   const userId = user?.userId;
 
   useEffect(() => { loadAll(); }, []);
@@ -5185,14 +5221,15 @@ function StudyGroupsScreen({ profile, user, gs }) {
 
   const doJoinGroup = async (group) => {
     try {
+      const freshToken = await getValidToken() || token;
       await fetch(`${SB}/group_members`, {
         method: "POST",
-        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"resolution=merge-duplicates,return=minimal" },
+        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${freshToken}`, Prefer:"resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ group_id:group.id, user_id:userId, display_name:profile.userName, role:"member" })
       });
       await fetch(`${SB}/leaderboard_members`, {
         method: "POST",
-        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"resolution=merge-duplicates,return=minimal" },
+        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${freshToken}`, Prefer:"resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ leaderboard_id:group.id, user_id:userId, display_name:profile.userName, xp:gs.state.xp||0, level:gs.state.level||1, streak:gs.state.streak||0 })
       }).catch(()=>{});
       const newIds = new Set([...myGroupIds, group.id]);
@@ -5225,11 +5262,13 @@ function StudyGroupsScreen({ profile, user, gs }) {
     if (!token) { setError("Not logged in — please sign out and sign back in."); return; }
     setCreating(true); setError("");
     try {
+      const freshToken = await getValidToken();
+      if (!freshToken) { setError("Session expired — please sign out and sign back in."); setCreating(false); return; }
       const code = "ACE-"+Math.random().toString(36).slice(2,6).toUpperCase();
       // Use minimal return to avoid empty JSON issue, then fetch the created group
       const res = await fetch(`${SB}/study_groups`, {
         method: "POST",
-        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${token}`, Prefer:"return=minimal" },
+        headers: { "Content-Type":"application/json", apikey:SB_KEY, Authorization:`Bearer ${freshToken}`, Prefer:"return=minimal" },
         body: JSON.stringify({ name:newName.trim(), subject:newSubject, description:newDesc.trim(), created_by:userId, member_count:1, code, is_public:newPublic })
       });
       if (!res.ok) {
