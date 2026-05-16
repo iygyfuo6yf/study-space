@@ -138,7 +138,7 @@ const LIGHT_CSS = `
   --border:#1A1A1A;--border-light:#E0DBD3;
   --text:#1A1A1A;--text2:#3D3830;
   --muted:#8A8070;--muted2:#B5AFA5;
-  --accent:#1A1A1A;--gold:#C8A96E;--gold-light:#F5ECD8;
+  --accent:#1A1A1A;--gold:#3D6B4F;--gold-light:#F5ECD8;
   --success:#2C7A4B;--success-bg:#E8F5EE;
   --danger:#C0392B;--danger-bg:#FDECEA;
   --shadow:0 2px 12px rgba(26,26,26,0.08);
@@ -148,7 +148,7 @@ const DARK_CSS = `
   --border:#3A3A36;--border-light:#2E2E2B;
   --text:#F5F2EC;--text2:#C8C4BA;
   --muted:#8A8070;--muted2:#5A5650;
-  --accent:#C8A96E;--gold:#C8A96E;--gold-light:#2A2518;
+  --accent:#3D6B4F;--gold:#3D6B4F;--gold-light:#1A2E22;
   --success:#4CAF7D;--success-bg:#0D2018;
   --danger:#E05545;--danger-bg:#200D0A;
   --shadow:0 2px 12px rgba(0,0,0,0.35);
@@ -347,9 +347,9 @@ select.input{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appeara
 .heat{display:grid;grid-template-columns:repeat(17,1fr);gap:4px;}
 .hc{aspect-ratio:1;border-radius:3px;background:var(--bg4);border:1px solid var(--border-light);}
 .hc.h1{background:#E8E0D0;}
-.hc.h2{background:#C8A96E;opacity:.4;}
-.hc.h3{background:#C8A96E;opacity:.7;}
-.hc.h4{background:#C8A96E;}
+.hc.h2{background:#3D6B4F;opacity:.4;}
+.hc.h3{background:#3D6B4F;opacity:.7;}
+.hc.h4{background:#3D6B4F;}
 
 /* LEADERBOARD */
 .lb-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-light);}
@@ -795,14 +795,9 @@ function AuthScreen({ onAuth }) {
 
         {/* Logo */}
         <div style={{textAlign:"center",marginBottom:16}}>
-          <img
-            src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png"
-            alt="Study Ace"
-            style={{width:88,height:88,objectFit:"contain",borderRadius:20,border:"1.5px solid var(--border)"}}
-            onError={e=>{e.target.style.display="none";}}
-          />
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style={{borderRadius:10,flexShrink:0}}><defs><linearGradient id="tg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stopColor="#3D6B4F"/><stop offset="1" stopColor="#2A4D38"/></linearGradient></defs><rect width="36" height="36" rx="10" fill="url(#tg)"/><rect x="10" y="12" width="16" height="3.5" rx="1.75" fill="white"/><rect x="16.25" y="15.5" width="3.5" height="10" rx="1.75" fill="white"/></svg>
         </div>
-        <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",textAlign:"center",color:"var(--text)",marginBottom:4}}>Study Ace</div>
+        <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",textAlign:"center",color:"var(--text)",marginBottom:4}}>Tuff</div>
         <div style={{fontSize:13,color:"var(--muted)",textAlign:"center",marginBottom:24,lineHeight:1.5}}>
           {mode === "login" ? "Welcome back — ready to study?" : "Join Victorian students getting better grades"}
         </div>
@@ -1056,7 +1051,7 @@ function Onboarding({ user, onComplete }) {
         </div>
       </div>
       <button className="btn btn-p btn-full" style={{padding:14,fontSize:15}} onClick={()=>onComplete(data)}>
-        Enter Study Ace 🚀
+        Enter Tuff 🚀
       </button>
     </>
   );
@@ -1066,9 +1061,9 @@ function Onboarding({ user, onComplete }) {
   return (
     <div className="ob-wrap">
       <div className="ob-inner">
-        <div className="ob-logo"><img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Ace" style={{width:90,height:90,objectFit:"contain",borderRadius:20,marginBottom:4}}/></div>
-        <div className="ob-tag" style={{fontWeight:700,fontSize:14,color:"var(--text)",marginBottom:2,WebkitTextFillColor:"var(--text)"}}>Study Ace</div>
-        <div className="ob-tag">Victorian Education Platform · Years 9–12</div>
+        <div className="ob-logo"><img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Tuff" style={{width:90,height:90,objectFit:"contain",borderRadius:20,marginBottom:4}}/></div>
+        <div className="ob-tag" style={{fontWeight:700,fontSize:14,color:"var(--text)",marginBottom:2,WebkitTextFillColor:"var(--text)"}}>Tuff</div>
+        <div className="ob-tag">The AI Study Platform · Years 9–12</div>
         <div className="ob-prog"><div className="ob-fill" style={{width:`${pct}%`}}/></div>
         {steps[step]}
       </div>
@@ -4148,7 +4143,7 @@ Rules: Australian English. Warm and direct. Plain text maths (², √, ×). Bold
         </div>
 
         <div style={{fontSize:10,color:"var(--muted2)",marginTop:8,display:"flex",gap:12,alignItems:"center",justifyContent:"space-between"}}>
-          <span>Powered by Google Gemini · {curriculum} · Chat saved</span>
+          <span>Powered by AI · {curriculum} · Chat saved</span>
           <button onClick={()=>{ localStorage.removeItem(MEMORY_KEY); setMsgs([welcomeMsg]); }}
             style={{fontSize:10,color:"var(--muted)",background:"none",border:"none",cursor:"pointer",fontFamily:"var(--ff)",padding:0,textDecoration:"underline"}}>
             Clear chat
@@ -5017,10 +5012,10 @@ function SettingsScreen({ profile, onUpdateProfile, onSignOut }) {
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div className="card">
             <div className="cb" style={{textAlign:"center",padding:"24px"}}>
-              <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Ace" style={{width:80,height:80,borderRadius:18,marginBottom:12}}/>
-              <div style={{fontWeight:900,fontSize:22,marginBottom:4}}>Study Ace</div>
-              <div style={{color:"var(--muted)",fontSize:13,marginBottom:4}}>Victorian Education Platform · Years 9–12</div>
-              <div style={{fontSize:12,color:"var(--muted)"}}>Version 1.0.0</div>
+              <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Tuff" style={{width:80,height:80,borderRadius:18,marginBottom:12}}/>
+              <div style={{fontWeight:900,fontSize:22,marginBottom:4}}>Tuff</div>
+              <div style={{color:"var(--muted)",fontSize:13,marginBottom:4}}>The AI Study Platform · Years 9–12</div>
+              <div style={{fontSize:12,color:"var(--muted)"}}>Version 2.0.0</div>
             </div>
           </div>
           <div className="card">
@@ -5915,7 +5910,7 @@ function TutorDetailView({ tutor, profile, user, onBack, onReviewed }) {
           {tutor.qualifications && <div style={{background:"var(--bg3)",borderRadius:"var(--r)",padding:"10px 14px",marginBottom:12,fontSize:13,color:"var(--muted)"}}><strong style={{color:"var(--text)"}}>Qualifications: </strong>{tutor.qualifications}</div>}
           <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:14}}>{(tutor.subjects||[]).map(s=><span key={s} style={{fontSize:11,background:getColor(s)+"18",color:getColor(s),border:`1px solid ${getColor(s)}44`,borderRadius:20,padding:"3px 10px",fontWeight:700}}>{s}</span>)}</div>
           {tutor.contact_email && tutor.available && (
-            <a href={`mailto:${tutor.contact_email}?subject=Tutoring Enquiry — Study Ace&body=Hi ${tutor.name},%0A%0AI found your profile on Study Ace and would like to enquire about tutoring.%0A%0AYear level: ${profile.yearLevel?.toUpperCase()}%0ASubjects: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).join(", ")}%0A%0AThanks,%0A${profile.userName}`}
+            <a href={`mailto:${tutor.contact_email}?subject=Tutoring Enquiry — Tuff&body=Hi ${tutor.name},%0A%0AI found your profile on Tuff and would like to enquire about tutoring.%0A%0AYear level: ${profile.yearLevel?.toUpperCase()}%0ASubjects: ${(Array.isArray(profile.selectedSubjects)?profile.selectedSubjects:[]).join(", ")}%0A%0AThanks,%0A${profile.userName}`}
               className="btn btn-primary" style={{display:"inline-flex"}}>Contact {tutor.name?.split(" ")[0]}</a>
           )}
           {!tutor.available && <span style={{fontSize:13,color:"var(--muted)",fontWeight:600}}>Currently unavailable</span>}
@@ -6246,7 +6241,7 @@ export default function App() {
     <>
       <style>{css}</style>
       <div style={{position:"fixed",inset:0,background:"var(--bg)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
-        <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Ace" style={{width:100,height:100,objectFit:"contain",borderRadius:22,marginBottom:16}}/>
+        <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Tuff" style={{width:100,height:100,objectFit:"contain",borderRadius:22,marginBottom:16}}/>
         <div style={{display:"flex",gap:8}}>
           {[0,.15,.3].map(d=><div key={d} className="typing-dot" style={{animationDelay:`${d}s`,width:10,height:10}}/>)}
         </div>
@@ -6288,9 +6283,9 @@ export default function App() {
         {/* SIDEBAR — desktop only */}
         <div className="sidebar">
           <div className="logo">
-            <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Study Ace" style={{width:34,height:34,objectFit:"contain",borderRadius:"var(--r)",flexShrink:0,border:"1.5px solid var(--border)"}}/>
+            <img src="https://raw.githubusercontent.com/iygyfuo6yf/study-space/main/logo.png" alt="Tuff" style={{width:34,height:34,objectFit:"contain",borderRadius:"var(--r)",flexShrink:0,border:"1.5px solid var(--border)"}}/>
             <div>
-              <div className="logo-text">Study Ace</div>
+              <div className="logo-text">Tuff</div>
               <span className="logo-sub">VCE · IB · Years 9–12</span>
             </div>
           </div>
@@ -6342,7 +6337,7 @@ export default function App() {
         {/* MAIN */}
         <div className="main" onClick={()=>showNotifications&&setShowNotifications(false)}>
           <div className="topbar">
-            <div className="topbar-title">{TITLES[screen]||"Study Ace"}</div>
+            <div className="topbar-title">{TITLES[screen]||"Tuff"}</div>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
               <div className="chip chip-fire">🔥 {gs.state.streak||0}</div>
               <div className="chip chip-xp">⚡ {(gs.state.xp||0).toLocaleString()}</div>
