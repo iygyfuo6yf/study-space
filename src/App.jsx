@@ -5380,8 +5380,9 @@ function StudyGroupsScreen({ profile, user, gs }) {
         loading ? <div style={{textAlign:"center",padding:40,color:"var(--muted)"}}>Loading...</div>
         : otherGroups.length===0 ? (
           <div style={{textAlign:"center",padding:"60px 24px"}}>
-            <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:8}}>No other groups yet</div>
-            <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>Create the first one</button>
+            <div style={{fontWeight:700,fontSize:16,color:"var(--text)",marginBottom:8}}>No public groups yet</div>
+            <div style={{fontSize:13,color:"var(--muted)",marginBottom:12}}>Other groups will appear here once created</div>
+            <button className="btn btn-primary btn-sm" onClick={()=>setTab("create")}>+ Create a group</button>
           </div>
         ) : (
           <div style={{display:"flex",flexDirection:"column",gap:12}}>
