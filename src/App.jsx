@@ -795,7 +795,7 @@ function AuthScreen({ onAuth }) {
 
         {/* Logo */}
         <div style={{textAlign:"center",marginBottom:16}}>
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style={{borderRadius:10,flexShrink:0}}><defs><linearGradient id="tg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stopColor="#3D6B4F"/><stop offset="1" stopColor="#2A4D38"/></linearGradient></defs><rect width="36" height="36" rx="10" fill="url(#tg)"/><rect x="10" y="12" width="16" height="3.5" rx="1.75" fill="white"/><rect x="16.25" y="15.5" width="3.5" height="10" rx="1.75" fill="white"/></svg>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style={{borderRadius:10,flexShrink:0}}><defs><linearGradient id="tg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stopColor="#3D6B4F"/><stop offset="1" stopColor="#2A4D38"/></linearGradient></defs><rect width="36" height="36" rx="10" fill="url(#tg)"/><rect x="8" y="10" width="20" height="6" rx="2" fill="white"/><rect x="15" y="16" width="6" height="11" rx="2" fill="white"/></svg>
         </div>
         <div style={{fontWeight:900,fontSize:22,letterSpacing:"-.03em",textAlign:"center",color:"var(--text)",marginBottom:4}}>Tuff</div>
         <div style={{fontSize:13,color:"var(--muted)",textAlign:"center",marginBottom:24,lineHeight:1.5}}>
